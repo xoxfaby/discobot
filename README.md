@@ -1,6 +1,6 @@
-#Noodle Discord Pybot
+# Noodle Discord Pybot
 
-##Pybot Readme
+## Pybot Readme
 
 - This bot was created using the rapptz discord.py library (rewrite)
 - This bot was made for my own personal use and for fun on my main servers
