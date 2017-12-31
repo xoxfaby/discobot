@@ -123,14 +123,15 @@ class BotInfo:
     @commands.command()
     async def info(self, ctx):
         embed = discord.Embed(title="Bot Information", description="Noodle Disco-Pybot", color=0x3347ff)
-        embed.add_field(name="Web URL", value="<https://personalwebsite.website/wiki/noodlebot>")
+        embed.add_field(name="Web URL", value="[Boat Wiki](https://personalwebsite.website/wiki/noodlebot)")
         embed.set_thumbnail(
             url='https://cdn.discordapp.com/app-icons/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png')
         embed.add_field(name="Creator", value="noodle#4660", inline=False)
         embed.add_field(name="Invite", value="[Invite URL]"
                                              "(https://discordapp.com/oauth2/authorize?client_id=340802627887693825"
-                                             "&scope=bot&permissions=1610083543)", inline=True)
-        embed.add_field(name="Bot Prefix", value="`,` (Comma)")
+                                             "&scope=bot&permissions=1610083543)", inline=False)
+        embed.add_field(name="Bot Prefix", value="`,` (Comma)", inline=False)
+        embed.add_field(name="Source", value="[Github](https://github.com/jwshields/discobot)", inline=False)
         await ctx.send(embed=embed)
 
     @commands.command()
