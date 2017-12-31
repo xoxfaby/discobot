@@ -1,0 +1,53 @@
+##########
+# Noodle pybot configuration file
+# the bot will ignore lines prefixed with a '#'
+#
+# to fill out an option, such as trustedusers, with multiple people, separate each entry by a comma
+#
+#
+##########
+[script]
+loggingenabled = True
+logvoice = True
+logtext = True
+logusers = True
+mysqlserver = 127.0.0.1
+mysqlport = 3306
+mysqluser = username
+mysqlpw = password
+mysqldb = discobot
+
+[dbot]
+discordbottoken = yourtoken
+discordbotcommandprefix = ,
+botowner = your-discord-id
+trustedusers = id-of-trusted-users,
+mainserver = id-of-main-guild,
+mainserverlogchan = id-of-main-guild-log-channel,
+mainservervoicelogchan = id-of-main-guild-log-channel,
+mainservergeneralchan = id-of-main-guild-general-channel,
+mainserverwelcomechan = id-of-main-guild-welcome-channel,
+botdescription = discobot
+botdiscordid = userid-of-discordbot
+mainserverjailrole = id-of-jail-roie,
+mainserverafkchan = id-of-main-server-afk-voice-channel,
+mainservermedialinks = http://example.com
+mainserverspamroom = id-of-main-server-room-for-spam,
+
+[youtube]
+youtubeapikey = yourkey
+
+[wolfram]
+wolframalphaapikey = yourkey
+
+[wunderground]
+weatherapikey = yourkey
+
+[imgflip]
+imgusername = username
+imgpassword = password
+
+[DONOTTOUCH]
+#DO NOT TOUCH mysqlconfigured#
+mysqlconfigured = False
+#DO NOT TOUCH mysqlconfigured#

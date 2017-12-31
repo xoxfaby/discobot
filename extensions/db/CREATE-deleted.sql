@@ -1,0 +1,15 @@
+CREATE TABLE `mysqldb`.`tablename` (
+  `id_deleted` BIGINT NOT NULL AUTO_INCREMENT,
+  `time` VARCHAR(45) NOT NULL,
+  `guild-id` VARCHAR(45) NOT NULL,
+  `guild-name` LONGTEXT NOT NULL,
+  `channel-id` LONGTEXT NOT NULL,
+  `channel-name` VARCHAR(45) NOT NULL,
+  `user-id` VARCHAR(45) NOT NULL,
+  `user-name` LONGTEXT NOT NULL,
+  `message-id` VARCHAR(45) NOT NULL,
+  `original-send-time` VARCHAR(45) NOT NULL,
+  `content` LONGTEXT NULL,
+  `attachmenturl` LONGTEXT NULL,
+  `attachmentfilename` LONGTEXT NULL,
+  PRIMARY KEY (`id_deleted`));
