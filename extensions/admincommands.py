@@ -43,6 +43,7 @@ class AdminCommands:
         return await self.bot.logout()
 
     @commands.command(hidden=True)
+    # @self.bot.botchecks.check_trusted_user()
     async def boatsay(self, ctx, *args):
         mesg = ' '.join(args)
         if str('Direct Message') not in str(ctx.channel):
@@ -50,9 +51,11 @@ class AdminCommands:
         return await ctx.send(mesg)
 
     @commands.command(hidden=True)
+    # @self.bot.botchecks.check_trusted_user(self.bot)
     async def adminbotsay(self, ctx, chanid, *args):
         mesg = ' '.join(args)
-        if (str('Direct Message') not in str(ctx.channel)) and (str(ctx.channel.id) != str(mainserverspamroom[0])):
+        if (str('Direct Message') not in str(ctx.channel)) and \
+                (str(ctx.channel.id) != str(self.bot.common.mainserverspamroom[0])):
             await ctx.message.delete()
         customchannel = self.bot.get_channel(id=int(chanid))
         return await customchannel.send(mesg)

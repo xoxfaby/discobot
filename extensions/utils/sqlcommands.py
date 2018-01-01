@@ -376,14 +376,16 @@ class InternalSQL:
 
     async def statement_insert_cmdtable(self, ctx):
         msgtime = str(datetime.datetime.now())
-        guildid = str(ctx.guild.id)
-        guildname = str(ctx.guild.name)
-        if str('Direct Message') in str(ctx.channel):
+        if str("Direct Message") in str(ctx.channel):
             channelid = "DM"
             channelname = "DM"
+            guildid = "DM"
+            guildname = "DM"
         else:
             channelid = str(ctx.channel.id)
             channelname = str(ctx.channel.name)
+            guildid = str(ctx.guild.id)
+            guildname = str(ctx.guild.name)
         userid = str(ctx.author.id)
         username = str(ctx.author)
         content = str(ctx.message.content)

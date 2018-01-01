@@ -63,49 +63,54 @@ class BotInfo:
         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
 
-    # async def on_guild_join(self, guild):
-    #     guildchannels = guild.channels
-    #     print(guildchannels)
-    #     defaultchan.send("I am " + botdescription + "\nThank you for joining me to this server, please run `"
-    #                      + discordbotcommandprefix + "bogconfig` to run my setup for this server.")
-    #
-    # async def getchans(self, ctx):
-    #     textchans = ctx.guild.text_channels
-    #     numofchans = len(textchans)
-    #     nums = 1
-    #     listofchans = "Text channels:\n"
-    #     chanids = "Text Channels:\n"
-    #     while nums != numofchans + 1:
-    #         for chan in textchans:
-    #             listofchans += str(nums) + ". " + str(chan.name) + "\n"
-    #             chanids += str(nums) + ". " + str(chan.id) + "\n"
-    #             nums += 1
-    #     return listofchans, chanids
-    #
+    async def on_guild_join(self, guild):
+        channel = guild.system_channel
+        if channel is None:
+            guildchans = guild.text_channels
+            for chan in guildchans:
+                sendperms = chan.permissions_for(guild.me).send_messages
+                if sendperms:
+                    initialchannel = chan
+                    break
+                else:
+                    pass
+        else:
+            initialchannel = channel
+        # message = ("I am " + self.bot.common.botdescription + "\nThank you for joining me to this server, please run `"
+        #            + self.bot.common.discordbotcommandprefix + "bogconfig` to run my setup for this server.\nIn the " +
+        #            "setup we'll set things such as if and where you want welcome messages and other things.")
+        message = ("I am " + self.bot.common.botdescription + "\nThank you for joining me to this server; "
+                   "my owner is currently working on a configuration utility for each server upon join.")
+        await initialchannel.send(message)
+
     # @commands.command(hidden=True)
     # async def botconfig(self, ctx):
+    #     perms = ctx.channel.permissions_for(ctx.author).administrator
     #     if perms:
-    #         perms = ctx.channel.permissions_for(ctx.author).administrator
     #         channelconverter = commands.TextChannelConverter()
-    #         def checkchanid(m):
-    #             return m.content.isdigit() and m.author == ctx.author
-    #         def checkresponsebool(m):
-    #             return m.author == ctx.author and m.content == "Yes"
+    #
+    #         def checkauthor(m):
+    #             return m.author == ctx.author
+    #
     #         await ctx.send('Beginning the bot configuration for server: ' + ctx.guild.name)
     #         await asyncio.sleep(0.5)
-    #         await ctx.send("Do you want to enable user join/part messages/logging?\nPlease type 'Yes' or 'No'")
-    #         enableloggingresp = await self.bot.wait_for('message', check=checkresponsebool)
-    #         await ctx.send("Please enter the channelid of the welcome channel")
-    #
-    #         welcomechanid = await self.bot.wait_for('message', check=checkchanid)
-    #         welcomechanobj = await channelconverter.convert(ctx, welcomechanid.content)
-    #         await ctx.send("You've selected " + str(welcomechanobj) + " as your new user welcome channel\n" +
-    #                        "Please enter the channel id of the admin log/audit channel" +
-    #                        "\nThis channel will be used to log users who join and leave with timestamps.\n"
-    #                        "If you don't want to have a secondary channel of user joins/parts, please type 'None'")
-    #         adminlogchanid = await self.bot.wait_for('message', check=checkchanid)
-    #         adminlogchanobj = await channelconverter.convert(ctx, adminlogchanid.content)
-    #         await ctx.send("Log channel defined.\n")
+    #         await ctx.send("Do you want to enable user join/part messages?\nPlease type 'Yes' or 'No'")
+    #         enableloggingresp = await self.bot.wait_for('message', check=checkauthor)
+    #         loggingresp = bool(enableloggingresp.content)
+    #         if loggingresp:
+    #             await ctx.send("Please enter the name of the welcome channel\n"
+    #                            "(You can do this by typing a `#` and the channel name)")
+    #             welcomechanmessage = await self.bot.wait_for('message', check=checkauthor)
+    #             welcomechan = welcomechanmessage.channel_mentions
+    #             await ctx.send("You've selected " + str(welcomechan.mention) + " as your new user welcome channel")
+    #         else:
+    #             await ctx.send("You've selected to not enable welcome/part messages for this server.")
+
+            # ("Please enter the channel id of the admin log/audit channel\nThis channel will be used to log users who join and leave with timestamps.\n"
+            #                "If you don't want to have a secondary channel of user joins/parts, please type 'None'")
+            # adminlogchanid = await self.bot.wait_for('message', check=checkauthor)
+            # adminlogchanobj = await channelconverter.convert(ctx, adminlogchanid.content)
+            # await ctx.send("Log channel defined.\n")
     #
     #         # answer = random.randint(1, 10)
     #         # if guess is None:

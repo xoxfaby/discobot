@@ -1,5 +1,5 @@
 from extensions.utils.importsfile import *
-# from extensions.utils.dbotchecks import *
+# from extensions.utils.dbotchecks import DBotChecks
 
 
 class CommonParams:
