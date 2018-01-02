@@ -12,6 +12,7 @@ class LoopClass:
         await self.loopstorun()
 
     async def loopstorun(self):
+        # pass
         self.bot.loop.create_task(self.awoo())
         # self.loop.create_task(self.servertakeover())
 

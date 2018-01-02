@@ -79,7 +79,7 @@ class BotInfo:
         message = ("I am " + self.bot.common.botdescription + "\nThank you for joining me to this server, please run `"
                    + self.bot.common.discordbotcommandprefix + "bogconfig` to run my setup for this server.\nIn the " +
                    "setup we'll set things such as if and where you want welcome messages and other features.\n"
-                   "**Please note, you will need `manage_guild` permissions on this guild in order to run `botconfig`")
+                   "**Please note, you will need `manage_guild` permissions on this guild in order to run `botconfig`**")
         await initialchannel.send(message)
 
     @commands.command(hidden=True)
@@ -87,141 +87,172 @@ class BotInfo:
     async def botconfig(self, ctx):
         def checkauthor(m):
             return m.author == ctx.author
-
+        botconfigscript = []
+        with open(os.path.join("extensions", "utils", "botconfig-lines.txt"), encoding='utf-8', mode='r') as infile:
+            botconfigscript = infile.read().split("%%\n")
         yesanswerlist = ['yes', 'y', 'true', 'yeah', 'yup', '1', 't']
         noanswerlist = ['no', 'n', 'negative', 'false', 'nope', '0', 'f']
         configmessagelist = []
-        startmsg = ('Beginning the bot configuration for server: ' + ctx.guild.name)
-        sent_startmsg = await ctx.send(startmsg)
-        configmessagelist.append(sent_startmsg)
-        thischannelmsg = ("As a note, I am marking this channel as the 'initial' channel for this server\n"
-                          "If my creator needs to send an announcement to all servers I am joined to, "
-                          "I will send the message to this channel;\nNote: announcements are very rare, "
-                          "I won't spam up your channel\nIs this acceptable? Please type 'yes' or 'no'")
-        sent_thischannelmsg = await ctx.send(thischannelmsg)
+        configmessagelist1 = []
+        sent_startmsg = await ctx.send(str(botconfigscript[0]).format(str(ctx.guild.name)))
+        configmessagelist1.append(sent_startmsg)
+        sent_thischannelmsg = await ctx.send(botconfigscript[1])
         configmessagelist.append(sent_thischannelmsg)
-        thischannelresp = await self.bot.wait_for('message', check=checkauthor)
+        thischannelresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
         configmessagelist.append(thischannelresp)
         enablelogging = True
         thischannelresp1 = thischannelresp.content.lower()
         if thischannelresp1 in yesanswerlist:
-            announcemsg1 = await ctx.send("Awesome, I'll mark this down as a good channel to send announcements to. "
-                                          "Thanks!")
+            announcemsg1 = await ctx.send(botconfigscript[2])
             configmessagelist.append(announcemsg1)
             initialchan = ctx.channel
         else:
-            announcemsg1 = await ctx.send("Please enter the name of the channel you would like bot announcements sent "
-                                          "to.\n(You can do this by typing a `#` and the channel name)")
+            announcemsg1 = await ctx.send(botconfigscript[3])
             configmessagelist.append(announcemsg1)
-            initialchanresp = await self.bot.wait_for('message', check=checkauthor)
+            initialchanresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
             configmessagelist.append(initialchanresp)
             initialchan = initialchanresp.channel_mentions[0]
-            myinitalresp = await ctx.send("You've selected " + str(initialchan.mention) +
-                                          " as the channel I will send announcements to")
+            myinitalresp = await ctx.send(botconfigscript[4].format(str(initialchan.mention)))
             configmessagelist.append(myinitalresp)
+        async with ctx.typing():
+            await ctx.channel.delete_messages(configmessagelist)
+        configmessagelist = None
+        configmessagelist = []
 
         await asyncio.sleep(0.5)
-        usermsgs = ("Do you want to enable user join/part messages?\nPlease enter 'yes' or 'no'\n"
-                    "Example: <https://personalwebsite.website/wiki/images/7/73/Bot_messages.png>")
-        sent_usermsgs = await ctx.send(usermsgs)
+        sent_usermsgs = await ctx.send(botconfigscript[5])
         configmessagelist.append(sent_usermsgs)
-        enableloggingresp = await self.bot.wait_for('message', check=checkauthor)
+        enableloggingresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
         configmessagelist.append(enableloggingresp)
         loggingresp = enableloggingresp.content.lower()
         if loggingresp in yesanswerlist:
-            myloggingresp = await ctx.send("Please enter the name of the welcome channel\n"
-                                           "(You can do this by typing a `#` and the channel name)")
+            myloggingresp = await ctx.send(botconfigscript[6])
             configmessagelist.append(myloggingresp)
-            welcomechanmessage = await self.bot.wait_for('message', check=checkauthor)
+            welcomechanmessage = await self.bot.wait_for('message', check=checkauthor, timeout=60)
             configmessagelist.append(welcomechanmessage)
             welcomechan = welcomechanmessage.channel_mentions[0]
-            mywelcomeresp = await ctx.send("You've selected " + str(welcomechan.mention) + " as your new user welcome channel")
+            mywelcomeresp = await ctx.send(botconfigscript[7].format(str(welcomechan.mention)))
             configmessagelist.append(mywelcomeresp)
             welcomechanbool = 1
+            sent_defaultmessages = await ctx.send(botconfigscript[18])
+            configmessagelist.append(sent_defaultmessages)
+            defaultmessagesresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
+            configmessagelist.append(defaultmessagesresp)
+            secondresp = defaultmessagesresp.content.lower()
+            if secondresp in yesanswerlist:
+                sent_asknewwelcome = await ctx.send(botconfigscript[19])
+                configmessagelist.append(sent_asknewwelcome)
+                newwelcomeresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
+                configmessagelist.append(newwelcomeresp)
+                welcomemessage = newwelcomeresp.content
+                sent_asknewpart = await ctx.send(botconfigscript[20])
+                configmessagelist.append(sent_asknewpart)
+                newleaveresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
+                configmessagelist.append(newleaveresp)
+                leavemessage = newleaveresp.content
+            else:
+                sent_nochangemessages = await ctx.send(botconfigscript[21])
+                configmessagelist.append(sent_nochangemessages)
+                welcomemessage = None
+                leavemessage = None
         else:
-            mywelcomeresp = await ctx.send("You've selected to not enable welcome/part messages for this server.")
+            mywelcomeresp = await ctx.send(botconfigscript[8])
             configmessagelist.append(mywelcomeresp)
             welcomechan = None
             welcomechanbool = 0
+            welcomemessage = None
+            leavemessage = None
+        async with ctx.typing():
+            await ctx.channel.delete_messages(configmessagelist)
+        configmessagelist = None
+        configmessagelist = []
 
         await asyncio.sleep(0.5)
-        adminauditlogmsg = ("Do you want to enable an audit log which will be a log with timestamps, "
-                            "of users who join and part this guild?\nPlease enter 'yes' or 'no'")
-        sent_adminauditlogmsg = await ctx.send(adminauditlogmsg)
+        sent_adminauditlogmsg = await ctx.send(botconfigscript[9])
         configmessagelist.append(sent_adminauditlogmsg)
-        adminauditlogresp = await self.bot.wait_for('message', check=checkauthor)
+        adminauditlogresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
         configmessagelist.append(adminauditlogresp)
         auditresp = adminauditlogresp.content.lower()
         if auditresp in yesanswerlist:
-            adminlogchanmsg = (
-                "Please enter the name of the channel you would like to use as a user log audit channel\n"
-                "This channel will be used to make a log of users who join and leave with timestamps.\n"
-                "If you don't want to have a secondary channel of user joins/parts, please type 'None'\n"
-                "(You can do this by typing a `#` and the channel name)\n"
-                "Example: <https://personalwebsite.website/wiki/images/7/73/Bot_messages.png>"
-            )
-            sent_adminlogchanmsg = await ctx.send(adminlogchanmsg)
+            sent_adminlogchanmsg = await ctx.send(botconfigscript[10])
             configmessagelist.append(sent_adminlogchanmsg)
             adminlogchanresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
             configmessagelist.append(adminlogchanresp)
             adminlogchan = adminlogchanresp.channel_mentions[0]
-            myresp = await ctx.send("You've selected " + str(adminlogchan.mention) + " as the user log channel")
+            myresp = await ctx.send(botconfigscript[11].format(str(adminlogchan.mention)))
             configmessagelist.append(myresp)
             adminlogchanbool = 1
         else:
-            myresp = await ctx.send("You've selected to not enable user join/part messages for this server")
+            myresp = await ctx.send(botconfigscript[12])
             configmessagelist.append(myresp)
             adminlogchan = None
             adminlogchanbool = 0
+        async with ctx.typing():
+            await ctx.channel.delete_messages(configmessagelist)
+        configmessagelist = None
+        configmessagelist = []
 
         await asyncio.sleep(0.5)
-        voicelogmsg = ("Do you want to enable a voice audit log?\n"
-                       "If enabled, with this function, I will send messages with timestamps of who "
-                       "joined which voice channel\n"
-                       "Please enter 'yes' or 'no'\n"
-                       "**__Attention: the bot will not, and will never join voice channels, and thus, "
-                       "conversations will never be recorded.__**\n"
-                       "**__This feature will only send a message containing [time, who, joined/left, voicechannel__**"
-                       "\nExample: <https://personalwebsite.website/wiki/images/0/05/Bot-voice_channel_message.png>"
-                       )
-        sent_voicelogmsg = await ctx.send(voicelogmsg)
+        sent_voicelogmsg = await ctx.send(botconfigscript[13])
         configmessagelist.append(sent_voicelogmsg)
         voicelogmsgresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
         configmessagelist.append(voicelogmsgresp)
         voiceresp = voicelogmsgresp.content.lower()
         if voiceresp in yesanswerlist:
-            voicelogchanmsg = (
-                "Please enter the name of the channel you would like to use as a voice connection log channel\n"
-                "(You can do this by typing a `#` and the channel name)"
-            )
-            sent_voicelogchanmsg = await ctx.send(voicelogchanmsg)
+            sent_voicelogchanmsg = await ctx.send(botconfigscript[14])
             configmessagelist.append(sent_voicelogchanmsg)
             voicelogchanresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
             configmessagelist.append(voicelogchanresp)
             voicelogchan = voicelogchanresp.channel_mentions[0]
-            myresp1 = await ctx.send("You've selected " + str(voicelogchan.mention) + " as the voice log channel")
+            myresp1 = await ctx.send(botconfigscript[15].format(str(voicelogchan.mention)))
             configmessagelist.append(myresp1)
             voicelogchanbool = 1
         else:
-            myresp1 = await ctx.send("You've selected to not enable user voice messages for this server")
+            myresp1 = await ctx.send(botconfigscript[16])
             configmessagelist.append(myresp1)
             voicelogchan = None
             voicelogchanbool = 0
+        async with ctx.typing():
+            await ctx.channel.delete_messages(configmessagelist)
+        configmessagelist = None
+        configmessagelist = []
 
-        await ctx.channel.delete_messages(configmessagelist)
-        endconfigmsg = ("This concludes my configuration.\nThank you for adding me to this server;\n"
-                        "You can view my help documentation at <https://personalwebsite.website/wiki/Noodlebot>\n"
-                        "My creator is `noodle#4660`, and you can join my main server at "
-                        "<https://discord.gg/9B8eVyx> if you need help with me.\n"
-                        "You can also re-run this configuration command at any time to change your selections.")
-        await ctx.send(endconfigmsg)
-        channellist = [initialchan, welcomechan, adminlogchan, voicelogchan]
-        responses = [enablelogging, welcomechanbool, adminlogchanbool, voicelogchanbool]
-        sqlquery, tablename, querydata = await self.bot.sql.statement_insert_guildconfig(ctx, channellist, responses)
+        await asyncio.sleep(0.5)
+        sent_awooquestion = await ctx.send(botconfigscript[22])
+        configmessagelist.append(sent_awooquestion)
+        awooresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
+        configmessagelist.append(awooresp)
+        awoorespcontent = awooresp.content.lower()
+        if awoorespcontent in yesanswerlist:
+            sent_awoochanquestion = await ctx.send(botconfigscript[23])
+            configmessagelist.append(sent_awoochanquestion)
+            awoochanresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
+            configmessagelist.append(awoochanresp)
+            awoochan = awoochanresp.channel_mentions[0]
+            enableawoos = True
+        else:
+            sent_awoochanquestion = await ctx.send(botconfigscript[24])
+            configmessagelist.append(sent_awoochanquestion)
+            enableawoos = False
+            awoochan = None
+        await asyncio.sleep(2)
+        async with ctx.typing():
+            await ctx.channel.delete_messages(configmessagelist)
+        configmessagelist = None
+        configmessagelist = []
+
+        # add config option to choose what prefix to use
+
+        await ctx.channel.delete_messages(configmessagelist1)
+        await ctx.send(botconfigscript[17])
+        channellist = [initialchan, welcomechan, adminlogchan, voicelogchan, awoochan]
+        responses = [enablelogging, welcomechanbool, adminlogchanbool, voicelogchanbool, enableawoos]
+        joinpartmsgs = [welcomemessage, leavemessage]
+        sqlquery, tablename, querydata = await self.bot.sql.statement_insert_guildconfig(ctx, channellist, responses,
+                                                                                         joinpartmsgs)
         async with self.bot.sql.mysqlcon.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(sqlquery, querydata)
-
 
     @commands.command()
     async def info(self, ctx):

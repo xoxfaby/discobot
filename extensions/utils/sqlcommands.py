@@ -398,7 +398,7 @@ class InternalSQL:
         querydata = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, content)
         return newquery, querydata
 
-    async def statement_insert_guildconfig(self, ctx, channellist: list, responses: list):
+    async def statement_insert_guildconfig(self, ctx, channellist: list, responses: list, joinpartmsgs: list):
         configtime = str(datetime.datetime.now())
         guildid = str(ctx.guild.id)
         whoconfiged = str(ctx.author)
@@ -406,16 +406,23 @@ class InternalSQL:
         welcomechan = str(channellist[1].id)
         adminlogchan = str(channellist[2].id)
         voicelogchan = str(channellist[3].id)
+        awoochan = str(channellist[4].id)
+        enableawoos = responses[4]
         enablelogging = responses[0]
         welcomechanbool = responses[1]
         adminlogchanbool = responses[2]
         voicelogchanbool = responses[3]
+        joinmessage = joinpartmsgs[0]
+        partmessage = joinpartmsgs[1]
         configquery = """
-        REPLACE INTO `{0}`.`_serverconfig` (`guild-id`, `initialchannel`, `whoconfiged`, `lastconfiged`, `enablelogging`, `enableusewelcome`, `enableadminlogs`, `enablevoicelogs`, `welcomechannel`, `adminchannel`, `voicelogchannel`)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        REPLACE INTO `{0}`.`_serverconfig` (`guild-id`, `initialchannel`, `whoconfiged`, `lastconfiged`, 
+        `enablelogging`, `enableusewelcome`, `enableadminlogs`, `enablevoicelogs`, `welcomechannel`, `adminchannel`,
+        `voicelogchannel`, `awoochannel`, `enableawoo`, `partmessage`, `welcomemessage`)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         newquery = configquery.format(self.bot.common.mysqldb)
         querydata = (guildid, initialchan, whoconfiged, configtime, enablelogging, welcomechanbool, adminlogchanbool,
-                     voicelogchanbool, welcomechan, adminlogchan, voicelogchan)
+                     voicelogchanbool, welcomechan, adminlogchan, voicelogchan, awoochan, enableawoos, partmessage,
+                     joinmessage)
         tablename = str("_serverconfig")
         return newquery, tablename, querydata

@@ -65,9 +65,12 @@ CREATE TABLE `mysqldb`.`_serverconfig` (
   `enableusewelcome` TINYINT(4) NOT NULL,
   `enableadminlogs` TINYINT(4) NOT NULL,
   `enablevoicelogs` TINYINT(4) NOT NULL,
+  `enableawoo` VARCHAR(45) NOT NULL,
   `welcomechannel` VARCHAR(45) DEFAULT NULL,
   `adminchannel` VARCHAR(45) DEFAULT NULL,
   `voicelogchannel` VARCHAR(45) DEFAULT NULL,
+  `awoochannel` varchar(45) DEFAULT NULL,
+  `partmessage` varchar(2000) NOT NULL DEFAULT 'ok bye {0}',
+  `welcomemessage` varchar(2000) NOT NULL DEFAULT 'welcome to {1}, {0}~',
   PRIMARY KEY (`id_serverconfig`),
-  UNIQUE KEY `guild-id_UNIQUE` (`guild-id`)
-);
+  UNIQUE KEY `guild-id_UNIQUE` (`guild-id`));
