@@ -43,7 +43,7 @@ class AdminCommands:
         return await self.bot.logout()
 
     @commands.command(hidden=True)
-    # @botcheck.check_trusted_user
+    # @commands.check(self.bot.dbotchecks.check_trusted_user)
     async def boatsay(self, ctx, *args):
         mesg = ' '.join(args)
         if str('Direct Message') not in str(ctx.channel):
@@ -51,7 +51,7 @@ class AdminCommands:
         return await ctx.send(mesg)
 
     @commands.command(hidden=True)
-    # @self.bot.botcheck.check_trusted_user()
+    # @commands.check(self.bot.dbotchecks.check_trusted_user)
     async def adminbotsay(self, ctx, chanid, *args):
         mesg = ' '.join(args)
         if (str('Direct Message') not in str(ctx.channel)) and \

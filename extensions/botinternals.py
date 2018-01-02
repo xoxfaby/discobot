@@ -46,8 +46,12 @@ class BotInternals:
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor(aiomysql.DictCursor) as cursor:
                     await cursor.execute(sqlcmd)
-                    guildconf = await cursor.fetchone()
-            if guildconf['isconfigged']:
+                    rowcount = cursor.rowcount
+                    if rowcount == 1:
+                        guildconf = await cursor.fetchone()
+                    else:
+                        guildconf = {}
+            if 'isconfigged' in guildconf:
                 if guildconf['enablevoicelogs']:
                     content = (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ': ' + str(member) +
                                ' is in voice channel: ' + str(after.channel))
@@ -65,8 +69,12 @@ class BotInternals:
         async with self.bot.sql.mysqlcon.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(sqlcmd)
-                guildconf = await cursor.fetchone()
-        if guildconf['isconfigged']:
+                rowcount = cursor.rowcount
+                if rowcount == 1:
+                    guildconf = await cursor.fetchone()
+                else:
+                    guildconf = {}
+        if 'isconfigged' in guildconf:
             messagedict = {"join": guildconf['welcomemessage'], "leave": guildconf['partmessage'],
                            "ban": "{0} was banned.", "unban": "{0} was unbanned"}
             memberverb = {"join": " joined the server", "leave": " left the server",
