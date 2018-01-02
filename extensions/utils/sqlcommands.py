@@ -414,15 +414,27 @@ class InternalSQL:
         voicelogchanbool = responses[3]
         joinmessage = joinpartmsgs[0]
         partmessage = joinpartmsgs[1]
+        isconfigged = True
         configquery = """
-        REPLACE INTO `{0}`.`_serverconfig` (`guild-id`, `initialchannel`, `whoconfiged`, `lastconfiged`, 
+        REPLACE INTO `{0}`.`_serverconfig` (`guild-id`, `isconfigged`, `initialchannel`, `whoconfiged`, `lastconfiged`, 
         `enablelogging`, `enableusewelcome`, `enableadminlogs`, `enablevoicelogs`, `welcomechannel`, `adminchannel`,
         `voicelogchannel`, `awoochannel`, `enableawoo`, `partmessage`, `welcomemessage`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         newquery = configquery.format(self.bot.common.mysqldb)
-        querydata = (guildid, initialchan, whoconfiged, configtime, enablelogging, welcomechanbool, adminlogchanbool,
-                     voicelogchanbool, welcomechan, adminlogchan, voicelogchan, awoochan, enableawoos, partmessage,
-                     joinmessage)
+        querydata = (guildid, isconfigged, initialchan, whoconfiged, configtime, enablelogging, welcomechanbool,
+                     adminlogchanbool, voicelogchanbool, welcomechan, adminlogchan, voicelogchan, awoochan, enableawoos,
+                     partmessage, joinmessage)
         tablename = str("_serverconfig")
         return newquery, tablename, querydata
+
+    async def statement_get_server_config(self, guild):
+        guildid = guild.id
+        sqlquery = """
+        SELECT * 
+        FROM `{0}`.`_serverconfig`
+        WHERE `guild-id` = {1};
+        """
+        newquery = sqlquery.format(self.bot.common.mysqldb, guildid)
+        tablename = str("_serverconfig")
+        return newquery, tablename

@@ -38,49 +38,63 @@ class BotInternals:
         else:
             return await ctx.send(content='Command not recognized')
 
-    async def memberbotmessage(self, member, secondaryargs):
+    async def on_voice_state_update(self, member, before, after):
+        if str(before.channel) == str(after.channel):
+            return
+        else:
+            sqlcmd, tablename = await self.bot.sql.statement_get_server_config(member.guild)
+            async with self.bot.sql.mysqlcon.acquire() as conn:
+                async with conn.cursor(aiomysql.DictCursor) as cursor:
+                    await cursor.execute(sqlcmd)
+                    guildconf = await cursor.fetchone()
+            if guildconf['isconfigged']:
+                if guildconf['enablevoicelogs']:
+                    content = (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ': ' + str(member) +
+                               ' is in voice channel: ' + str(after.channel))
+                    voicelogchan = self.bot.get_channel(id=int(guildconf['voicelogchannel']))
+                    await voicelogchan.send(content=content)
+                else:
+                    return
+            else:
+                return
+
+    async def memberbotmessage(self, member, secondaryargs, guild):
         if str(member) == str(member.guild.me):
             return
-        channel = member.guild.system_channel
-        if not channel:
-            return
+        sqlcmd, tablename = await self.bot.sql.statement_get_server_config(guild)
+        async with self.bot.sql.mysqlcon.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(sqlcmd)
+                guildconf = await cursor.fetchone()
+        if guildconf['isconfigged']:
+            messagedict = {"join": guildconf['welcomemessage'], "leave": guildconf['partmessage'],
+                           "ban": "{0} was banned.", "unban": "{0} was unbanned"}
+            memberverb = {"join": " joined the server", "leave": " left the server",
+                          "ban": " was banned from the server", "unban": " was unbanned from the server"}
+            if guildconf['enableusewelcome']:
+                welcomechannel = self.bot.get_channel(id=int(guildconf['welcomechannel']))
+                welcomemessage = messagedict[secondaryargs].format(member.mention, guild.name)
+                if str(secondaryargs) is not "unban":
+                    await welcomechannel.send(content=welcomemessage)
+            if guildconf['enableadminlogs']:
+                adminmsg = (str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + ': ' + str(member) +
+                            str(memberverb[secondaryargs]))
+                adminchannel = self.bot.get_channel(id=int(guildconf['adminchannel']))
+                await adminchannel.send(adminmsg)
         else:
-            messages = {"join": "Welcome to {1}, {0}~", "leave": "ok bye {0}"}
-            welcomemessage = messages[secondaryargs].format(member.mention, member.guild.name)
-            return await channel.send(content=welcomemessage)
+            return
 
     async def on_member_join(self, member):
-        await self.memberbotmessage(member, "join")
+        await self.memberbotmessage(member, "join", member.guild)
 
     async def on_member_remove(self, member):
-        await self.memberbotmessage(member, "leave")
+        await self.memberbotmessage(member, "leave", member.guild)
 
+    async def on_member_ban(self, guild, member):
+        await self.memberbotmessage(member, "ban", guild)
 
-class BotInfo:
-    """Bot Information and configuration"""
-    def __init__(self, bot):
-        self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
-
-    async def on_guild_join(self, guild):
-        channel = guild.system_channel
-        if channel is None:
-            guildchans = guild.text_channels
-            for chan in guildchans:
-                sendperms = chan.permissions_for(guild.me).send_messages
-                if sendperms:
-                    initialchannel = chan
-                    break
-                else:
-                    pass
-        else:
-            initialchannel = channel
-        message = ("I am " + self.bot.common.botdescription + "\nThank you for joining me to this server, please run `"
-                   + self.bot.common.discordbotcommandprefix + "bogconfig` to run my setup for this server.\nIn the " +
-                   "setup we'll set things such as if and where you want welcome messages and other features.\n"
-                   "**Please note, you will need `manage_guild` permissions on this guild in order to run `botconfig`**")
-        await initialchannel.send(message)
+    async def on_member_unban(self, guild, member):
+        await self.memberbotmessage(member, "unban", guild)
 
     @commands.command(hidden=True)
     @commands.has_permissions(manage_guild=True)
@@ -253,6 +267,33 @@ class BotInfo:
         async with self.bot.sql.mysqlcon.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(sqlquery, querydata)
+
+
+class BotInfo:
+    """Bot Information and configuration"""
+    def __init__(self, bot):
+        self.bot = bot
+        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
+              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+
+    async def on_guild_join(self, guild):
+        channel = guild.system_channel
+        if channel is None:
+            guildchans = guild.text_channels
+            for chan in guildchans:
+                sendperms = chan.permissions_for(guild.me).send_messages
+                if sendperms:
+                    initialchannel = chan
+                    break
+                else:
+                    pass
+        else:
+            initialchannel = channel
+        message = ("I am " + self.bot.common.botdescription + "\nThank you for joining me to this server, please run `"
+                   + self.bot.common.discordbotcommandprefix + "bogconfig` to run my setup for this server.\nIn the " +
+                   "setup we'll set things such as if and where you want welcome messages and other features.\n"
+                   "**Please note, you will need `manage_guild` permissions on this guild in order to run `botconfig`**")
+        await initialchannel.send(message)
 
     @commands.command()
     async def info(self, ctx):

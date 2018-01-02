@@ -19,8 +19,8 @@ class BotLoggerDB:
         async with self.bot.sql.mysqlcon.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(sqlcmd)
-                numtables = cursor.rowcount
-        if numtables:
+                numrows = cursor.rowcount
+        if numrows:
             return True
         else:
             createcmd = await self.bot.sql.statement_create_table(str(tabletype), str(tablename))
