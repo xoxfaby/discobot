@@ -39,7 +39,7 @@ class AdminCommands:
             await ctx.message.delete()
         await ctx.send('Proceeding with bot shutdown now...')
         await self.bot.close()
-        await self.bot.sql.mysqllogger.close()
+        await self.bot.sql.mysqlcon.close()
         return await self.bot.logout()
 
     @commands.command(hidden=True)

@@ -397,3 +397,25 @@ class InternalSQL:
         newquery = sqlquery.format(self.bot.common.mysqldb)
         querydata = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, content)
         return newquery, querydata
+
+    async def statement_insert_guildconfig(self, ctx, channellist: list, responses: list):
+        configtime = str(datetime.datetime.now())
+        guildid = str(ctx.guild.id)
+        whoconfiged = str(ctx.author)
+        initialchan = str(channellist[0].id)
+        welcomechan = str(channellist[1].id)
+        adminlogchan = str(channellist[2].id)
+        voicelogchan = str(channellist[3].id)
+        enablelogging = responses[0]
+        welcomechanbool = responses[1]
+        adminlogchanbool = responses[2]
+        voicelogchanbool = responses[3]
+        configquery = """
+        REPLACE INTO `{0}`.`_serverconfig` (`guild-id`, `initialchannel`, `whoconfiged`, `lastconfiged`, `enablelogging`, `enableusewelcome`, `enableadminlogs`, `enablevoicelogs`, `welcomechannel`, `adminchannel`, `voicelogchannel`)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        newquery = configquery.format(self.bot.common.mysqldb)
+        querydata = (guildid, initialchan, whoconfiged, configtime, enablelogging, welcomechanbool, adminlogchanbool,
+                     voicelogchanbool, welcomechan, adminlogchan, voicelogchan)
+        tablename = str("_serverconfig")
+        return newquery, tablename, querydata

@@ -54,3 +54,20 @@ CREATE TABLE `mysqldb`.`_commandtable` (
   `message-id` VARCHAR(45) NOT NULL,
   `content` LONGTEXT NOT NULL,
   PRIMARY KEY (`id_commandtable`));
+
+CREATE TABLE `mysqldb`.`_serverconfig` (
+  `id_serverconfig` INT NOT NULL AUTO_INCREMENT,
+  `guild-id` VARCHAR(45) NOT NULL,
+  `whoconfiged` VARCHAR(45) NOT NULL,
+  `lastconfiged` VARCHAR(45) NOT NULL,
+  `initialchannel` VARCHAR(45) NOT NULL,
+  `enablelogging` TINYINT(4) NOT NULL DEFAULT '1',
+  `enableusewelcome` TINYINT(4) NOT NULL,
+  `enableadminlogs` TINYINT(4) NOT NULL,
+  `enablevoicelogs` TINYINT(4) NOT NULL,
+  `welcomechannel` VARCHAR(45) DEFAULT NULL,
+  `adminchannel` VARCHAR(45) DEFAULT NULL,
+  `voicelogchannel` VARCHAR(45) DEFAULT NULL,
+  PRIMARY KEY (`id_serverconfig`),
+  UNIQUE KEY `guild-id_UNIQUE` (`guild-id`)
+);
