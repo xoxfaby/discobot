@@ -26,10 +26,16 @@ class LoopClass:
                 awooarray += [str(filename)]
         while not self.bot.is_closed():
             waittime = random.choice(timerange)
-            for chan in self.bot.common.mainservergeneralchan:
-                randomawoo = random.choice(awooarray)
-                channel = self.bot.get_channel(id=int(chan))
-                await channel.send(file=discord.File(fp=randomawoo, filename="awoo.png"), content="awoo~")
+            sqlcmd = await self.bot.sql.statement_get_awoolist()
+            async with self.bot.sql.mysqlcon.acquire() as conn:
+                async with conn.cursor(aiomysql.DictCursor) as cursor:
+                    await cursor.execute(sqlcmd)
+                    chanlist = await cursor.fetchall()
+            for item in chanlist:
+                for key, chanid in item.items():
+                    randomawoo = random.choice(awooarray)
+                    sendchan = self.bot.get_channel(id=int(chanid))
+                    await sendchan.send(file=discord.File(fp=randomawoo, filename="awoo.png"), content="awoo~")
             await asyncio.sleep(waittime)
 
     async def daychange(self):

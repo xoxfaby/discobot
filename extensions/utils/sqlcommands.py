@@ -451,3 +451,12 @@ class InternalSQL:
         """
         newquery = sqlquery.format(self.bot.common.mysqldb)
         return newquery
+
+    async def statement_get_awoolist(self):
+        sqlquery = """
+        SELECT `awoochannel` 
+        FROM `{0}`.`_serverconfig`
+        WHERE `enableawoo` = '1';
+        """
+        newquery = sqlquery.format(self.bot.common.mysqldb)
+        return newquery
