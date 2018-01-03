@@ -1,5 +1,4 @@
 from extensions.utils.importsfile import *
-# from extensions.utils.dbotchecks import DBotChecks
 
 
 class CommonParams:
@@ -60,8 +59,6 @@ class CommonParams:
               ]
 
     uptime = datetime.datetime.utcnow()
-    # check_main_server = DBotChecks.check_main_server()
-    # check_trusted_user = DBotChecks.check_trusted_user()
 
     if not botdescription:
         botdescription = 'discord pybot'

@@ -438,3 +438,11 @@ class InternalSQL:
         newquery = sqlquery.format(self.bot.common.mysqldb, guildid)
         tablename = str("_serverconfig")
         return newquery, tablename
+
+    async def statement_get_initialchannel(self):
+        sqlquery = """
+        SELECT `guild-id`, `initialchannel`
+        FROM `{0}`.`_serverconfig`
+        """
+        newquery = sqlquery.format(self.bot.common.mysqldb)
+        return newquery

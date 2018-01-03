@@ -12,17 +12,6 @@ class BotInternals:
     async def help(self, ctx):
         return await ctx.send("Please see my help documentation at <https://personalwebsite.website/wiki/noodlebot>")
 
-    @commands.command()
-    async def uptime(self, ctx):
-        now = datetime.datetime.utcnow()
-        delta = now - self.bot.common.uptime
-        hours, remainder = divmod(int(delta.total_seconds()), 3600)
-        minutes, seconds = divmod(remainder, 60)
-        days, hours = divmod(hours, 24)
-        fmt = '{h} hours, {m} minutes, and {s} seconds'
-        fmtnew = fmt.format(h=hours, m=minutes, s=seconds)
-        return await ctx.send(fmtnew)
-
     async def on_command_error(self, ctx, exception):
         print(str(datetime.datetime.now()) + ': ' + str(exception))
         if isinstance(exception, commands.errors.NotOwner):
@@ -316,6 +305,17 @@ class BotInfo:
         embed.add_field(name="Bot Prefix", value="`,` (Comma)", inline=False)
         embed.add_field(name="Source", value="[Github](https://github.com/jwshields/discobot)", inline=False)
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def uptime(self, ctx):
+        now = datetime.datetime.utcnow()
+        delta = now - self.bot.common.uptime
+        hours, remainder = divmod(int(delta.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+        fmt = '{h} hours, {m} minutes, and {s} seconds'
+        fmtnew = fmt.format(h=hours, m=minutes, s=seconds)
+        return await ctx.send(fmtnew)
 
     @commands.command()
     async def ping(self, ctx):

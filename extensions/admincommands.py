@@ -43,7 +43,7 @@ class AdminCommands:
         return await self.bot.logout()
 
     @commands.command(hidden=True)
-    # @commands.check(self.bot.dbotchecks.check_trusted_user)
+    @commands.is_owner()
     async def boatsay(self, ctx, *args):
         mesg = ' '.join(args)
         if str('Direct Message') not in str(ctx.channel):
@@ -51,7 +51,7 @@ class AdminCommands:
         return await ctx.send(mesg)
 
     @commands.command(hidden=True)
-    # @commands.check(self.bot.dbotchecks.check_trusted_user)
+    @commands.is_owner()
     async def adminbotsay(self, ctx, chanid, *args):
         mesg = ' '.join(args)
         if (str('Direct Message') not in str(ctx.channel)) and \
@@ -59,6 +59,36 @@ class AdminCommands:
             await ctx.message.delete()
         customchannel = self.bot.get_channel(id=int(chanid))
         return await customchannel.send(mesg)
+
+    # @commands.command(hidden=True)
+    # @commands.is_owner()
+    # async def allguildbroadcast(self, ctx, *, message):
+    #     if str(ctx.author.id) == str(self.bot.common.botowner):
+    #         sqlcmd = await self.bot.sql.statement_get_initialchannel()
+    #         async with self.bot.sql.mysqlcon.acquire() as conn:
+    #             async with conn.cursor(aiomysql.DictCursor) as cursor:
+    #                 await cursor.execute(sqlcmd)
+    #                 rowcount = cursor.rowcount
+    #                 guildconf = await cursor.fetchall()
+    #                 dbguildlist = guildconf['guild-id']
+    #                 botguildlist = []
+    #                 for guild in self.bot.guilds:
+    #                     botguildlist += guild
+    #                 newlist = set(dbguildlist).symmetric_difference(botguildlist)
+    #                 print(newlist)
+    #
+    #         count = 0
+    #         for guild in self.bot.guilds:
+    #             try:
+    #                 await guild.owner.send(message)
+    #             except:
+    #                 pass
+    #             else:
+    #                 count += 1
+    #         await say("Broadcast message sent to **{0}** users".format(count))
+    #         await clear()
+    #     else:
+    #         return
 
     # @commands.command(hidden=True)
     # async def jail(self, ctx, *args):

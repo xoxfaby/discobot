@@ -268,6 +268,26 @@ class Misc:
         await numberresponse.delete()
         await botmessage.edit(content=newcontent, embed=None)
 
+    @commands.command()
+    async def avatar(self, ctx, target: discord.User=None):
+        if target is None:
+            target = ctx.message.author
+        embed = discord.Embed(title="Avatar")
+        embed.set_image(url=target.avatar_url_as(format='png'))
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['bigmoji', 'bemoji', 'big'])
+    async def bigemoji(self, ctx, emoji):
+        try:
+            newemoji = await commands.EmojiConverter().convert(ctx, emoji)
+        except commands.BadArgument:
+            return await ctx.send("This is not a custom emoji, I cannot biggify it.")
+        if type(newemoji) == discord.Emoji:
+            emoji_cdn = newemoji.url
+            embed = discord.Embed(title=f':{newemoji.name}: \N{EM DASH} `{newemoji.id}`')
+            embed.set_image(url=emoji_cdn)
+            await ctx.send(embed=embed)
+
 
 class EtcOnMessage:
     def __init__(self, bot):
