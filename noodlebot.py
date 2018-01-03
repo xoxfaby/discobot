@@ -1,6 +1,7 @@
 import extensions.utils.common as common
 from extensions.utils.importsfile import *
 from extensions.utils.sqlcommands import InternalSQL
+from extensions.utils.cache import BotCache
 
 
 class DBot(commands.Bot):
@@ -10,7 +11,7 @@ class DBot(commands.Bot):
                          command_prefix=commands.when_mentioned_or(common.CommonParams.discordbotcommandprefix))
         self.common = common.CommonParams()
         self.sql = InternalSQL(self)
-        self.loop.create_task(self.sql.mysqlstart())
+        self.botcache = BotCache(self)
 
     async def on_ready(self):
         self.common.logger.info('\nLogged in as %s, id: %s', str(self.user.name), str(self.user.id))

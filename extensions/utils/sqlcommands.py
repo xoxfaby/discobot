@@ -6,6 +6,7 @@ class InternalSQL:
         self.bot = bot
         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        self.bot.loop.create_task(self.mysqlstart())
 
     async def mysqlstart(self):
         mysqlconfigured = self.bot.common.config.getboolean('DONOTTOUCH', 'mysqlconfigured')

@@ -14,20 +14,44 @@ class BotLoggerDB:
             async with conn.cursor() as cursor:
                 await cursor.execute(sqlcmd, querydata)
 
-    async def check_table(self, tabletype, tablename):
-        sqlcmd = await self.bot.sql.statement_check_table_exist(tablename)
-        async with self.bot.sql.mysqlcon.acquire() as conn:
-            async with conn.cursor() as cursor:
-                await cursor.execute(sqlcmd)
-                numrows = cursor.rowcount
-        if numrows:
-            return True
+    async def check_table(self, tabletype: str, tablename: str):
+        tableexistsincache = await self.bot.botcache.mysqlcache.exists(key=tablename)
+        if tableexistsincache:
+            value = await self.bot.botcache.mysqlcache.get(key=tablename)
+            if value:
+                createtable = False
+            else:
+                createtable = True
         else:
-            createcmd = await self.bot.sql.statement_create_table(str(tabletype), str(tablename))
+            createtable = True
+        if createtable:
+            sqlcmd = await self.bot.sql.statement_check_table_exist(tablename)
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    await cursor.execute(createcmd)
-            return True
+                    await cursor.execute(sqlcmd)
+                    numtables = cursor.rowcount
+                    if numtables:
+                        pass
+                    else:
+                        createcmd = await self.bot.sql.statement_create_table(tabletype, tablename)
+                        await cursor.execute(createcmd)
+            addkv = await self.bot.botcache.mysqlcache.add(namespace="mysql", key=tablename, value=True)
+            if addkv:
+                nowexists = await self.bot.botcache.mysqlcache.exists(key=tablename)
+                return nowexists
+
+
+        # check cache first
+        # if cache None, run sql
+            # -> store new result in cache for later
+        # if cache exists but false, run sql
+            # -> store new result in cache for later
+        # if cache exists & true, return
+            # -> do nothing with sql nor cache
+
+
+
+
 
     async def download_attachment(self, ctx):
         if ctx.author.id == self.bot.common.botdiscordid:
