@@ -111,7 +111,7 @@ class BotInternals:
         configmessagelist.append(sent_thischannelmsg)
         thischannelresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
         configmessagelist.append(thischannelresp)
-        enablelogging = True
+        enablelogging = 1
         thischannelresp1 = thischannelresp.content.lower()
         if thischannelresp1 in yesanswerlist:
             announcemsg1 = await ctx.send(botconfigscript[2])
@@ -164,8 +164,8 @@ class BotInternals:
             else:
                 sent_nochangemessages = await ctx.send(botconfigscript[21])
                 configmessagelist.append(sent_nochangemessages)
-                welcomemessage = None
-                leavemessage = None
+                welcomemessage = botconfigscript[25]
+                leavemessage = botconfigscript[26]
         else:
             mywelcomeresp = await ctx.send(botconfigscript[8])
             configmessagelist.append(mywelcomeresp)
@@ -240,30 +240,26 @@ class BotInternals:
             awoochanresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
             configmessagelist.append(awoochanresp)
             awoochan = awoochanresp.channel_mentions[0]
-            enableawoos = True
+            enableawoos = 1
         else:
             sent_awoochanquestion = await ctx.send(botconfigscript[24])
             configmessagelist.append(sent_awoochanquestion)
-            enableawoos = False
+            enableawoos = 0
             awoochan = None
-        await asyncio.sleep(2)
-        async with ctx.typing():
-            await ctx.channel.delete_messages(configmessagelist)
-        configmessagelist = None
-        configmessagelist = []
 
         # add config option to choose what prefix to use
-
-        await ctx.channel.delete_messages(configmessagelist1)
         await ctx.send(botconfigscript[17])
         channellist = [initialchan, welcomechan, adminlogchan, voicelogchan, awoochan]
         responses = [enablelogging, welcomechanbool, adminlogchanbool, voicelogchanbool, enableawoos]
         joinpartmsgs = [welcomemessage, leavemessage]
-        sqlquery, tablename, querydata = await self.bot.sql.statement_insert_guildconfig(ctx, channellist, responses,
-                                                                                         joinpartmsgs)
+        sqlquery, querydata = await self.bot.sql.statement_insert_guildconfig(ctx, channellist, responses, joinpartmsgs)
         async with self.bot.sql.mysqlcon.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(sqlquery, querydata)
+        await asyncio.sleep(2)
+        async with ctx.typing():
+            await ctx.channel.delete_messages(configmessagelist1)
+            await ctx.channel.delete_messages(configmessagelist)
 
 
 class BotInfo:

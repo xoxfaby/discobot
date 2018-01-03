@@ -399,6 +399,14 @@ class InternalSQL:
         return newquery, querydata
 
     async def statement_insert_guildconfig(self, ctx, channellist: list, responses: list, joinpartmsgs: list):
+        with open(os.path.join("extensions", "utils", "botconfig-lines.txt"), encoding='utf-8', mode='r') as infile:
+            botconfigscript = infile.read().split("%%\n")
+        if (str(joinpartmsgs[0]) == str(botconfigscript[25])) and (str(joinpartmsgs[1]) == str(botconfigscript[26])):
+            joinmessage = str(botconfigscript[25])
+            partmessage = str(botconfigscript[26])
+        else:
+            joinmessage = str(joinpartmsgs[0])
+            partmessage = str(joinpartmsgs[1])
         configtime = str(datetime.datetime.now())
         guildid = str(ctx.guild.id)
         whoconfiged = str(ctx.author)
@@ -407,29 +415,26 @@ class InternalSQL:
         adminlogchan = str(channellist[2].id)
         voicelogchan = str(channellist[3].id)
         awoochan = str(channellist[4].id)
-        enableawoos = responses[4]
-        enablelogging = responses[0]
-        welcomechanbool = responses[1]
-        adminlogchanbool = responses[2]
-        voicelogchanbool = responses[3]
-        joinmessage = joinpartmsgs[0]
-        partmessage = joinpartmsgs[1]
-        isconfigged = True
+        enableawoos = bool(responses[4])
+        enablelogging = bool(responses[0])
+        welcomechanbool = bool(responses[1])
+        adminlogchanbool = bool(responses[2])
+        voicelogchanbool = bool(responses[3])
+        isconfigged = 1
         configquery = """
         REPLACE INTO `{0}`.`_serverconfig` (`guild-id`, `isconfigged`, `initialchannel`, `whoconfiged`, `lastconfiged`, 
         `enablelogging`, `enableusewelcome`, `enableadminlogs`, `enablevoicelogs`, `welcomechannel`, `adminchannel`,
         `voicelogchannel`, `awoochannel`, `enableawoo`, `partmessage`, `welcomemessage`)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         newquery = configquery.format(self.bot.common.mysqldb)
         querydata = (guildid, isconfigged, initialchan, whoconfiged, configtime, enablelogging, welcomechanbool,
                      adminlogchanbool, voicelogchanbool, welcomechan, adminlogchan, voicelogchan, awoochan, enableawoos,
                      partmessage, joinmessage)
-        tablename = str("_serverconfig")
-        return newquery, tablename, querydata
+        return newquery, querydata
 
     async def statement_get_server_config(self, guild):
-        guildid = guild.id
+        guildid = str(guild.id)
         sqlquery = """
         SELECT * 
         FROM `{0}`.`_serverconfig`

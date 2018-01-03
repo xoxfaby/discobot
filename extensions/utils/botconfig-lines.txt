@@ -1,5 +1,5 @@
 Beginning the bot configuration for server: {0}
-After each section I will delete my messages from that part of the configuration as to not clutter up the channel with noise.
+After the configuration is done, I will delete my messages so as to not clutter up the channel with noise.
 Please note: each question has a timeout of 60 seconds, if you do not answer within that time, you will need to restart the configuration.
 %%
 As a note, I am marking this channel as the 'initial' channel for this server
@@ -82,4 +82,8 @@ Please enter the name of the channel you would like me to awoo in.
 (You can do this by typing a `#` and the channel name)
 %%
 You have chosen to not have awoos randomly occur on this server.
+%%
+welcome to {1}, {0}~
+%%
+ok bye {0}
 %%
