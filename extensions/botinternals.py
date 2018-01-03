@@ -95,6 +95,7 @@ class BotInternals:
 
     @commands.command(hidden=True)
     @commands.has_permissions(manage_guild=True)
+    @commands.guild_only()
     async def botconfig(self, ctx):
         def checkauthor(m):
             return m.author == ctx.author
