@@ -40,19 +40,6 @@ class BotLoggerDB:
                 nowexists = await self.bot.botcache.mysqlcache.exists(key=tablename)
                 return nowexists
 
-
-        # check cache first
-        # if cache None, run sql
-            # -> store new result in cache for later
-        # if cache exists but false, run sql
-            # -> store new result in cache for later
-        # if cache exists & true, return
-            # -> do nothing with sql nor cache
-
-
-
-
-
     async def download_attachment(self, ctx):
         if ctx.author.id == self.bot.common.botdiscordid:
             return

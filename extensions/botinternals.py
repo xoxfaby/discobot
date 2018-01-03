@@ -8,10 +8,6 @@ class BotInternals:
         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
 
-    @commands.command(hidden=True)
-    async def help(self, ctx):
-        return await ctx.send("Please see my help documentation at <https://personalwebsite.website/wiki/noodlebot>")
-
     async def on_command_error(self, ctx, exception):
         print(str(datetime.datetime.now()) + ': ' + str(exception))
         if isinstance(exception, commands.errors.NotOwner):
@@ -352,7 +348,32 @@ class BotInfo:
                        + f'<{discord.utils.oauth_url(str(self.bot.common.botdiscordid), perms)}>')
 
 
+class DBotHelp:
+    """Bot help replacement"""
+    def __init__(self, bot):
+        self.bot = bot
+        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
+              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+
+    @commands.command(hidden=True)
+    async def help(self, ctx, cmd=None, subcmd=None):
+        if cmd is None and subcmd is None:
+            return await ctx.send("No command was specified.\nYou can see my help documentation at"
+                                  "<https://personalwebsite.website/wiki/noodlebot>")
+        elif cmd and not subcmd:
+            mycmd = self.bot.get_command(cmd)
+            print(type(mycmd))
+            print(vars(mycmd))
+            # print help for top level cmd
+            # check to see if cmd is real, else error
+        elif cmd and subcmd:
+            pass
+            # print help for specific subcmd
+            # check to see if cmd is real and subcmd is real, else error
+
+
 def setup(dbot):
     dbot.remove_command("help")
+    dbot.add_cog(DBotHelp(dbot))
     dbot.add_cog(BotInternals(dbot))
     dbot.add_cog(BotInfo(dbot))
