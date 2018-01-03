@@ -7,6 +7,7 @@ class InternalSQL:
         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
         self.bot.loop.create_task(self.mysqlstart())
+        self.mysqlcache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="mysql")
 
     async def mysqlstart(self):
         mysqlconfigured = self.bot.common.config.getboolean('DONOTTOUCH', 'mysqlconfigured')

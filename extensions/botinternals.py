@@ -357,19 +357,19 @@ class DBotHelp:
 
     @commands.command(hidden=True)
     async def help(self, ctx, cmd=None, subcmd=None):
-        if cmd is None and subcmd is None:
+        # if cmd is None and subcmd is None:
             return await ctx.send("No command was specified.\nYou can see my help documentation at"
                                   "<https://personalwebsite.website/wiki/noodlebot>")
-        elif cmd and not subcmd:
-            mycmd = self.bot.get_command(cmd)
-            print(type(mycmd))
-            print(vars(mycmd))
-            # print help for top level cmd
-            # check to see if cmd is real, else error
-        elif cmd and subcmd:
-            pass
-            # print help for specific subcmd
-            # check to see if cmd is real and subcmd is real, else error
+        # elif cmd and not subcmd:
+        #     mycmd = self.bot.get_command(cmd)
+        #     print(type(mycmd))
+        #     print(vars(mycmd))
+        #     # print help for top level cmd
+        #     # check to see if cmd is real, else error
+        # elif cmd and subcmd:
+        #     pass
+        #     # print help for specific subcmd
+        #     # check to see if cmd is real and subcmd is real, else error
 
 
 def setup(dbot):

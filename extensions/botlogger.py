@@ -15,9 +15,9 @@ class BotLoggerDB:
                 await cursor.execute(sqlcmd, querydata)
 
     async def check_table(self, tabletype: str, tablename: str):
-        tableexistsincache = await self.bot.botcache.mysqlcache.exists(key=tablename)
+        tableexistsincache = await self.bot.sql.mysqlcache.exists(key=tablename)
         if tableexistsincache:
-            value = await self.bot.botcache.mysqlcache.get(key=tablename)
+            value = await self.bot.sql.mysqlcache.get(key=tablename)
             if value:
                 createtable = False
             else:
@@ -35,9 +35,9 @@ class BotLoggerDB:
                     else:
                         createcmd = await self.bot.sql.statement_create_table(tabletype, tablename)
                         await cursor.execute(createcmd)
-            addkv = await self.bot.botcache.mysqlcache.add(namespace="mysql", key=tablename, value=True)
+            addkv = await self.bot.sql.mysqlcache.add(namespace="mysql", key=tablename, value=True)
             if addkv:
-                nowexists = await self.bot.botcache.mysqlcache.exists(key=tablename)
+                nowexists = await self.bot.sql.mysqlcache.exists(key=tablename)
                 return nowexists
 
     async def download_attachment(self, ctx):

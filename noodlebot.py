@@ -11,7 +11,6 @@ class DBot(commands.Bot):
                          command_prefix=commands.when_mentioned_or(common.CommonParams.discordbotcommandprefix))
         self.common = common.CommonParams()
         self.sql = InternalSQL(self)
-        self.botcache = BotCache(self)
 
     async def on_ready(self):
         self.common.logger.info('\nLogged in as %s, id: %s', str(self.user.name), str(self.user.id))
