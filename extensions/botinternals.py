@@ -97,10 +97,113 @@ class BotInternals:
     async def on_member_unban(self, guild, member):
         await self.member_bot_message(member, "unban", guild)
 
+
+class BotInfo:
+    """Bot Information and configuration"""
+    def __init__(self, bot):
+        self.bot = bot
+        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
+              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+
+    async def on_guild_join(self, guild):
+        channel = guild.system_channel
+        if channel is None:
+            guildchans = guild.text_channels
+            for chan in guildchans:
+                sendperms = chan.permissions_for(guild.me).send_messages
+                if sendperms:
+                    initialchannel = chan
+                    break
+                else:
+                    pass
+        else:
+            initialchannel = channel
+        message = ("Hello! I am " + self.bot.common.botdescription + "\nThank you for joining me to this server, "
+                   "please run `" + self.bot.common.discordbotcommandprefix + "bogconfig` to run my setup for this "
+                   "server.\nIn the setup we'll set things such as if and where you want welcome messages and other "
+                   "features.\n**Please note, you will need `manage_guild` permissions on this guild in order to run`" +
+                   self.bot.common.discordbotcommandprefix + "botconfig`**")
+        await initialchannel.send(message)
+
+    @commands.command()
+    async def info(self, ctx):
+        embed = discord.Embed(title="Bot Information", description="Noodle Disco-Pybot", color=0x3347ff)
+        embed.add_field(name="Web URL", value="[Boat Wiki](https://personalwebsite.website/wiki/noodlebot)")
+        embed.set_thumbnail(
+            url='https://cdn.discordapp.com/app-icons/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png')
+        embed.add_field(name="Creator", value="noodle#4660", inline=False)
+        embed.add_field(name="Invite", value="[Invite URL]"
+                                             "(https://discordapp.com/oauth2/authorize?client_id=340802627887693825"
+                                             "&scope=bot&permissions=1610083543)", inline=False)
+        embed.add_field(name="Bot Prefix", value="`,` (Comma)", inline=False)
+        embed.add_field(name="Source", value="[Github](https://github.com/jwshields/discobot)", inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def uptime(self, ctx):
+        now = datetime.datetime.utcnow()
+        delta = now - self.bot.common.uptime
+        hours, remainder = divmod(int(delta.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+        fmt = '{h} hours, {m} minutes, and {s} seconds'
+        fmtnew = fmt.format(h=hours, m=minutes, s=seconds)
+        return await ctx.send(fmtnew)
+
+    @commands.command()
+    async def ping(self, ctx):
+        """
+        This command takes no arguments
+        It will give you a pseudo-ping time, counting the amount of time it takes to send a "typing" signal to discord.
+        """
+        t1 = time.perf_counter()
+        await ctx.channel.trigger_typing()
+        t2 = time.perf_counter()
+        await ctx.channel.send("pseudo-ping: {}ms".format(round((t2-t1)*1000)))
+
+    @commands.command(description="This command can be used to invite the bot to a server")
+    async def invite(self, ctx):
+        """
+        This command takes no arguments.
+        It can be used to generate an invite URL for me to your server.
+        """
+        perms = discord.Permissions.none()
+        perms.create_instant_invite = True
+        perms.kick_members = True
+        perms.ban_members = True
+        perms.manage_channels = True
+        perms.add_reactions = True
+        perms.view_audit_log = True
+        perms.read_messages = True
+        perms.send_messages = True
+        perms.manage_messages = True
+        perms.embed_links = True
+        perms.attach_files = True
+        perms.read_message_history = True
+        perms.mention_everyone = True
+        perms.external_emojis = True
+        perms.connect = True
+        perms.speak = True
+        perms.mute_members = True
+        perms.deafen_members = True
+        perms.move_members = True
+        perms.use_voice_activation = True
+        perms.change_nickname = True
+        perms.manage_nicknames = True
+        perms.manage_roles = True
+        perms.manage_emojis = True
+        await ctx.send('Please click on this link to invite me to your server.\n'
+                       + f'<{discord.utils.oauth_url(str(self.bot.common.botdiscordid), perms)}>')
+
     @commands.command(hidden=True, aliases=['botconfig', 'config'])
     @commands.has_permissions(manage_guild=True)
     @commands.guild_only()
     async def bot_config(self, ctx):
+        """
+        This command can only be used by users with the `manage_guild` permission or higher.
+        This command accepts no arguments when calling it;
+        Calling this command will begin the bot into a prompt with you about how to configure various options on this server.
+        """
         def checkauthor(m):
             return m.author == ctx.author
         botconfigscript = []
@@ -253,96 +356,6 @@ class BotInternals:
             await ctx.channel.delete_messages(configmessagelist)
 
 
-class BotInfo:
-    """Bot Information and configuration"""
-    def __init__(self, bot):
-        self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
-
-    async def on_guild_join(self, guild):
-        channel = guild.system_channel
-        if channel is None:
-            guildchans = guild.text_channels
-            for chan in guildchans:
-                sendperms = chan.permissions_for(guild.me).send_messages
-                if sendperms:
-                    initialchannel = chan
-                    break
-                else:
-                    pass
-        else:
-            initialchannel = channel
-        message = ("Hello! I am " + self.bot.common.botdescription + "\nThank you for joining me to this server, "
-                   "please run `" + self.bot.common.discordbotcommandprefix + "bogconfig` to run my setup for this "
-                   "server.\nIn the setup we'll set things such as if and where you want welcome messages and other "
-                   "features.\n**Please note, you will need `manage_guild` permissions on this guild in order to run`" +
-                   self.bot.common.discordbotcommandprefix + "botconfig`**")
-        await initialchannel.send(message)
-
-    @commands.command()
-    async def info(self, ctx):
-        embed = discord.Embed(title="Bot Information", description="Noodle Disco-Pybot", color=0x3347ff)
-        embed.add_field(name="Web URL", value="[Boat Wiki](https://personalwebsite.website/wiki/noodlebot)")
-        embed.set_thumbnail(
-            url='https://cdn.discordapp.com/app-icons/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png')
-        embed.add_field(name="Creator", value="noodle#4660", inline=False)
-        embed.add_field(name="Invite", value="[Invite URL]"
-                                             "(https://discordapp.com/oauth2/authorize?client_id=340802627887693825"
-                                             "&scope=bot&permissions=1610083543)", inline=False)
-        embed.add_field(name="Bot Prefix", value="`,` (Comma)", inline=False)
-        embed.add_field(name="Source", value="[Github](https://github.com/jwshields/discobot)", inline=False)
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def uptime(self, ctx):
-        now = datetime.datetime.utcnow()
-        delta = now - self.bot.common.uptime
-        hours, remainder = divmod(int(delta.total_seconds()), 3600)
-        minutes, seconds = divmod(remainder, 60)
-        days, hours = divmod(hours, 24)
-        fmt = '{h} hours, {m} minutes, and {s} seconds'
-        fmtnew = fmt.format(h=hours, m=minutes, s=seconds)
-        return await ctx.send(fmtnew)
-
-    @commands.command()
-    async def ping(self, ctx):
-        t1 = time.perf_counter()
-        await ctx.channel.trigger_typing()
-        t2 = time.perf_counter()
-        await ctx.channel.send("pseudo-ping: {}ms".format(round((t2-t1)*1000)))
-
-    @commands.command(description="This command can be used to invite the bot to a server")
-    async def invite(self, ctx):
-        perms = discord.Permissions.none()
-        perms.create_instant_invite = True
-        perms.kick_members = True
-        perms.ban_members = True
-        perms.manage_channels = True
-        perms.add_reactions = True
-        perms.view_audit_log = True
-        perms.read_messages = True
-        perms.send_messages = True
-        perms.manage_messages = True
-        perms.embed_links = True
-        perms.attach_files = True
-        perms.read_message_history = True
-        perms.mention_everyone = True
-        perms.external_emojis = True
-        perms.connect = True
-        perms.speak = True
-        perms.mute_members = True
-        perms.deafen_members = True
-        perms.move_members = True
-        perms.use_voice_activation = True
-        perms.change_nickname = True
-        perms.manage_nicknames = True
-        perms.manage_roles = True
-        perms.manage_emojis = True
-        await ctx.send('Please click on this link to invite me to your server.\n'
-                       + f'<{discord.utils.oauth_url(str(self.bot.common.botdiscordid), perms)}>')
-
-
 class DBotHelp:
     """Bot help replacement"""
     def __init__(self, bot):
@@ -352,19 +365,42 @@ class DBotHelp:
 
     @commands.command(hidden=True)
     async def help(self, ctx, cmd=None, subcmd=None):
-        # if cmd is None and subcmd is None:
+        """
+        Help command
+        """
+        if str(cmd) == "help":
+            return await ctx.send("Why are you trying to get help for help?")
+        elif cmd is None and subcmd is None:
             return await ctx.send("No command was specified.\nYou can see my help documentation at"
                                   "<https://personalwebsite.website/wiki/noodlebot>")
-        # elif cmd and not subcmd:
-        #     mycmd = self.bot.get_command(cmd)
-        #     print(type(mycmd))
-        #     print(vars(mycmd))
-        #     # print help for top level cmd
-        #     # check to see if cmd is real, else error
-        # elif cmd and subcmd:
-        #     pass
-        #     # print help for specific subcmd
-        #     # check to see if cmd is real and subcmd is real, else error
+        elif cmd and not subcmd:
+            mycmd = self.bot.get_command(cmd)
+            if mycmd is not None:
+                url = f'https://personalwebsite.website/wiki/{mycmd.cog_name}#{mycmd.name}'
+                if mycmd.help is not None:
+                    helptext = mycmd.help
+                else:
+                    helptext = "I do not have built-in help text for this command, please see my website"
+            else:
+                return
+        elif cmd and subcmd:
+            mycmd = self.bot.get_command(cmd)
+            if mycmd is not None:
+                url = f'https://personalwebsite.website/wiki/{mycmd.cog_name}#{mycmd.name}'
+                if mycmd.help is not None:
+                    helptext = mycmd.help
+                else:
+                    helptext = "I do not have built-in help text for this command, please see my website"
+            else:
+                return
+        else:
+            return
+        embed = discord.Embed(title="Bot Help", colour=discord.Colour(0x3ba6c9), url=url)
+        embed.set_thumbnail(
+            url="https://cdn.discordapp.com/avatars/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png?size=1024")
+        embed.add_field(name=f'Command: `{mycmd}`', value=helptext)
+        embed.add_field(name="URL", value=f'<{url}>')
+        await ctx.send(embed=embed)
 
 
 def setup(dbot):

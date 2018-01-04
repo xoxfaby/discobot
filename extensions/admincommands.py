@@ -202,6 +202,11 @@ class AdminTesting:
     #         chansincat = [cat.channels]
     #         for subchan in chansincat:
     #             print(subchan.name)
+    #
+    # @commands.command()
+    # async def guildicon(self, ctx):
+    #     icon = ctx.guild.icon_url
+    #     print(icon)
 
 
 def setup(dbot):
