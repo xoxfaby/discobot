@@ -27,72 +27,80 @@ class BotInternals:
         if str(before.channel) == str(after.channel):
             return
         else:
-            sqlcmd, tablename = await self.bot.sql.statement_get_server_config(member.guild)
-            async with self.bot.sql.mysqlcon.acquire() as conn:
-                async with conn.cursor(aiomysql.DictCursor) as cursor:
-                    await cursor.execute(sqlcmd)
-                    rowcount = cursor.rowcount
-                    if rowcount == 1:
-                        guildconf = await cursor.fetchone()
-                    else:
-                        guildconf = {}
-            if 'isconfigged' in guildconf:
-                if guildconf['enablevoicelogs']:
-                    content = (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ': ' + str(member) +
-                               ' is in voice channel: ' + str(after.channel))
-                    voicelogchan = self.bot.get_channel(id=int(guildconf['voicelogchannel']))
-                    await voicelogchan.send(content=content)
+            member_guild_config = str(member.guild.id + "_guild_config")
+            guild_config_exists_in_cache = await self.bot.sql.mysqlcache.exists(key=member_guild_config)
+            if guild_config_exists_in_cache:
+                guild_conf = await self.bot.sql.mysqlcache.get(key=member_guild_config)
+                if 'isconfigged' in guild_conf:
+                    enable_voice_logs = bool(guild_conf['enablevoicelogs'])
                 else:
                     return
             else:
+                sql_cmd, table_name = await self.bot.sql.statement_get_server_config(member.guild)
+                async with self.bot.sql.mysqlcon.acquire() as conn:
+                    async with conn.cursor(aiomysql.DictCursor) as cursor:
+                        await cursor.execute(sql_cmd)
+                        rowcount = cursor.rowcount
+                        if rowcount == 1:
+                            guild_conf = await cursor.fetchone()
+                            await self.bot.sql.mysqlcache.add(key=member_guild_config, value=guild_conf)
+                            enable_voice_logs = bool(guild_conf['enablevoicelogs'])
+                        else:
+                            return
+            if enable_voice_logs:
+                content = (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ': ' + str(member) +
+                           ' is in voice channel: ' + str(after.channel))
+                voice_log_chan = self.bot.get_channel(id=int(guild_conf['voicelogchannel']))
+                await voice_log_chan.send(content=content)
+            else:
                 return
 
-    async def memberbotmessage(self, member, secondaryargs, guild):
+    async def member_bot_message(self, member, secondaryargs, guild):
         if str(member) == str(member.guild.me):
             return
-        sqlcmd, tablename = await self.bot.sql.statement_get_server_config(guild)
+        sql_cmd, table_name = await self.bot.sql.statement_get_server_config(guild)
         async with self.bot.sql.mysqlcon.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
-                await cursor.execute(sqlcmd)
+                await cursor.execute(sql_cmd)
                 rowcount = cursor.rowcount
                 if rowcount == 1:
                     guildconf = await cursor.fetchone()
                 else:
-                    guildconf = {}
+                    return
         if 'isconfigged' in guildconf:
-            messagedict = {"join": guildconf['welcomemessage'], "leave": guildconf['partmessage'],
+            message_dict = {"join": guildconf['welcomemessage'], "leave": guildconf['partmessage'],
                            "ban": "{0} was banned.", "unban": "{0} was unbanned"}
-            memberverb = {"join": " joined the server", "leave": " left the server",
+            member_verb = {"join": " joined the server", "leave": " left the server",
                           "ban": " was banned from the server", "unban": " was unbanned from the server"}
             if guildconf['enableusewelcome']:
-                welcomechannel = self.bot.get_channel(id=int(guildconf['welcomechannel']))
-                welcomemessage = messagedict[secondaryargs].format(member.mention, guild.name)
+                welcome_channel = self.bot.get_channel(id=int(guildconf['welcomechannel']))
+                welcome_message = message_dict[secondaryargs].format(member.mention, guild.name)
                 if str(secondaryargs) is not "unban":
-                    await welcomechannel.send(content=welcomemessage)
+                    await welcome_channel.send(content=welcome_message)
             if guildconf['enableadminlogs']:
-                adminmsg = (str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + ': ' + str(member) +
-                            str(memberverb[secondaryargs]))
-                adminchannel = self.bot.get_channel(id=int(guildconf['adminchannel']))
-                await adminchannel.send(adminmsg)
+                admin_msg = (str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + ': ' + str(member) +
+                            str(member_verb[secondaryargs]))
+                admin_channel = self.bot.get_channel(id=int(guildconf['adminchannel']))
+                await admin_channel.send(admin_msg)
         else:
             return
 
     async def on_member_join(self, member):
-        await self.memberbotmessage(member, "join", member.guild)
+        await self.member_bot_message(member, "join", member.guild)
 
     async def on_member_remove(self, member):
-        await self.memberbotmessage(member, "leave", member.guild)
+        await self.member_bot_message(member, "leave", member.guild)
 
     async def on_member_ban(self, guild, member):
-        await self.memberbotmessage(member, "ban", guild)
+        await self.member_bot_message(member, "ban", guild)
 
     async def on_member_unban(self, guild, member):
-        await self.memberbotmessage(member, "unban", guild)
+        await self.member_bot_message(member, "unban", guild)
 
-    @commands.command(hidden=True)
+    @commands.command(hidden=True, aliases=['botconfig', 'config'])
     @commands.has_permissions(manage_guild=True)
     @commands.guild_only()
-    async def botconfig(self, ctx):
+    async def bot_config(self, ctx):
         def checkauthor(m):
             return m.author == ctx.author
         botconfigscript = []
@@ -102,8 +110,10 @@ class BotInternals:
         noanswerlist = ['no', 'n', 'negative', 'false', 'nope', '0', 'f']
         configmessagelist = []
         configmessagelist1 = []
+
         sent_startmsg = await ctx.send(str(botconfigscript[0]).format(str(ctx.guild.name)))
         configmessagelist1.append(sent_startmsg)
+
         sent_thischannelmsg = await ctx.send(botconfigscript[1])
         configmessagelist.append(sent_thischannelmsg)
         thischannelresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
@@ -122,10 +132,6 @@ class BotInternals:
             initialchan = initialchanresp.channel_mentions[0]
             myinitalresp = await ctx.send(botconfigscript[4].format(str(initialchan.mention)))
             configmessagelist.append(myinitalresp)
-        async with ctx.typing():
-            await ctx.channel.delete_messages(configmessagelist)
-        configmessagelist = None
-        configmessagelist = []
 
         await asyncio.sleep(0.5)
         sent_usermsgs = await ctx.send(botconfigscript[5])
@@ -170,10 +176,6 @@ class BotInternals:
             welcomechanbool = 0
             welcomemessage = None
             leavemessage = None
-        async with ctx.typing():
-            await ctx.channel.delete_messages(configmessagelist)
-        configmessagelist = None
-        configmessagelist = []
 
         await asyncio.sleep(0.5)
         sent_adminauditlogmsg = await ctx.send(botconfigscript[9])
@@ -195,10 +197,6 @@ class BotInternals:
             configmessagelist.append(myresp)
             adminlogchan = None
             adminlogchanbool = 0
-        async with ctx.typing():
-            await ctx.channel.delete_messages(configmessagelist)
-        configmessagelist = None
-        configmessagelist = []
 
         await asyncio.sleep(0.5)
         sent_voicelogmsg = await ctx.send(botconfigscript[13])
@@ -220,10 +218,6 @@ class BotInternals:
             configmessagelist.append(myresp1)
             voicelogchan = None
             voicelogchanbool = 0
-        async with ctx.typing():
-            await ctx.channel.delete_messages(configmessagelist)
-        configmessagelist = None
-        configmessagelist = []
 
         await asyncio.sleep(0.5)
         sent_awooquestion = await ctx.send(botconfigscript[22])
@@ -253,7 +247,7 @@ class BotInternals:
         async with self.bot.sql.mysqlcon.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(sqlquery, querydata)
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
         async with ctx.typing():
             await ctx.channel.delete_messages(configmessagelist1)
             await ctx.channel.delete_messages(configmessagelist)
@@ -279,10 +273,11 @@ class BotInfo:
                     pass
         else:
             initialchannel = channel
-        message = ("I am " + self.bot.common.botdescription + "\nThank you for joining me to this server, please run `"
-                   + self.bot.common.discordbotcommandprefix + "bogconfig` to run my setup for this server.\nIn the " +
-                   "setup we'll set things such as if and where you want welcome messages and other features.\n"
-                   "**Please note, you will need `manage_guild` permissions on this guild in order to run `botconfig`**")
+        message = ("Hello! I am " + self.bot.common.botdescription + "\nThank you for joining me to this server, "
+                   "please run `" + self.bot.common.discordbotcommandprefix + "bogconfig` to run my setup for this "
+                   "server.\nIn the setup we'll set things such as if and where you want welcome messages and other "
+                   "features.\n**Please note, you will need `manage_guild` permissions on this guild in order to run`" +
+                   self.bot.common.discordbotcommandprefix + "botconfig`**")
         await initialchannel.send(message)
 
     @commands.command()

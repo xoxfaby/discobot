@@ -1,7 +1,7 @@
 import extensions.utils.common as common
 from extensions.utils.importsfile import *
 from extensions.utils.sqlcommands import InternalSQL
-from extensions.utils.cache import BotCache
+# from extensions.utils.cache import BotCache
 
 
 class DBot(commands.Bot):

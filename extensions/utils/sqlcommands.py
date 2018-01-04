@@ -6,16 +6,16 @@ class InternalSQL:
         self.bot = bot
         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
-        self.bot.loop.create_task(self.mysqlstart())
         self.mysqlcache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="mysql")
+        self.bot.loop.create_task(self.mysqlstart())
 
     async def mysqlstart(self):
         mysqlconfigured = self.bot.common.config.getboolean('DONOTTOUCH', 'mysqlconfigured')
+        schema = self.bot.common.mysqldb
         if not mysqlconfigured:
             await self.schemacreate()
-            schema = self.bot.common.mysqldb
         else:
-            schema = self.bot.common.mysqldb
+            pass
         self.mysqlcon = await aiomysql.create_pool(host=self.bot.common.mysqlserver, port=self.bot.common.mysqlport,
                                                    user=self.bot.common.mysqluser, minsize=5, maxsize=100,
                                                    use_unicode=True, password=self.bot.common.mysqlpw, db=schema,
@@ -326,11 +326,6 @@ class InternalSQL:
             QueryData = (leavetime, guildid)
         tablename = str("_guildlog")
         return NewQuery, tablename, QueryData
-
-    async def statement_check_table_exist(self, tablename):
-        tableexistscmd = """SHOW TABLES IN `{0}` LIKE '{1}'"""
-        sqlcmd = tableexistscmd.format(self.bot.common.mysqldb, tablename)
-        return sqlcmd
 
     async def statement_create_table(self, table_type, table_name):
         if table_type == "voice":
