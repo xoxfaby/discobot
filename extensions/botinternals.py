@@ -27,7 +27,7 @@ class BotInternals:
         if str(before.channel) == str(after.channel):
             return
         else:
-            member_guild_config = str(member.guild.id + "_guild_config")
+            member_guild_config = str(f'{str(member.guild.id)}_guild_config')
             guild_config_exists_in_cache = await self.bot.sql.mysqlcache.exists(key=member_guild_config)
             if guild_config_exists_in_cache:
                 guild_conf = await self.bot.sql.mysqlcache.get(key=member_guild_config)
