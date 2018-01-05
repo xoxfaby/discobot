@@ -1,4 +1,4 @@
-from extensions.utils.common import *
+from extensions.utils.importsfile import *
 
 
 class InternalSQL:

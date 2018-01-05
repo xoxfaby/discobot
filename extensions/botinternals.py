@@ -10,7 +10,11 @@ class BotInternals:
 
     async def on_command_error(self, ctx, exception):
         print(str(datetime.datetime.now()) + ': ' + str(exception))
-        if isinstance(exception, commands.errors.NotOwner):
+        if isinstance(exception, self.bot.myerrors.DBotInternalError):
+            return await ctx.send(content=exception)
+        elif isinstance(exception, self.bot.myerrors.DBotExternalError):
+            return await ctx.send(content=exception)
+        elif isinstance(exception, commands.errors.NotOwner):
             return await ctx.send(content="You do not have the permissions to perform this command.")
         elif isinstance(exception, commands.errors.CheckFailure):
             return await ctx.send(content='You do not have the permissions to perform this command.')

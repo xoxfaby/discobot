@@ -70,18 +70,20 @@ class Misc:
                         getlocation = None
             if getlocation is None:
                 if ctx.message.mentions:
-                    return await ctx.send("The mentioned user has not set their default weather; please try again.")
+                    raise self.bot.myerrors.DBotInternalError("The mentioned user has not set their default weather;"
+                                                              "please try again.")
                 else:
-                    return await ctx.send('Please use a zip code when calling this function\nExample: `' +
-                                          self.bot.common.discordbotcommandprefix + 'weather 98104`\n' +
-                                          'You could also set your default weather by using the `' +
-                                          self.bot.common.discordbotcommandprefix + 'weatherset [zipcode]` command')
+                    raise self.bot.myerrors.DBotInternalError('Please use a zip code when calling this function\n'
+                                                              'Example: `' + self.bot.common.discordbotcommandprefix +
+                                                              'weather 98104`\nYou could also set your default weather '
+                                                              'by using the `' + self.bot.common.discordbotcommandprefix
+                                                              + 'weatherset zipcode` command')
             else:
                 getlocation = str(getlocation)
         elif zipcode.isdigit():
             getlocation = str(zipcode)
         else:
-            raise commands.errors.BadArgument("Invalid argument was specified")
+            raise self.bot.myerrors.DBotInternalError("A zipcode or user mention was not given")
         if getlocation:
             tempfull = "http://api.wunderground.com/api/{0}/geolookup/conditions/radar/q/{1}.json"
             fullurl = tempfull.format(self.bot.common.weatherapikey, getlocation)
@@ -144,8 +146,9 @@ class Misc:
     @commands.command(aliases=['ws'], usage=['[zipcode]'])
     async def weatherset(self, ctx, zipcode=None):
         if zipcode is None:
-            return await ctx.send("You did not pass a zipcode when calling this command." + '\n' + "Example: `"
-                                  + self.bot.common.discordbotcommandprefix + "weatherset 98104`")
+            raise self.bot.myerrors.DBotInternalError("You did not pass a zipcode when calling this command.\nExample: "
+                                                      "`" + self.bot.common.discordbotcommandprefix +
+                                                      "weatherset 98104`")
         elif zipcode.isdigit():
             sqlquery = await self.bot.sql.statement_upsert_weathertable(str(ctx.author.id), str(zipcode))
             async with self.bot.sql.mysqlcon.acquire() as conn:
@@ -154,7 +157,7 @@ class Misc:
             return await ctx.send('Your default weather has been set\nIn the future, you can run `'
                                   + self.bot.common.discordbotcommandprefix + 'w` to retrieve your local weather')
         else:
-            raise commands.errors.UserInputError("A proper zip code was not specified")
+            raise self.bot.myerrors.DBotInternalError("A proper zip code was not specified")
 
     @commands.command(aliases=['poll'], usage="'Title' 'Option 1' 'Option 2' 'Option 3' 'etc...'")
     async def straw(self, ctx, *args):
@@ -217,7 +220,7 @@ class Misc:
                     parsed_json = await r.json()
                     await ctx.send(parsed_json['file'])
                 else:
-                    raise commands.errors.CommandInvokeError("Error occurred when calling random.cat")
+                    raise self.bot.myerrors.DBotExternalError("An error occurred when calling random.cat")
 
     @commands.command(aliases=['yt'])
     async def youtube(self, ctx, *args):
@@ -245,7 +248,7 @@ class Misc:
                         fullurl.append("https://youtu.be/" + result['id']['videoId'])
                         itemcontents.append(str(result['id']['videoId']))
                 else:
-                    raise commands.errors.CommandInvokeError("Error occurred when calling Youtube")
+                    raise self.bot.myerrors.DBotExternalError("An error occurred when calling Youtube")
         contentslist = ",".join(itemcontents)
         newurl = f'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&' \
                  f'key={self.bot.common.youtubeapikey}&id={contentslist}'
