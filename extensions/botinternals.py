@@ -205,7 +205,7 @@ class BotInfo:
         Calling this command will begin the bot into a prompt with you about how to configure various options on this server.
         """
         def checkauthor(m):
-            return m.author == ctx.author
+            return m.author == ctx.author and m.channel == ctx.channel
         botconfigscript = []
         with open(os.path.join("extensions", "utils", "botconfig-lines.txt"), encoding='utf-8', mode='r') as infile:
             botconfigscript = infile.read().split("%%\n")

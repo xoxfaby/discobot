@@ -50,11 +50,14 @@ class Misc:
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     await cursor.execute(sqlcmd)
-                    getlocation = (await cursor.fetchone())[0]
+                    num_rows = cursor.rowcount
+                    if num_rows:
+                        getlocation = (await cursor.fetchone())[0]
+                    else:
+                        getlocation = None
             if getlocation is None:
                 if ctx.message.mentions:
-                    raise commands.errors.UserInputError("The mentioned user has not set their default weather;"
-                                                         "please try again.")
+                    return await ctx.send("The mentioned user has not set their default weather; please try again.")
                 else:
                     return await ctx.send('Please use a zip code when calling this function\nExample: `' +
                                           self.bot.common.discordbotcommandprefix + 'weather 98104`\n' +
