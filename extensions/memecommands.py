@@ -198,7 +198,11 @@ class TextMemes:
 
     @commands.command()
     async def hug(self, ctx):
-        await ctx.send("(づ｡◕‿‿◕｡)づ")
+        if ctx.message.mentions:
+            message = f'You need a huggu {ctx.message.mentions[0].mention}~ <3\n(づ｡◕‿‿◕｡)づ'
+        else:
+            message = "(づ｡◕‿‿◕｡)づ"
+        await ctx.send(message)
 
     @commands.command()
     async def lenny(self, ctx):

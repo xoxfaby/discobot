@@ -373,7 +373,7 @@ class DBotHelp:
         if str(cmd) == "help":
             return await ctx.send("Why are you trying to get help for help?")
         elif cmd is None and subcmd is None:
-            return await ctx.send("No command was specified.\nYou can see my help documentation at"
+            return await ctx.send("No command was specified.\nYou can see my help documentation at "
                                   "<https://personalwebsite.website/wiki/noodlebot>")
         elif cmd and not subcmd:
             mycmd = self.bot.get_command(cmd)
