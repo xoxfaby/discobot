@@ -147,7 +147,7 @@ class Misc:
             return await ctx.send("You did not pass a zipcode when calling this command." + '\n' + "Example: `"
                                   + self.bot.common.discordbotcommandprefix + "weatherset 98104`")
         elif zipcode.isdigit():
-            sqlquery = self.bot.sql.statement_upsert_weathertable(str(ctx.author.id), str(zipcode))
+            sqlquery = await self.bot.sql.statement_upsert_weathertable(str(ctx.author.id), str(zipcode))
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     await cursor.execute(sqlquery)
