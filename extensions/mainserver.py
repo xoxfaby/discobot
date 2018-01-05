@@ -8,14 +8,6 @@ class MainServer:
         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
 
-    @commands.command(hidden=True)
-    async def watch(self, ctx):
-        if str(ctx.guild.id) == str(self.bot.common.mainserver[0]):
-            return await ctx.send('Media Links:' + '\n<' + self.bot.common.mainservermedialinks[0] + '>\n<' +
-                                  self.bot.common.mainservermedialinks[1] + '>')
-        else:
-            return
-
     async def on_guild_join(self, guild):
         await self.guildlogger(guild, str("join"))
 

@@ -74,3 +74,9 @@ CREATE TABLE `mysqldb`.`_serverconfig` (
   `welcomemessage` varchar(2000) NOT NULL DEFAULT 'welcome to {1}, {0}~',
   PRIMARY KEY (`id_serverconfig`),
   UNIQUE KEY `guild-id_UNIQUE` (`guild-id`));
+
+CREATE TABLE `mysqldb`.`_guild_links` (
+  `id_guild_links` INT NOT NULL,
+  `guild-id` VARCHAR(45) NOT NULL,
+  `links` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id_guild_links`));

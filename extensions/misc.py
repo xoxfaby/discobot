@@ -13,18 +13,117 @@ class Misc:
             file = os.path.join("internalfiles", "images", args)
             return await ctx.send(file=discord.File(fp=file, filename=args))
 
-    # @commands.command(hidden=True)
-    # async def watch1(self, ctx):
-    #     # check cache for media links per guild
-    #     # if not in cache, check db for links
-    #     # if not in db, prompt with "no media/server links available, do you want to set them?"
-    #     # Create sql function to insert into db media links
-    #
-    #     if str(ctx.guild.id) == str(self.bot.common.mainserver[0]):
-    #         return await ctx.send('Media Links:' + '\n<' + self.bot.common.mainservermedialinks[0] + '>\n<' +
-    #                               self.bot.common.mainservermedialinks[1] + '>')
-    #     else:
-    #         return
+    @commands.group(hidden=True)
+    async def watch(self, ctx):
+        """
+        This command allows you to set a list of links that are unique to your discord guild/server.
+        This list can be as large or small as you want.
+        You can invoke this command a number of ways.
+        By calling `watch` by itself, I will print a list of registered links;
+        By calling `watch add` and then listing a link, I will add it to the stored list;
+        By calling `watch remove` and then listing a link, I will remove it from the stored list;
+        By calling `watch removeall` I will remove all stored links;
+        """
+        if ctx.invoked_subcommand is None:
+            # check cache for media links per guild
+            cache_key = f'{str(ctx.guild.id)}_links'
+            guild_links_exists_in_cache = await self.bot.sql.mysqlcache.exists(key=cache_key)
+            if guild_links_exists_in_cache:
+                linksvalue = await self.bot.sql.mysqlcache.get(key=cache_key)
+                get_from_db = False
+            else:
+                linksvalue = None
+                get_from_db = True
+            # if not in cache, check db for links
+            if get_from_db:
+                table_name = f'`{self.bot.common.mysqldb}`.`_guild_links`'
+                sqlquery = """
+                SELECT `links` FROM {0} WHERE `guild-id` = '{1}'
+                """
+                sql_cmd = sqlquery.format(table_name, ctx.guild.id)
+                async with self.bot.sql.mysqlcon.acquire() as conn:
+                    async with conn.cursor(aiomysql.DictCursor) as cursor:
+                        await cursor.execute(sql_cmd)
+                        num_rows = cursor.rowcount
+                        if num_rows == 0:
+                            raise self.bot.myerrors.DBotInternalError("Error: this server haa no stored links.")
+                        else:
+                            linksvalue = await cursor.fetchall()
+                            await self.bot.sql.mysqlcache.add(key=cache_key, value=linksvalue)
+            # preformatted_text = "```\n"
+            # preformatted_text += "Server Links:\n"
+            # num = 1
+            # for row in linksvalue:
+            #     preformatted_text += f'Link #{num}: {row["links"]}\n'
+            #     num += 1
+            # preformatted_text += "\n```"
+            # await ctx.send(content=preformatted_text)
+            linktext = ""
+            for row in linksvalue:
+                linktext += str(row['links'] + "\n")
+            embed = discord.Embed(title="Links:", colour=discord.Colour(0x17f705))
+            embed.add_field(name="_\n_", value=linktext)
+            await ctx.send(embed=embed)
+
+    @watch.command()
+    async def add(self, ctx, *args):
+        cache_key = f'{str(ctx.guild.id)}_links'
+        links = (" ".join(args)).split(" ")
+        guildid = str(ctx.guild.id)
+        table_name = f'`{str(self.bot.common.mysqldb)}`.`_guild_links`'
+        sqlquery = """
+        INSERT INTO {0} (`guild-id`, `links`)
+        VALUES (%s, %s);
+        """
+        sql_cmd = sqlquery.format(table_name)
+        querydata = []
+        for link in links:
+            data = (str(guildid), str(link))
+            querydata.append(data)
+        async with self.bot.sql.mysqlcon.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.executemany(sql_cmd, querydata)
+        await self.bot.sql.mysqlcache.delete(key=cache_key)
+        await ctx.send("Alright, I've added that to the database.")
+
+    @watch.command()
+    async def remove(self, ctx, *args):
+        cache_key = f'{str(ctx.guild.id)}_links'
+        links = (" ".join(args)).split(" ")
+        guildid = str(ctx.guild.id)
+        table_name = f'`{str(self.bot.common.mysqldb)}`.`_guild_links`'
+        sqlquery = """
+        DELETE FROM {0} 
+        WHERE `guild-id` = '{1}'
+        AND `links` = %s
+        """
+        sql_cmd = sqlquery.format(table_name, str(guildid))
+        querydata = []
+        for link in links:
+            data = (str(link))
+            querydata.append(data)
+        async with self.bot.sql.mysqlcon.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.executemany(sql_cmd, querydata)
+        await self.bot.sql.mysqlcache.delete(key=cache_key)
+        await ctx.send("Alright, I've removed the listed links from the database.")
+
+    @watch.command()
+    async def removeall(self, ctx, *args):
+        cache_key = f'{str(ctx.guild.id)}_links'
+        await self.bot.sql.mysqlcache.delete(key=cache_key)
+        guildid = str(ctx.guild.id)
+        table_name = f'`{str(self.bot.common.mysqldb)}`.`_guild_links`'
+        sqlquery = """
+               DELETE FROM {0} 
+               WHERE `guild-id` = '{1}'
+               """
+        sql_cmd = sqlquery.format(table_name, str(guildid))
+        async with self.bot.sql.mysqlcon.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(sql_cmd)
+        await self.bot.sql.mysqlcache.delete(key=cache_key)
+        await ctx.send("Alright, I've removed all links from the database.")
 
     @commands.command()
     async def fakename(self, ctx):

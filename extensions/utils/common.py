@@ -57,34 +57,33 @@ class CommonParams:
         botdescription = 'discord pybot'
     if not discordbotcommandprefix:
         discordbotcommandprefix = ","
-    if loggingenabled:
-        logger = logging.getLogger('discord')
-        logger.setLevel(logging.DEBUG)
-        logpath = os.path.join(os.curdir, 'internalfiles', 'logger')
-        if not os.path.exists(logpath):
-            os.makedirs(logpath)
-        logname = 'discordapi.log'
-        fulllog = os.path.join(logpath, logname)
-        archivepath = os.path.join(logpath, 'oldlogs')
-        if not os.path.exists(archivepath):
-            os.makedirs(archivepath)
-        rotatelog = None
-        if os.path.isfile(fulllog):
-            logtogz = open(fulllog, 'rb')
-            logtogz1 = logtogz.read()
-            logtogz.close()
-            gzdfile = gzip.GzipFile(fulllog + '.gz', 'wb')
-            gzdfile.write(logtogz1)
-            gzdfile.close()
-            gzfilename = fulllog + '.gz'
-            if os.path.isfile(gzfilename):
-                os.remove(fulllog)
-            i = 0
-            archivepathname = os.path.join(archivepath, logname)
-            while os.path.isfile(archivepathname + '_' + time.strftime('%Y-%m-%d') + '_' + str(i) + '.log.gz'):
-                i += 1
-            rotatelog = os.path.join(archivepath, logname) + '_' + time.strftime('%Y-%m-%d') + '_' + str(i) + '.log.gz'
-            os.rename(gzfilename, rotatelog)
-        handler = logging.FileHandler(filename=fulllog, encoding='utf-8', mode='w+')
-        handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-        logger.addHandler(handler)
+    logger = logging.getLogger('discord')
+    logger.setLevel(logging.DEBUG)
+    logpath = os.path.join(os.curdir, 'internalfiles', 'logger')
+    if not os.path.exists(logpath):
+        os.makedirs(logpath)
+    logname = 'discordapi.log'
+    fulllog = os.path.join(logpath, logname)
+    archivepath = os.path.join(logpath, 'oldlogs')
+    if not os.path.exists(archivepath):
+        os.makedirs(archivepath)
+    rotatelog = None
+    if os.path.isfile(fulllog):
+        logtogz = open(fulllog, 'rb')
+        logtogz1 = logtogz.read()
+        logtogz.close()
+        gzdfile = gzip.GzipFile(fulllog + '.gz', 'wb')
+        gzdfile.write(logtogz1)
+        gzdfile.close()
+        gzfilename = fulllog + '.gz'
+        if os.path.isfile(gzfilename):
+            os.remove(fulllog)
+        i = 0
+        archivepathname = os.path.join(archivepath, logname)
+        while os.path.isfile(archivepathname + '_' + time.strftime('%Y-%m-%d') + '_' + str(i) + '.log.gz'):
+            i += 1
+        rotatelog = os.path.join(archivepath, logname) + '_' + time.strftime('%Y-%m-%d') + '_' + str(i) + '.log.gz'
+        os.rename(gzfilename, rotatelog)
+    handler = logging.FileHandler(filename=fulllog, encoding='utf-8', mode='w+')
+    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    logger.addHandler(handler)
