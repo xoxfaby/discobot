@@ -87,3 +87,5 @@ welcome to {1}, {0}~
 %%
 ok bye {0}
 %%
+You've selected {0} as the awoo channel
+%%

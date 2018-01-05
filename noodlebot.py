@@ -7,7 +7,7 @@ from extensions.utils.sqlcommands import InternalSQL
 class DBot(commands.Bot):
     """A modified discord.ext.commands.Bot class"""
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, description=common.CommonParams.botdescription, pm_help=True,
+        super().__init__(*args, **kwargs, description=common.CommonParams.botdescription,
                          command_prefix=commands.when_mentioned_or(common.CommonParams.discordbotcommandprefix))
         self.common = common.CommonParams()
         self.sql = InternalSQL(self)

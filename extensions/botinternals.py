@@ -67,17 +67,17 @@ class BotInternals:
                     guildconf = await cursor.fetchone()
                 else:
                     return
-        if 'isconfigged' in guildconf:
+        if bool(guildconf['isconfigged']):
             message_dict = {"join": guildconf['welcomemessage'], "leave": guildconf['partmessage'],
                            "ban": "{0} was banned.", "unban": "{0} was unbanned"}
             member_verb = {"join": " joined the server", "leave": " left the server",
                           "ban": " was banned from the server", "unban": " was unbanned from the server"}
-            if guildconf['enableusewelcome']:
+            if bool(guildconf['enableusewelcome']):
                 welcome_channel = self.bot.get_channel(id=int(guildconf['welcomechannel']))
                 welcome_message = message_dict[secondaryargs].format(member.mention, guild.name)
                 if str(secondaryargs) is not "unban":
                     await welcome_channel.send(content=welcome_message)
-            if guildconf['enableadminlogs']:
+            if bool(guildconf['enableadminlogs']):
                 admin_msg = (str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + ': ' + str(member) +
                             str(member_verb[secondaryargs]))
                 admin_channel = self.bot.get_channel(id=int(guildconf['adminchannel']))
@@ -334,6 +334,8 @@ class BotInfo:
             awoochanresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
             configmessagelist.append(awoochanresp)
             awoochan = awoochanresp.channel_mentions[0]
+            myresp1 = await ctx.send(botconfigscript[27].format(str(awoochan.mention)))
+            configmessagelist.append(myresp1)
             enableawoos = 1
         else:
             sent_awoochanquestion = await ctx.send(botconfigscript[24])

@@ -13,12 +13,13 @@
 - There should be a folder in the repo root named "internalfiles" and within that, "content"
     - It should contain files for whatever commands you want, but to save space and not clutter the repo with images, I've put it in the gitignore file
     - Most of the things in the "content" folder are images and associated with "extensions/memecommands.py"
-- Boat should be compatible with both *nix and Windows, but primarily aimed at Windows for the moment
+- Boat should be compatible with both *nix and Windows, but I am developing it on Windows currently.
 - To make sure you have all libraries for Python installed, required for this script, please check below:
     - Also check "extensions/utils/importsfile.py" for required imports
     - you will need python 3.5 minimum
     - discord.py rewrite
     - aiomysql (this should include asyncio, sqlalchemy, etc)
+    - aiocache
     - multiprocessing, aioprocessing, wolframalpha, numpy, configparser, Pillow
     - csv, janus, threading, io, dataset, strawpoll, gzip, hashlib, glob,
 - contact me:
