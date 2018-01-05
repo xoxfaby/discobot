@@ -46,18 +46,10 @@ class Misc:
                         await cursor.execute(sql_cmd)
                         num_rows = cursor.rowcount
                         if num_rows == 0:
-                            raise self.bot.myerrors.DBotInternalError("Error: this server haa no stored links.")
+                            raise self.bot.myerrors.DBotInternalError("Error: this server has no stored links.")
                         else:
                             linksvalue = await cursor.fetchall()
                             await self.bot.sql.mysqlcache.add(key=cache_key, value=linksvalue)
-            # preformatted_text = "```\n"
-            # preformatted_text += "Server Links:\n"
-            # num = 1
-            # for row in linksvalue:
-            #     preformatted_text += f'Link #{num}: {row["links"]}\n'
-            #     num += 1
-            # preformatted_text += "\n```"
-            # await ctx.send(content=preformatted_text)
             linktext = ""
             for row in linksvalue:
                 linktext += str(row['links'] + "\n")

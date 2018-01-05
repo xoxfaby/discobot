@@ -190,7 +190,4 @@ class BotLoggerDB:
 
 
 def setup(dbot):
-    if dbot.common.addloggercog:
-        dbot.add_cog(BotLoggerDB(dbot))
-    else:
-        pass
+    dbot.add_cog(BotLoggerDB(dbot))
