@@ -8,9 +8,6 @@
 ##########
 [script]
 loggingenabled = True
-logvoice = True
-logtext = True
-logusers = True
 mysqlserver = 127.0.0.1
 mysqlport = 3306
 mysqluser = username

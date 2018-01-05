@@ -28,13 +28,6 @@ class CommonParams:
     mainservergeneralchan = (config['dbot']['mainservergeneralchan']).split(',')
     mainservermedialinks = (config['dbot']['mainservermedialinks']).split(',')
     mainserverspamroom = (config['dbot']['mainserverspamroom']).split(',')
-    loggingenabled = config.getboolean('script', 'loggingenabled')
-
-    if loggingenabled:
-        addloggercog = True
-        logvoice = config.getboolean('script', 'logvoice')
-        logtext = config.getboolean('script', 'logtext')
-        logusers = config.getboolean('script', 'logusers')
 
     mysqlserver = str(config['script']['mysqlserver'])
     mysqlport = int(config['script']['mysqlport'])

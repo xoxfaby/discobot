@@ -13,6 +13,19 @@ class Misc:
             file = os.path.join("internalfiles", "images", args)
             return await ctx.send(file=discord.File(fp=file, filename=args))
 
+    # @commands.command(hidden=True)
+    # async def watch1(self, ctx):
+    #     # check cache for media links per guild
+    #     # if not in cache, check db for links
+    #     # if not in db, prompt with "no media/server links available, do you want to set them?"
+    #     # Create sql function to insert into db media links
+    #
+    #     if str(ctx.guild.id) == str(self.bot.common.mainserver[0]):
+    #         return await ctx.send('Media Links:' + '\n<' + self.bot.common.mainservermedialinks[0] + '>\n<' +
+    #                               self.bot.common.mainservermedialinks[1] + '>')
+    #     else:
+    #         return
+
     @commands.command()
     async def fakename(self, ctx):
         apiurl = "https://uinames.com/api/?ext"
