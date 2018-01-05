@@ -19,7 +19,7 @@ class BotLoggerDB:
         if table_exists_in_cache:
             value = await self.bot.sql.mysqlcache.get(key=table_name)
             if value:
-                create_table = False
+                return
             else:
                 create_table = True
         else:
@@ -36,10 +36,8 @@ class BotLoggerDB:
                     else:
                         create_cmd = await self.bot.sql.statement_create_table(table_type, table_name)
                         await cursor.execute(create_cmd)
-            addkv = await self.bot.sql.mysqlcache.add(namespace="mysql", key=table_name, value=True)
-            if addkv:
-                nowexists = await self.bot.sql.mysqlcache.exists(key=table_name)
-                return nowexists
+            await self.bot.sql.mysqlcache.add(namespace="mysql", key=table_name, value=True)
+            return
 
     async def download_attachment(self, ctx):
         if ctx.author.id == self.bot.common.botdiscordid:
