@@ -383,17 +383,18 @@ class Misc:
                         length.append(str(newlength))
         incnum = 1
         for t, u, v, f, l in zip(title, uploaded, videoid, fullurl, length):
-            videoinfo = f'Length: {l}\nURL: {f}'
-            embed.add_field(name="Title", value=t, inline=False)
-            embed.add_field(name="_\n_", value=videoinfo, inline=False)
+            videoinfo = f'\nLength: {l}\nURL: {f}'
+            valuedata = t + videoinfo
+            embed.add_field(name=f'Video #{incnum}', value=valuedata, inline=False)
             incnum += 1
 
         def checknumber(m):
-            return (m.author == ctx.author) and (int(m.content) < int(len(contentslist)))
+            return (m.author == ctx.author) and (int(m.content) < int(len(contentslist))) and \
+                   (m.channel.id == ctx.channel.id)
 
         botmessage = await ctx.send(embed=embed)
         questionmesg = await ctx.send("Please say the video number you want")
-        numberresponse = await self.bot.wait_for('message', check=checknumber)
+        numberresponse = await self.bot.wait_for('message', check=checknumber, timeout=30)
         newcontent = fullurl[(int(numberresponse.content) - 1)]
         await questionmesg.delete()
         await numberresponse.delete()
@@ -418,6 +419,24 @@ class Misc:
             embed = discord.Embed(title=f':{newemoji.name}: \N{EM DASH} `{newemoji.id}`')
             embed.set_image(url=emoji_cdn)
             await ctx.send(embed=embed)
+
+    # def _wolf(self, query):
+    #     """ Non async WolframAlpha lib function """
+    #     wolframclient = wolframalpha.Client(self.bot.common.wolframapikey)
+    #     wolframquery = (" ".join(query))
+    #     results = wolframclient.query(wolframquery)
+    #     return results
+    #
+    # @commands.command(aliases=['wolfram', 'alpha', 'calculate'])
+    # async def wolframalpha(self, ctx, *, args):
+    #     if not args:
+    #         raise self.bot.myerrors.DBotInternalError("You've not entered anything for Wolfram to calculate!")
+    #     await ctx.trigger_typing()
+    #     result = await self.bot.loop.run_in_executor(None, self._wolf, args)
+    #     if result is not None:
+    #         await ctx.send(result)
+    #     else:
+    #         raise self.bot.myerrors.DBotExternalError(f"Sorry, I couldn't calculate `{args}`.")
 
 
 class EtcOnMessage:

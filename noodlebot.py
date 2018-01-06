@@ -31,7 +31,8 @@ class Main:
             loaded_exts += 1
         except Exception as e:
             print('{} failed to load.\n{}: {}'.format(extension, type(e).__name__, e))
-    print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())) + f': {loaded_exts}/{total_exts} have been loaded')
+    curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
+    print(curtime + f': {loaded_exts}/{total_exts} extensions have been loaded')
     bot.run(bot.common.discordbottoken)
     exit(0)
 
