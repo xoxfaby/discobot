@@ -457,3 +457,22 @@ class InternalSQL:
         """
         new_query = sql_query.format(self.bot.common.mysqldb)
         return new_query
+
+
+# beginning framework for dynamic table, row, column, and statement generator
+# this is going to be messy
+# no promises lollllllll
+# class MySQLFramework:
+#     def __init__(self, bot):
+#         self.bot = bot
+#         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
+#               + ': Addon "{}" loaded'.format(self.__class__.__name__))
+#
+#     async def tablecreate(self):
+#         pass
+#
+#     async def columns(self):
+#         pass
+#
+#     async def statement_generator(self):
+#         pass
