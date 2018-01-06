@@ -391,9 +391,9 @@ class InternalSQL:
         `user-id`, `user-name`, `message-id`, `content`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
-        newquery = sqlquery.format(self.bot.common.mysqldb)
-        querydata = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, content)
-        return newquery, querydata
+        new_query = sqlquery.format(self.bot.common.mysqldb)
+        query_data = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, content)
+        return new_query, query_data
 
     async def statement_insert_guildconfig(self, ctx, channellist: list, responses: list, joinpartmsgs: list):
         with open(os.path.join("extensions", "utils", "botconfig-lines.txt"), encoding='utf-8', mode='r') as infile:
@@ -424,11 +424,11 @@ class InternalSQL:
         `voicelogchannel`, `awoochannel`, `enableawoo`, `partmessage`, `welcomemessage`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        newquery = configquery.format(self.bot.common.mysqldb)
-        querydata = (guildid, isconfigged, initialchan, whoconfiged, configtime, enablelogging, welcomechanbool,
+        new_query = configquery.format(self.bot.common.mysqldb)
+        query_data = (guildid, isconfigged, initialchan, whoconfiged, configtime, enablelogging, welcomechanbool,
                      adminlogchanbool, voicelogchanbool, welcomechan, adminlogchan, voicelogchan, awoochan, enableawoos,
                      partmessage, joinmessage)
-        return newquery, querydata
+        return new_query, query_data
 
     async def statement_get_server_config(self, guild):
         guildid = str(guild.id)
@@ -437,7 +437,7 @@ class InternalSQL:
         FROM `{0}`.`_serverconfig`
         WHERE `guild-id` = {1};
         """
-        newquery = sql_query.format(self.bot.common.mysqldb, guildid)
+        new_query = sql_query.format(self.bot.common.mysqldb, guildid)
         table_name = str("_serverconfig")
         return new_query, table_name
 
