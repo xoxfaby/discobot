@@ -242,7 +242,6 @@ class BotInfo:
         configmessagelist.append(sent_thischannelmsg)
         thischannelresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
         configmessagelist.append(thischannelresp)
-        enablelogging = 1
         thischannelresp1 = thischannelresp.content.lower()
         if thischannelresp1 in yesanswerlist:
             announcemsg1 = await ctx.send(botconfigscript[2])
@@ -366,6 +365,7 @@ class BotInfo:
 
         # add config option to choose what prefix to use
         await ctx.send(botconfigscript[17])
+        enablelogging = any([welcomechanbool, adminlogchanbool, voicelogchanbool])
         channellist = [initialchan, welcomechan, adminlogchan, voicelogchan, awoochan]
         responses = [enablelogging, welcomechanbool, adminlogchanbool, voicelogchanbool, enableawoos]
         joinpartmsgs = [welcomemessage, leavemessage]
