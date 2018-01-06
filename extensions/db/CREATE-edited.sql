@@ -14,4 +14,5 @@ CREATE TABLE `mysqldb`.`tablename` (
   `before-attachmentfilename` LONGTEXT NULL,
   `after-attachmenturl` LONGTEXT NULL,
   `after-attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_edited`));
+  PRIMARY KEY (`id_edited`))
+ROW_FORMAT=COMPRESSED;

@@ -12,7 +12,8 @@ CREATE TABLE `mysqldb`.`_guildlog` (
   `number-users-on-join` INT NOT NULL,
   `guild-created-date-UTC` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id_guildlog`),
-  UNIQUE INDEX `guildid_UNIQUE` (`guildid` ASC));
+  UNIQUE INDEX `guildid_UNIQUE` (`guildid` ASC))
+ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_errorlog` (
   `id_errorlog` INT NOT NULL AUTO_INCREMENT,
@@ -23,7 +24,8 @@ CREATE TABLE `mysqldb`.`_errorlog` (
   `message-id` VARCHAR(45) NOT NULL,
   `errormessage` LONGTEXT NOT NULL,
   `content` LONGTEXT NOT NULL,
-  PRIMARY KEY (`id_errorlog`));
+  PRIMARY KEY (`id_errorlog`))
+ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_weathertable` (
   `id_weathertable` INT NOT NULL AUTO_INCREMENT,
@@ -32,7 +34,8 @@ CREATE TABLE `mysqldb`.`_weathertable` (
   PRIMARY KEY (`id_weathertable`),
   UNIQUE INDEX `user-id_UNIQUE` (`user-id` ASC))
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_unicode_ci
+ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_encountered-users` (
   `id_encountered-users` INT NOT NULL AUTO_INCREMENT,
@@ -40,7 +43,8 @@ CREATE TABLE `mysqldb`.`_encountered-users` (
   `user-id` VARCHAR(45) NOT NULL,
   `user-name` LONGTEXT NOT NULL,
   PRIMARY KEY (`id_encountered-users`),
-  UNIQUE INDEX `user-id_UNIQUE` (`user-id` ASC));
+  UNIQUE INDEX `user-id_UNIQUE` (`user-id` ASC))
+  ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_commandtable` (
   `id_commandtable` INT NOT NULL AUTO_INCREMENT,
@@ -53,7 +57,8 @@ CREATE TABLE `mysqldb`.`_commandtable` (
   `user-name` LONGTEXT NOT NULL,
   `message-id` VARCHAR(45) NOT NULL,
   `content` LONGTEXT NOT NULL,
-  PRIMARY KEY (`id_commandtable`));
+  PRIMARY KEY (`id_commandtable`))
+  ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_serverconfig` (
   `id_serverconfig` INT NOT NULL AUTO_INCREMENT,
@@ -73,10 +78,12 @@ CREATE TABLE `mysqldb`.`_serverconfig` (
   `partmessage` varchar(2000) NOT NULL DEFAULT 'ok bye {0}',
   `welcomemessage` varchar(2000) NOT NULL DEFAULT 'welcome to {1}, {0}~',
   PRIMARY KEY (`id_serverconfig`),
-  UNIQUE KEY `guild-id_UNIQUE` (`guild-id`));
+  UNIQUE KEY `guild-id_UNIQUE` (`guild-id`))
+  ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_guild_links` (
   `id_guild_links` INT NOT NULL,
   `guild-id` VARCHAR(45) NOT NULL,
   `links` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id_guild_links`));
+  PRIMARY KEY (`id_guild_links`))
+  ROW_FORMAT=COMPRESSED;

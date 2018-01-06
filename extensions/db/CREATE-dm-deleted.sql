@@ -9,4 +9,5 @@ CREATE TABLE `mysqldb`.`tablename` (
   `content` LONGTEXT NULL,
   `attachmenturl` LONGTEXT NULL,
   `attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_deleted`));
+  PRIMARY KEY (`id_deleted`))
+ROW_FORMAT=COMPRESSED;

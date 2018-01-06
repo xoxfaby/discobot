@@ -11,4 +11,5 @@ CREATE TABLE `mysqldb`.`tablename` (
   `content` LONGTEXT NULL,
   `attachmenturl` LONGTEXT NULL,
   `attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_messages`));
+  PRIMARY KEY (`id_messages`))
+  ROW_FORMAT=COMPRESSED;

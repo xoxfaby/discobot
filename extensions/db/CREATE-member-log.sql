@@ -6,4 +6,5 @@ CREATE TABLE `mysqldb`.`tablename` (
   `user-id` VARCHAR(45) NOT NULL,
   `user-name` LONGTEXT NOT NULL,
   `action` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id_member-list`));
+  PRIMARY KEY (`id_member-list`))
+ROW_FORMAT=COMPRESSED;

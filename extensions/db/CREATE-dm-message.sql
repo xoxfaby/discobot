@@ -8,4 +8,5 @@ CREATE TABLE `mysqldb`.`tablename` (
   `content` LONGTEXT NULL,
   `attachmenturl` LONGTEXT NULL,
   `attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_DM`));
+  PRIMARY KEY (`id_DM`))
+ROW_FORMAT=COMPRESSED;
