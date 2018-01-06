@@ -24,35 +24,35 @@ class InternalSQL:
     async def schemacreate(self):
         print("MySQL isn't configured yet...\nCreating tables in the Database now...")
         schemacommands = await self.bot.sql.statement_create_bot_schema()
-        tempcon = await aiomysql.connect(host=self.bot.common.mysqlserver, port=self.bot.common.mysqlport,
-                                         user=self.bot.common.mysqluser, password=self.bot.common.mysqlpw,
-                                         charset='utf8mb4', use_unicode=True, autocommit=True)
-        async with tempcon.cursor() as cursor:
+        temp_con = await aiomysql.connect(host=self.bot.common.mysqlserver, port=self.bot.common.mysqlport,
+                                          user=self.bot.common.mysqluser, password=self.bot.common.mysqlpw,
+                                          charset='utf8mb4', use_unicode=True, autocommit=True)
+        async with temp_con.cursor() as cursor:
             for command in schemacommands:
                 await cursor.execute(command)
             await cursor.close()
-        tempcon.close()
+        temp_con.close()
         self.bot.common.config.set('DONOTTOUCH', 'mysqlconfigured', 'True')
         with open(self.bot.common.configfile, 'w') as towrite:
             self.bot.common.config.write(towrite)
 
     async def statement_create_bot_schema(self):
         infile = open(os.path.join("extensions", "db", "CREATE-bot-schema.sql"), 'r')
-        sqlfile = infile.read()
+        sql_file = infile.read()
         infile.close()
-        sqlfile1 = sqlfile.replace("mysqldb", self.bot.common.mysqldb)
-        sqlcommands = sqlfile1.strip('\n').split(';')[:-1]
-        return sqlcommands
+        sql_file1 = sql_file.replace("mysqldb", self.bot.common.mysqldb)
+        sql_commands = sql_file1.strip('\n').split(';')[:-1]
+        return sql_commands
 
     async def statement_upsert_weathertable(self, authorid, zipcode):
-        sqlquery = """REPLACE INTO `{0}`.`_weathertable` (`user-id`, `zipcode`) VALUES ('{1}', '{2}');"""
-        newquery = sqlquery.format(self.bot.common.mysqldb, str(authorid), str(zipcode))
-        return newquery
+        sql_query = """REPLACE INTO `{0}`.`_weathertable` (`user-id`, `zipcode`) VALUES ('{1}', '{2}');"""
+        new_query = sql_query.format(self.bot.common.mysqldb, str(authorid), str(zipcode))
+        return new_query
 
     async def statement_get_weather_single_user(self, authorid):
-        sqlquery = """SELECT `zipcode` FROM `{0}`.`_weathertable` WHERE `user-id` = '{1}';"""
-        newquery = sqlquery.format(self.bot.common.mysqldb, authorid)
-        return newquery
+        sql_query = """SELECT `zipcode` FROM `{0}`.`_weathertable` WHERE `user-id` = '{1}';"""
+        new_query = sql_query.format(self.bot.common.mysqldb, authorid)
+        return new_query
 
     async def statement_insert_channel_new(self, ctx):
         msgtime = str(datetime.datetime.now())
@@ -70,16 +70,16 @@ class InternalSQL:
         else:
             attachmenturl = "None"
             attachmentfilename = "None"
-        sqlquery = """
+        sql_query = """
         INSERT INTO `{0}`.`{1}_{2}_messages` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
         `user-id`, `user-name`, `message-id`, `content`, `attachmenturl`, `attachmentfilename`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
-        newquery = sqlquery.format(self.bot.common.mysqldb, guildid, channelid)
-        querydata = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, content,
-                     attachmenturl, attachmentfilename)
-        tablename = str(guildid + "_" + channelid + "_messages")
-        return newquery, tablename, querydata
+        new_query = sql_query.format(self.bot.common.mysqldb, guildid, channelid)
+        query_data = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, content,
+                      attachmenturl, attachmentfilename)
+        table_name = str(guildid + "_" + channelid + "_messages")
+        return new_query, table_name, query_data
 
     async def statement_insert_channel_edit(self, ctx, aftermessage):
         msgtime = str(datetime.datetime.now())
@@ -432,28 +432,28 @@ class InternalSQL:
 
     async def statement_get_server_config(self, guild):
         guildid = str(guild.id)
-        sqlquery = """
+        sql_query = """
         SELECT * 
         FROM `{0}`.`_serverconfig`
         WHERE `guild-id` = {1};
         """
-        newquery = sqlquery.format(self.bot.common.mysqldb, guildid)
-        tablename = str("_serverconfig")
-        return newquery, tablename
+        newquery = sql_query.format(self.bot.common.mysqldb, guildid)
+        table_name = str("_serverconfig")
+        return new_query, table_name
 
     async def statement_get_initialchannel(self):
-        sqlquery = """
+        sql_query = """
         SELECT `guild-id`, `initialchannel`
         FROM `{0}`.`_serverconfig`
         """
-        newquery = sqlquery.format(self.bot.common.mysqldb)
-        return newquery
+        new_query = sql_query.format(self.bot.common.mysqldb)
+        return new_query
 
     async def statement_get_awoolist(self):
-        sqlquery = """
+        sql_query = """
         SELECT `awoochannel` 
         FROM `{0}`.`_serverconfig`
         WHERE `enableawoo` = '1';
         """
-        newquery = sqlquery.format(self.bot.common.mysqldb)
-        return newquery
+        new_query = sql_query.format(self.bot.common.mysqldb)
+        return new_query

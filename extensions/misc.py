@@ -20,8 +20,8 @@ class Misc:
         This list can be as large or small as you want.
         You can invoke this command a number of ways.
         By calling `watch` by itself, I will print a list of registered links;
-        By calling `watch add` and then listing a link, I will add it to the stored list;
-        By calling `watch remove` and then listing a link, I will remove it from the stored list;
+        By calling `watch add` and then listing a link or multiple links separated by spaces, I will add it to the stored list;
+        By calling `watch remove` and then listing a link or multiple links separated by spaces, I will remove it from the stored list;
         By calling `watch removeall` I will remove all stored links;
         """
         if ctx.invoked_subcommand is None:
@@ -161,14 +161,14 @@ class Misc:
                         getlocation = None
             if getlocation is None:
                 if ctx.message.mentions:
-                    raise self.bot.myerrors.DBotInternalError("The mentioned user has not set their default weather;"
-                                                              "please try again.")
+                    message = "The mentioned user has not set their default weather;\nplease try again."
+                    raise self.bot.myerrors.DBotInternalError(message)
                 else:
-                    raise self.bot.myerrors.DBotInternalError('Please use a zip code when calling this function\n'
-                                                              'Example: `' + self.bot.common.discordbotcommandprefix +
-                                                              'weather 98104`\nYou could also set your default weather '
-                                                              'by using the `' + self.bot.common.discordbotcommandprefix
-                                                              + 'weatherset zipcode` command')
+                    message = ('Please use a zip code when calling this function\n Example: `' +
+                               self.bot.common.discordbotcommandprefix + 'weather 98104`\nYou could also set your '
+                               'default weather by using the `' + self.bot.common.discordbotcommandprefix +
+                               'weatherset zipcode` command')
+                    raise self.bot.myerrors.DBotInternalError(message)
             else:
                 getlocation = str(getlocation)
         elif zipcode.isdigit():
@@ -189,17 +189,17 @@ class Misc:
                     async with session.get(fullurl) as r:
                         if r.status == 200:
                             parsed_json = await r.json()
-                            location1 = parsed_json['current_observation']['display_location']['full']
-                            location2 = parsed_json['current_observation']['display_location']['country_iso3166']
-                            locationfull = f'{location1}, {location2}'
+                            location1 = str(parsed_json['current_observation']['display_location']['full'])
+                            location2 = str(parsed_json['current_observation']['display_location']['country_iso3166'])
+                            locationfull = str(f'{location1}, {location2}')
                             temp = parsed_json['current_observation']['temperature_string']
                             weburl = parsed_json['current_observation']['ob_url']
                             currentweather = parsed_json['current_observation']['weather']
                             lastupdated = (parsed_json['current_observation']['observation_time'] + " (Local time)")
                             humidity = parsed_json['current_observation']['relative_humidity']
-                            wind = str(parsed_json['current_observation']['wind_dir']) + ' at ' + \
-                                   str(parsed_json['current_observation']['wind_mph']) + ' MPH, gusting to ' + \
-                                   str(parsed_json['current_observation']['wind_gust_mph']) + ' MPH'
+                            wind = (str(parsed_json['current_observation']['wind_dir']) + ' at ' +
+                                    str(parsed_json['current_observation']['wind_mph']) + ' MPH, gusting to ' +
+                                    str(parsed_json['current_observation']['wind_gust_mph']) + ' MPH')
                             weathercontent.title = str(locationfull)
                             weathercontent.colour = discord.Color(0xd6f00c)
                             weathercontent.url = str(weburl)
@@ -250,15 +250,21 @@ class Misc:
         else:
             raise self.bot.myerrors.DBotInternalError("A proper zip code was not specified")
 
-    @commands.command(aliases=['poll'], usage="'Title' 'Option 1' 'Option 2' 'Option 3' 'etc...'")
+    @commands.command(aliases=['poll'])
     async def straw(self, ctx, *args):
-        spollapi = strawpoll.API()
+        """
+        Creates a poll on strawpoll.
+        Usage:
+        - Enter all parameters with double quotes
+        poll "my poll title" "first option" "second option" "third option" etc...
+        """
+        spoll_api = strawpoll.API()
         title = args[0]
         arglist = list(args)
         arglist.pop(0)
         topoll = strawpoll.Poll(title, arglist, multi=False)
-        returnpoll = await spollapi.submit_poll(poll=topoll)
-        return await ctx.send(returnpoll.url)
+        return_poll = await spoll_api.submit_poll(poll=topoll)
+        return await ctx.send(return_poll.url)
 
     @commands.command()
     async def nice(self, ctx):
@@ -288,22 +294,37 @@ class Misc:
 
     @commands.command(description='No fighting', aliases=['preciousfriends', 'friends', 'nofight', 'nofite'])
     async def fight(self, ctx):
+        """
+        No fiting aloud
+        """
         return await self._internalfile(ctx, "V63Hv.jpg")
 
     @commands.command(description='sadpanda', aliases=['panda', 'fuckyou', 'exhentai', 'why'])
     async def sadpanda(self, ctx):
+        """
+        Fuck you why is there a sad panda
+        """
         return await self._internalfile(ctx, "sadpanda.png")
 
     @commands.command(description='sleep')
     async def sleep(self, ctx):
+        """
+        Awoo sleep
+        """
         return await self._internalfile(ctx, "awoosleep.png")
 
     @commands.command(aliases=['404'])
     async def fourzerofour(self, ctx):
+        """
+        File not found
+        """
         return await self._internalfile(ctx, "404.gif")
 
     @commands.command()
     async def cat(self, ctx):
+        """
+        Retreives a random cat image from http://random.cat/
+        """
         fullurl = "http://random.cat/meow"
         async with aiohttp.ClientSession() as session:
             async with session.get(fullurl) as r:
@@ -364,7 +385,7 @@ class Misc:
         for t, u, v, f, l in zip(title, uploaded, videoid, fullurl, length):
             videoinfo = f'Length: {l}\nURL: {f}'
             embed.add_field(name="Title", value=t, inline=False)
-            embed.add_field(name="Video Info", value=videoinfo, inline=False)
+            embed.add_field(name="_\n_", value=videoinfo, inline=False)
             incnum += 1
 
         def checknumber(m):

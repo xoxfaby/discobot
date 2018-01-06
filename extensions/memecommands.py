@@ -28,22 +28,38 @@ class ImageMemes:
 
     @commands.command()
     async def memes(self, ctx):
+        """
+        Posts a nice meme
+        """
         await self._randomfilechoice(ctx, "memes")
 
     @commands.command()
     async def pepes(self, ctx):
+        """
+        Posts a rare pepe
+        """
         await self._randomfilechoice(ctx, "pepes")
 
     @commands.command()
     async def mokou(self, ctx):
+        """
+        Posts a mokou
+        """
         await self._randomfilechoice(ctx, "mokou")
 
     @commands.command()
     async def grill(self, ctx):
+        """
+        Posts a smug anime girl
+        """
         await self._randomfilechoice(ctx, "smug")
 
     @commands.command()
     async def rabbit(self, ctx):
+        """
+        DO
+        NOT
+        """
         rabbitquestion = bool(random.getrandbits(1))
         if rabbitquestion:
             await self._randomfilechoice(ctx, "rabbit")
@@ -52,18 +68,30 @@ class ImageMemes:
 
     @commands.command()
     async def animals(self, ctx):
+        """
+        Posts a cute animal
+        """
         await self._randomfilechoice(ctx, "Animals")
 
     @commands.command()
     async def bestgirl(self, ctx):
+        """
+        Posts a nice girl
+        """
         await self._randomfilechoice(ctx, "bestgirl")
 
     @commands.command()
     async def miku(self, ctx):
+        """
+        Posts from a selection of Miku images
+        """
         await self._randomfilechoice(ctx, "miku")
 
     @commands.command()
     async def awoo(self, ctx):
+        """
+        Awoo~~~
+        """
         await self._internalfile(ctx, "3ae.png")
 
     @commands.command()
@@ -84,10 +112,16 @@ class ImageMemes:
 
     @commands.command()
     async def m(self, ctx):
+        """
+        m
+        """
         await self._internalfile(ctx, "m.jpg")
 
     @commands.command(hidden=True)
     async def superawoo(self, ctx):
+        """
+        Sekrit
+        """
         awoofile = os.path.join("internalfiles", "images", "3ae.png")
         if str('Direct Message') not in str(ctx.channel):
             await ctx.message.delete()
@@ -107,10 +141,16 @@ class ImageMemes:
 
     @commands.command()
     async def whatisgoingonhere(self, ctx):
+        """
+        Oh no
+        """
         await ctx.send("http://i.imgur.com/tnWSXf7.png")
 
     @commands.command()
     async def inspire(self, ctx):
+        """
+        Generates an image from inspirobot
+        """
         fullurl = "http://inspirobot.me/api?generate=true"
         async with aiohttp.ClientSession() as session:
             async with session.get(fullurl) as r:
@@ -122,6 +162,11 @@ class ImageMemes:
 
     @commands.command(aliases=['genmeme', 'imgflip'])
     async def memegen(self, ctx, memetype, *args):
+        """
+        Generates a meme from imgflip
+        Please see this webpage for more information:
+        https://personalwebsite.website/wiki/index.php?title=ImageMemes#memegen
+        """
         if (str(memetype) == "help") or (str(memetype) == "list"):
             msg = "Please see this link for more information: " \
                   "<https://personalwebsite.website/wiki/index.php?title=ImageMemes#memegen>"
@@ -233,6 +278,9 @@ class TextMemes:
 
     @commands.command(aliases=['pasta', 'emoji', 'daddy'])
     async def emojipasta(self, ctx):
+        """
+        I will call you daddy
+        """
         pastafile = os.path.join("internalfiles", 'content', 'textshit', 'emojipasta.txt')
         result = []
         results = []
@@ -248,6 +296,12 @@ class TextMemes:
 
     @commands.command()
     async def thinking(self, ctx):
+        """
+        rly
+        make
+        u
+        thonk
+        """
         message = '```\n'
         message += "⠀⠀⠀⠀⠀⢀⣀⣀⣀\n"
         message += "⠀⠀⠀⠰⡿⠿⠛⠛⠻⠿⣷\n"
@@ -270,6 +324,9 @@ class TextMemes:
 
     @commands.command()
     async def comrade(self, ctx):
+        """
+        Communism
+        """
         message = '```\n'
         message += '                 !#########       #\n'
         message += '               !########!          ##!\n'
@@ -294,6 +351,9 @@ class TextMemes:
 
     @commands.command()
     async def bigawoo(self, ctx):
+        """
+        AWOO
+        """
         message = '```\n'
         message += '⣿⣿⣿⣿⣿⣿⡷⣯⢿⣿⣷⣻⢯⣿⡽⣻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⠸⣿⣿⣆⠹⣿⣿⢾⣟⣯⣿⣿⣿⣿⣿⣿⣽⣻⣿⣿⣿⣿⣿⣿⣿⣿⣷⡌\n'
         message += '⣿⣿⣿⣿⣿⣿⣻⣽⡿⣿⣎⠙⣿⣞⣷⡌⢻⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⡄⠹⣿⣿⡆⠻⣿⣟⣯⡿⣽⡿⣿⣿⣿⣿⣽⡷⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿\n'
@@ -330,6 +390,9 @@ class TextMemes:
 
     @commands.command(usage="[the text you want to invoke the hivemind with]")
     async def zalgo(self, ctx, *args: str):
+        """
+        To invoke the hivemind
+        """
         if str('Direct Message') not in str(ctx.channel):
             await ctx.message.delete()
         partialurl = "https://zalgo.io/api?text="
@@ -342,7 +405,7 @@ class TextMemes:
                     response = await r.text()
                     await ctx.send(response)
                 else:
-                    await ctx.send("An error occurred when invoking the hivemind.")
+                    raise self.bot.myerrors.DBotExternalError("An error occurred when invoking the hivemind.")
 
 
 def setup(dbot):

@@ -35,7 +35,7 @@ class BotInternals:
             guild_config_exists_in_cache = await self.bot.sql.mysqlcache.exists(key=member_guild_config)
             if guild_config_exists_in_cache:
                 guild_conf = await self.bot.sql.mysqlcache.get(key=member_guild_config)
-                if 'isconfigged' in guild_conf:
+                if bool(guild_conf['isconfigged']):
                     enable_voice_logs = bool(guild_conf['enablevoicelogs'])
                 else:
                     return
@@ -60,34 +60,43 @@ class BotInternals:
                 return
 
     async def member_bot_message(self, member, secondaryargs, guild):
-        if str(member) == str(member.guild.me):
+        if member == member.guild.me:
             return
-        sql_cmd, table_name = await self.bot.sql.statement_get_server_config(guild)
-        async with self.bot.sql.mysqlcon.acquire() as conn:
-            async with conn.cursor(aiomysql.DictCursor) as cursor:
-                await cursor.execute(sql_cmd)
-                rowcount = cursor.rowcount
-                if rowcount == 1:
-                    guildconf = await cursor.fetchone()
-                else:
-                    return
-        if bool(guildconf['isconfigged']):
-            message_dict = {"join": guildconf['welcomemessage'], "leave": guildconf['partmessage'],
-                           "ban": "{0} was banned.", "unban": "{0} was unbanned"}
-            member_verb = {"join": " joined the server", "leave": " left the server",
-                          "ban": " was banned from the server", "unban": " was unbanned from the server"}
-            if bool(guildconf['enableusewelcome']):
-                welcome_channel = self.bot.get_channel(id=int(guildconf['welcomechannel']))
-                welcome_message = message_dict[secondaryargs].format(member.mention, guild.name)
-                if str(secondaryargs) is not "unban":
-                    await welcome_channel.send(content=welcome_message)
-            if bool(guildconf['enableadminlogs']):
-                admin_msg = (str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + ': ' + str(member) +
-                            str(member_verb[secondaryargs]))
-                admin_channel = self.bot.get_channel(id=int(guildconf['adminchannel']))
-                await admin_channel.send(admin_msg)
         else:
-            return
+            member_guild_config = str(f'{str(member.guild.id)}_guild_config')
+            guild_config_exists_in_cache = await self.bot.sql.mysqlcache.exists(key=member_guild_config)
+            if guild_config_exists_in_cache:
+                guild_conf = await self.bot.sql.mysqlcache.get(key=member_guild_config)
+                run_next = bool(guild_conf['isconfigged'])
+            else:
+                sql_cmd, table_name = await self.bot.sql.statement_get_server_config(guild)
+                async with self.bot.sql.mysqlcon.acquire() as conn:
+                    async with conn.cursor(aiomysql.DictCursor) as cursor:
+                        await cursor.execute(sql_cmd)
+                        rowcount = cursor.rowcount
+                        if rowcount == 1:
+                            guild_conf = await cursor.fetchone()
+                            await self.bot.sql.mysqlcache.add(key=member_guild_config, value=guild_conf)
+                            run_next = bool(guild_conf['isconfigged'])
+                        else:
+                            return
+            if run_next:
+                if bool(guild_conf['enableusewelcome']):
+                    message_dict = {"join": guild_conf['welcomemessage'], "leave": guild_conf['partmessage'],
+                                    "ban": "{0} was banned.", "unban": "{0} was unbanned"}
+                    welcome_channel = self.bot.get_channel(id=int(guild_conf['welcomechannel']))
+                    welcome_message = message_dict[secondaryargs].format(member.mention, guild.name)
+                    if str(secondaryargs) is not "unban":
+                        await welcome_channel.send(content=welcome_message)
+                if bool(guild_conf['enableadminlogs']):
+                    member_verb = {"join": " joined the server", "leave": " left the server",
+                                   "ban": " was banned from the server", "unban": " was unbanned from the server"}
+                    admin_msg = (str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + ': ' + str(member) +
+                                 str(member_verb[secondaryargs]))
+                    admin_channel = self.bot.get_channel(id=int(guild_conf['adminchannel']))
+                    await admin_channel.send(admin_msg)
+            else:
+                return
 
     async def on_member_join(self, member):
         await self.member_bot_message(member, "join", member.guild)
@@ -131,11 +140,14 @@ class BotInfo:
 
     @commands.command()
     async def info(self, ctx):
+        """
+        This command shows various information about the bot.
+        """
         embed = discord.Embed(title="Bot Information", description="Noodle Disco-Pybot", color=0x3347ff)
         embed.add_field(name="Web URL", value="[Boat Wiki](https://personalwebsite.website/wiki/noodlebot)")
         embed.set_thumbnail(
             url='https://cdn.discordapp.com/app-icons/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png')
-        embed.add_field(name="Creator", value="noodle#4660", inline=False)
+        embed.add_field(name="Creator", value="`noodle#4660`", inline=False)
         embed.add_field(name="Invite", value="[Invite URL]"
                                              "(https://discordapp.com/oauth2/authorize?client_id=340802627887693825"
                                              "&scope=bot&permissions=1610083543)", inline=False)
@@ -145,14 +157,17 @@ class BotInfo:
 
     @commands.command()
     async def uptime(self, ctx):
+        """
+        This command shows the uptime of the bot.
+        """
         now = datetime.datetime.utcnow()
         delta = now - self.bot.common.uptime
         hours, remainder = divmod(int(delta.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
         fmt = '{h} hours, {m} minutes, and {s} seconds'
-        fmtnew = fmt.format(h=hours, m=minutes, s=seconds)
-        return await ctx.send(fmtnew)
+        fmt_new = fmt.format(h=hours, m=minutes, s=seconds)
+        return await ctx.send(fmt_new)
 
     @commands.command()
     async def ping(self, ctx):
@@ -169,7 +184,7 @@ class BotInfo:
     async def invite(self, ctx):
         """
         This command takes no arguments.
-        It can be used to generate an invite URL for me to your server.
+        It can be used to generate an invite URL for me to join your server.
         """
         perms = discord.Permissions.none()
         perms.create_instant_invite = True
@@ -199,6 +214,7 @@ class BotInfo:
         await ctx.send('Please click on this link to invite me to your server.\n'
                        + f'<{discord.utils.oauth_url(str(self.bot.common.botdiscordid), perms)}>')
 
+    # Yes, I know this command is a mess. I need to rewrite it.
     @commands.command(hidden=True, aliases=['botconfig', 'config'])
     @commands.has_permissions(manage_guild=True)
     @commands.guild_only()
@@ -207,6 +223,7 @@ class BotInfo:
         This command can only be used by users with the `manage_guild` permission or higher.
         This command accepts no arguments when calling it;
         Calling this command will begin the bot into a prompt with you about how to configure various options on this server.
+        At the end of the configuration, I will delete messages relating to the config as to not clog up the room with messages.
         """
         def checkauthor(m):
             return m.author == ctx.author and m.channel == ctx.channel
@@ -377,7 +394,7 @@ class DBotHelp:
         if str(cmd) == "help":
             return await ctx.send("Why are you trying to get help for help?")
         elif cmd is None and subcmd is None:
-            return await ctx.send("No command was specified.\nYou can see my help documentation at "
+            return await ctx.send("No command was specified.\nYou can see my overall help documentation at "
                                   "<https://personalwebsite.website/wiki/noodlebot>")
         elif cmd and not subcmd:
             mycmd = self.bot.get_command(cmd)

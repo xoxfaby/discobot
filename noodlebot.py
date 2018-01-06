@@ -2,7 +2,6 @@ import extensions.utils.common as common
 from extensions.utils.importsfile import *
 from extensions.utils.sqlcommands import InternalSQL
 from extensions.utils.bot_error_helpers import MyErrors
-# from extensions.utils.cache import BotCache
 
 
 class DBot(commands.Bot):
@@ -24,11 +23,15 @@ class DBot(commands.Bot):
 
 class Main:
     bot = DBot()
+    loaded_exts = 0
+    total_exts = len(bot.common.addons)
     for extension in bot.common.addons:
         try:
             bot.load_extension(extension)
+            loaded_exts += 1
         except Exception as e:
             print('{} failed to load.\n{}: {}'.format(extension, type(e).__name__, e))
+    print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())) + f': {loaded_exts}/{total_exts} have been loaded')
     bot.run(bot.common.discordbottoken)
     exit(0)
 

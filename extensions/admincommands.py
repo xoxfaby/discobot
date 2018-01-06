@@ -32,6 +32,9 @@ class AdminCommands:
     @commands.command(hidden=True)
     @commands.is_owner()
     async def botkill(self, ctx):
+        """
+        This makes the bot shut itself down.
+        """
         self.bot.common.logger.info('The botkill command was called at' +
                                     time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                                     + ' in ' + str(ctx.guild) + '-' + str(ctx.channel))
@@ -44,6 +47,9 @@ class AdminCommands:
 
     @commands.command(hidden=True)
     async def boatsay(self, ctx, *args):
+        """
+        Sekrit
+        """
         mesg = ' '.join(args)
         if str('Direct Message') not in str(ctx.channel):
             await ctx.message.delete()
@@ -51,6 +57,9 @@ class AdminCommands:
 
     @commands.command(hidden=True)
     async def adminbotsay(self, ctx, chanid, *args):
+        """
+        Sekrit
+        """
         mesg = ' '.join(args)
         if (str('Direct Message') not in str(ctx.channel)) and \
                 (str(ctx.channel.id) != str(self.bot.common.mainserverspamroom[0])):
@@ -130,55 +139,6 @@ class AdminTesting:
     async def fake(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send('Command not recognized')
-
-    @fake.command()
-    async def join_user(self, ctx):
-        self.bot.dispatch("member_join", ctx.author)
-
-    @fake.command()
-    async def part_user(self, ctx):
-        self.bot.dispatch("member_remove", ctx.author)
-
-    @fake.command()
-    async def join_guild(self, ctx):
-        guild = ctx.guild
-        self.bot.dispatch("guild_join", guild)
-
-    @fake.command()
-    async def part_guild(self, ctx):
-        guild = ctx.guild
-        self.bot.dispatch("guild_remove", guild)
-
-    @fake.command()
-    async def ban(self, ctx):
-        guild = ctx.guild
-        member = ctx.author
-        self.bot.dispatch("member_ban", guild, member)
-
-    @fake.command()
-    async def unban(self, ctx):
-        guild = ctx.guild
-        member = ctx.author
-        self.bot.dispatch("member_unban", guild, member)
-
-    @commands.command(hidden=True)
-    async def cogstuff(self):
-        cogs = self.bot.cogs
-        for cog in cogs:
-            cogcommands = self.bot.get_cog_commands(cog)
-            for s in cogcommands:
-                print(s)
-            print("\n\n\n")
-
-    @commands.command(hidden=True)
-    async def showtasks(self):
-        alltasks = asyncio.Task.all_tasks()
-        print(alltasks)
-
-    @commands.command(hidden=True)
-    async def walkcom(self):
-        for cmd in self.bot.walk_commands():
-            print(cmd)
 
     # @commands.command(hidden=True)
     # async def guildchans(self, ctx):

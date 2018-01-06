@@ -14,28 +14,29 @@ class LoopClass:
     async def loopstorun(self):
         # pass
         self.bot.loop.create_task(self.awoo())
-        # self.loop.create_task(self.servertakeover())
+        # self.loop.create_task(self.daychange())
+        # self.loop.create_task(self.mainguild_takeover())
 
     async def awoo(self):
         timerange = list(range(7200, 28800, 2))
-        awooarray = []
-        awoopath = os.path.join("internalfiles", "images", "smallawoo", "**")
-        fileexts = '.png', '.jpg', '.jpeg', '.gif'
-        for filename in glob.glob(str(awoopath), recursive=False):
-            if filename.endswith(fileexts):
-                awooarray += [str(filename)]
+        awoo_array = []
+        awoo_path = os.path.join("internalfiles", "images", "smallawoo", "**")
+        file_exts = '.png', '.jpg', '.jpeg', '.gif'
+        for filename in glob.glob(str(awoo_path), recursive=False):
+            if filename.endswith(file_exts):
+                awoo_array += [str(filename)]
         while not self.bot.is_closed():
             waittime = random.choice(timerange)
-            sqlcmd = await self.bot.sql.statement_get_awoolist()
+            sql_cmd = await self.bot.sql.statement_get_awoolist()
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor(aiomysql.DictCursor) as cursor:
-                    await cursor.execute(sqlcmd)
-                    chanlist = await cursor.fetchall()
-            for item in chanlist:
+                    await cursor.execute(sql_cmd)
+                    chan_list = await cursor.fetchall()
+            for item in chan_list:
                 for key, chanid in item.items():
-                    randomawoo = random.choice(awooarray)
-                    sendchan = self.bot.get_channel(id=int(chanid))
-                    await sendchan.send(file=discord.File(fp=randomawoo, filename="awoo.png"), content="awoo~")
+                    random_awoo = random.choice(awoo_array)
+                    send_chan = self.bot.get_channel(id=int(chanid))
+                    await send_chan.send(file=discord.File(fp=random_awoo, filename="awoo.png"), content="awoo~")
             await asyncio.sleep(waittime)
 
     async def daychange(self):
@@ -50,7 +51,7 @@ class LoopClass:
             else:
                 await asyncio.sleep(30)
 
-    # async def servertakeover(self):
+    # async def mainguild_takeover(self):
     #     midnightutc = str(time.strftime("0000"))
     #     channel = self.get_channel(id=mainservergeneralchan)
     #     mainserverobj = self.get_guild(mainserver)

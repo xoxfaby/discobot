@@ -9,27 +9,22 @@ class MainServer:
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
 
     async def on_guild_join(self, guild):
-        await self.guildlogger(guild, str("join"))
+        await self.guild_logger(guild, str("join"))
 
     async def on_guild_remove(self, guild):
-        await self.guildlogger(guild, str("leave"))
+        await self.guild_logger(guild, str("leave"))
 
-    async def guildlogger(self, guild, joinleave):
+    async def guild_logger(self, guild, joinleave):
         if str(guild.id) in self.bot.common.mainserver:
             return
         else:
-            if str(joinleave) == "join":
-                action = "was added to a new"
-            elif str(joinleave) == "leave":
-                action = "was removed from a"
-            else:
-                action = None
-            mainservermessage = ("!!!! ALART !!!!\nBoat was {7} server\nDate: {0}\n"
-                                 "Guild Name & ID: {1} --- {2}\nGuild Owner: {3} --- Owner ID: {4}\n"
-                                 "Guild Info: Size: {5} Users; Created: {6}")
-            content = mainservermessage.format(str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
-                                               str(guild.name), str(guild.id), str(guild.owner), str(guild.owner.id),
-                                               str(guild.member_count), str(guild.created_at), str(action))
+            mytime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+            action = {"join": "was added to a new", "leave": "was removed from a"}
+            mainservermessage = ("!!!! ALART !!!!\nBoat was {7} server\nDate: {0}\nGuild Name & ID: {1} --- {2}\n"
+                                 "Guild Owner: {3} --- Owner ID: {4}\nGuild Info: Size: {5} Users; Created: {6}")
+            content = mainservermessage.format(mytime, str(guild.name), str(guild.id), str(guild.owner),
+                                               str(guild.owner.id), str(guild.member_count), str(guild.created_at),
+                                               str(action[joinleave]))
             for channel in self.bot.common.mainserverlogchan:
                 chan = self.bot.get_channel(id=int(channel))
                 await chan.send(content)

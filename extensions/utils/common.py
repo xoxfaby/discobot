@@ -20,14 +20,8 @@ class CommonParams:
     trustedusers = (config['dbot']['trustedusers']).split(',')
 
     mainserver = (config['dbot']['mainserver']).split(',')
-    mainserverlogchan = (config['dbot']['mainserverlogchan']).split(',')
-    mainservervoicelogchan = (config['dbot']['mainservervoicelogchan']).split(',')
     mainserverjailrole = int(config['dbot']['mainserverjailrole'])
-    mainserverwelcomechan = (config['dbot']['mainserverwelcomechan']).split(',')
     mainserverafkchan = int(config['dbot']['mainserverafkchan'])
-    mainservergeneralchan = (config['dbot']['mainservergeneralchan']).split(',')
-    mainservermedialinks = (config['dbot']['mainservermedialinks']).split(',')
-    mainserverspamroom = (config['dbot']['mainserverspamroom']).split(',')
 
     mysqlserver = str(config['script']['mysqlserver'])
     mysqlport = int(config['script']['mysqlport'])
@@ -56,7 +50,7 @@ class CommonParams:
     if not botdescription:
         botdescription = 'discord pybot'
     if not discordbotcommandprefix:
-        discordbotcommandprefix = ","
+        discordbotcommandprefix = "!!"
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
     logpath = os.path.join(os.curdir, 'internalfiles', 'logger')

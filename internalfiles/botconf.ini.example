@@ -20,15 +20,10 @@ discordbotcommandprefix = ,
 botowner = your-discord-id
 trustedusers = id-of-trusted-users,
 mainserver = id-of-main-guild,
-mainserverlogchan = id-of-main-guild-log-channel,
-mainservervoicelogchan = id-of-main-guild-log-channel,
-mainservergeneralchan = id-of-main-guild-general-channel,
-mainserverwelcomechan = id-of-main-guild-welcome-channel,
 botdescription = discobot
 botdiscordid = userid-of-discordbot
-mainserverjailrole = id-of-jail-roie,
+mainserverjailrole = id-of-jail-role,
 mainserverafkchan = id-of-main-server-afk-voice-channel,
-mainservermedialinks = http://example.com
 mainserverspamroom = id-of-main-server-room-for-spam,
 
 [youtube]
