@@ -420,13 +420,13 @@ class Misc:
             embed.set_image(url=emoji_cdn)
             await ctx.send(embed=embed)
 
-    # def _wolf(self, query):
-    #     """ Non async WolframAlpha lib function """
-    #     wolframclient = wolframalpha.Client(self.bot.common.wolframapikey)
-    #     wolframquery = (" ".join(query))
-    #     results = wolframclient.query(wolframquery)
-    #     return results
-    #
+    def _wolf(self, query):
+        """ Non async WolframAlpha lib function """
+        wolframclient = wolframalpha.Client(self.bot.common.wolframapikey)
+        wolframquery = (" ".join(query))
+        results = wolframclient.query(wolframquery)
+        return results
+
     # @commands.command(aliases=['wolfram', 'alpha', 'calculate'])
     # async def wolframalpha(self, ctx, *, args):
     #     if not args:
@@ -434,7 +434,10 @@ class Misc:
     #     await ctx.trigger_typing()
     #     result = await self.bot.loop.run_in_executor(None, self._wolf, args)
     #     if result is not None:
-    #         await ctx.send(result)
+    #         pass
+    #         # do things with results
+    #         # result.pods, result.info, result.assumptions, result.warnings, result.results
+    #         # await ctx.send(result)
     #     else:
     #         raise self.bot.myerrors.DBotExternalError(f"Sorry, I couldn't calculate `{args}`.")
 
