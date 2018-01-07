@@ -13,7 +13,7 @@ class Misc:
             file = os.path.join("internalfiles", "images", args)
             return await ctx.send(file=discord.File(fp=file, filename=args))
 
-    @commands.group(hidden=True)
+    @commands.group(hidden=True, aliases=['links'])
     async def watch(self, ctx):
         """
         This command allows you to set a list of links that are unique to your discord guild/server.

@@ -9,6 +9,8 @@ class BotInternals:
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
 
     async def on_command_error(self, ctx, exception):
+        if ctx.author.bot:
+            return
         print(str(datetime.datetime.now()) + ': ' + str(exception))
         if isinstance(exception, self.bot.myerrors.DBotInternalError):
             return await ctx.send(content=exception)
@@ -134,7 +136,7 @@ class BotInfo:
         else:
             initialchannel = channel
         message = ("Hello! I am " + self.bot.common.botdescription + "\nThank you for joining me to this server, "
-                   "please run `" + self.bot.common.discordbotcommandprefix + "bogconfig` to run my setup for this "
+                   "please run `" + self.bot.common.discordbotcommandprefix + "botconfig` to run my setup for this "
                    "server.\nIn the setup we'll set things such as if and where you want welcome messages and other "
                    "features.\n**Please note, you will need `manage_guild` permissions on this guild in order to run`" +
                    self.bot.common.discordbotcommandprefix + "botconfig`**")
@@ -429,6 +431,11 @@ class DBotHelp:
 
 
 def setup(dbot):
+
+    @dbot.check
+    async def globally_ignore_bots(ctx):
+        return not ctx.author.bot
+
     dbot.remove_command("help")
     dbot.add_cog(DBotHelp(dbot))
     dbot.add_cog(BotInternals(dbot))
