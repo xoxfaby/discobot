@@ -19,7 +19,7 @@ class Load:
             if botmodule[0:11] != "extensions.":
                 fullmodule = "extensions." + botmodule
             self.bot.load_extension(fullmodule)
-            await ctx.send('✅ Extension loaded.')
+            await ctx.message.add_reaction('✅')
         except Exception as e:
             await ctx.send('💢 Failed!\n```\n{}: {}\n```'.format(type(e).__name__, botmodule))
 
@@ -35,7 +35,7 @@ class Load:
                 await ctx.send("❌ I don't think you want to unload that!")
             else:
                 self.bot.unload_extension(fullmodule)
-                await ctx.send('✅ Extension unloaded.')
+                await ctx.message.add_reaction('✅')
         except Exception as e:
             await ctx.send('💢 Failed!\n```\n{}: {}\n```'.format(type(e).__name__, botmodule))
 
@@ -54,7 +54,7 @@ class Load:
             for mod in loadedmods:
                 self.bot.unload_extension(mod)
                 self.bot.load_extension(mod)
-            await ctx.send('✅ All extensions have been reloaded.')
+            await ctx.message.add_reaction('✅')
         else:
             try:
                 fullmodule = ""
@@ -62,7 +62,7 @@ class Load:
                     fullmodule = "extensions." + dbotmodule
                 self.bot.unload_extension(fullmodule)
                 self.bot.load_extension(fullmodule)
-                await ctx.send('✅ Extension reloaded.')
+                await ctx.message.add_reaction('✅')
             except Exception as e:
                 await ctx.send('💢 Failed!\n```\n{}: {}\n```'.format(type(e).__name__, dbotmodule))
 
