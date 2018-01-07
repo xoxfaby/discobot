@@ -1,4 +1,8 @@
 from extensions.utils.importsfile import *
+# from extensions.utils.dbotchecks import check_main_server, check_trusted_user
+#
+# check_trusted_user = check_trusted_user
+# check_main_server = check_main_server
 
 
 class CommonParams:

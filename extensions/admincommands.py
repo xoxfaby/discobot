@@ -46,6 +46,7 @@ class AdminCommands:
         return await self.bot.logout()
 
     @commands.command(hidden=True)
+    # @commands.check(check_trusted_user)
     async def boatsay(self, ctx, *args):
         """
         Sekrit

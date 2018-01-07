@@ -142,12 +142,9 @@ class Misc:
 
     @commands.command(aliases=['w', 'W'], usage="[zipcode]")
     async def weather(self, ctx, zipcode=None):
-        authorid = ''
         if (zipcode is None) or ctx.message.mentions:
             if ctx.message.mentions:
-                mesg = ctx.message.mentions
-                for usermention in mesg:
-                    authorid = usermention.id
+                authorid = ctx.message.mentions[0].id
             else:
                 authorid = ctx.author.id
             sqlcmd = await self.bot.sql.statement_get_weather_single_user(authorid)
@@ -169,70 +166,68 @@ class Misc:
                                'default weather by using the `' + self.bot.common.discordbotcommandprefix +
                                'weatherset zipcode` command')
                     raise self.bot.myerrors.DBotInternalError(message)
-            else:
-                getlocation = str(getlocation)
         elif zipcode.isdigit():
             getlocation = str(zipcode)
         else:
             raise self.bot.myerrors.DBotInternalError("A zipcode or user mention was not given")
-        if getlocation:
-            tempfull = "http://api.wunderground.com/api/{0}/geolookup/conditions/radar/q/{1}.json"
-            fullurl = tempfull.format(self.bot.common.weatherapikey, getlocation)
-            tempradar = ("http://api.wunderground.com/api/{0}/animatedradar/q/{1}.gif"
-                         "?newmaps=1&timelabel=1&timelabel.y=10&num=8&delay=75")
-            radarimageurl = tempradar.format(self.bot.common.weatherapikey, getlocation)
-            weathercontent = discord.Embed()
-            parsed_json = {}
-            currentweather = ""
-            async with ctx.typing():
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(fullurl) as r:
-                        if r.status == 200:
-                            parsed_json = await r.json()
-                            location1 = str(parsed_json['current_observation']['display_location']['full'])
-                            location2 = str(parsed_json['current_observation']['display_location']['country_iso3166'])
-                            locationfull = str(f'{location1}, {location2}')
-                            temp = parsed_json['current_observation']['temperature_string']
-                            weburl = parsed_json['current_observation']['ob_url']
-                            currentweather = parsed_json['current_observation']['weather']
-                            lastupdated = (parsed_json['current_observation']['observation_time'] + " (Local time)")
-                            humidity = parsed_json['current_observation']['relative_humidity']
-                            wind = (str(parsed_json['current_observation']['wind_dir']) + ' at ' +
-                                    str(parsed_json['current_observation']['wind_mph']) + ' MPH, gusting to ' +
-                                    str(parsed_json['current_observation']['wind_gust_mph']) + ' MPH')
-                            weathercontent.title = str(locationfull)
-                            weathercontent.colour = discord.Color(0xd6f00c)
-                            weathercontent.url = str(weburl)
-                            weathercontent.add_field(name="Updated", value=str(lastupdated), inline=False)
-                            weathercontent.add_field(name="Current Conditions", value=str(currentweather), inline=False)
-                            weathercontent.add_field(name="Current Temperature", value=str(temp), inline=True)
-                            weathercontent.add_field(name="Humidity", value=str(humidity), inline=True)
-                            weathercontent.add_field(name="Wind", value=str(wind), inline=True)
-                radargiflocation = os.path.join("internalfiles", "temp",
-                                                (getlocation + "-" + time.strftime("%Y%m%d-%H%M%S") + "-radar.gif"))
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(radarimageurl) as resp:
-                        if resp.status == 200:
-                            gifout = await resp.read()
-                            with open(radargiflocation, "wb") as giffile:
-                                giffile.write(gifout)
-                        else:
-                            radarimagetemp = parsed_json['radar']['image_url']
-                            radarimageurl1 = radarimagetemp.replace("%26api_key=" + self.bot.common.weatherapikey,
-                                                                    "%26time1=" + time.strftime("%H%M%S"))
-                            async with session.get(radarimageurl1) as resp:
-                                if resp.status == 200:
-                                    gifout = await resp.read()
-                                    with open(radargiflocation, "wb") as giffile:
-                                        giffile.write(gifout)
-                    weathercontent.set_image(url='attachment://radar.gif')
-            if "fog" in currentweather.lower():
-                await ctx.send("```IT IS FOG```")
-                await asyncio.sleep(4)
-            elif "snow" in currentweather.lower():
-                await ctx.send("```FUCK SNOW```")
-                await asyncio.sleep(4)
-            await ctx.send(embed=weathercontent, file=discord.File(radargiflocation, 'radar.gif'))
+
+        tempfull = "http://api.wunderground.com/api/{0}/geolookup/conditions/radar/q/{1}.json"
+        fullurl = tempfull.format(self.bot.common.weatherapikey, getlocation)
+        tempradar = ("http://api.wunderground.com/api/{0}/animatedradar/q/{1}.gif?newmaps=1&timelabel=1&timelabel.y=10"
+                     "&num=8&delay=75")
+        radarimageurl = tempradar.format(self.bot.common.weatherapikey, getlocation)
+        weathercontent = discord.Embed()
+        parsed_json = {}
+        async with ctx.typing():
+            async with aiohttp.ClientSession() as session:
+                async with session.get(fullurl) as r:
+                    if r.status == 200:
+                        parsed_json = await r.json()
+                        location1 = str(parsed_json['current_observation']['display_location']['full'])
+                        location2 = str(parsed_json['current_observation']['display_location']['country_iso3166'])
+                        locationfull = str(f'{location1}, {location2}')
+                        temp = parsed_json['current_observation']['temperature_string']
+                        weburl = parsed_json['current_observation']['ob_url']
+                        currentweather = parsed_json['current_observation']['weather']
+                        lastupdated = (parsed_json['current_observation']['observation_time'] + " (Local time)")
+                        humidity = parsed_json['current_observation']['relative_humidity']
+                        wind = (f"{parsed_json['current_observation']['wind_dir']} at "
+                                f"{parsed_json['current_observation']['wind_mph']}  MPH, gusting to "
+                                f"{parsed_json['current_observation']['wind_gust_mph']} MPH"
+                                )
+                        weathercontent.title = str(locationfull)
+                        weathercontent.colour = discord.Color(0xd6f00c)
+                        weathercontent.url = str(weburl)
+                        weathercontent.add_field(name="Updated", value=str(lastupdated), inline=False)
+                        weathercontent.add_field(name="Current Conditions", value=str(currentweather), inline=False)
+                        weathercontent.add_field(name="Current Temperature", value=str(temp), inline=True)
+                        weathercontent.add_field(name="Humidity", value=str(humidity), inline=True)
+                        weathercontent.add_field(name="Wind", value=str(wind), inline=True)
+            radargiflocation = os.path.join("internalfiles", "temp",
+                                            (getlocation + "-" + time.strftime("%Y%m%d-%H%M%S") + "-radar.gif"))
+            async with aiohttp.ClientSession() as session:
+                async with session.get(radarimageurl) as resp:
+                    if resp.status == 200:
+                        gifout = await resp.read()
+                        with open(radargiflocation, "wb") as giffile:
+                            giffile.write(gifout)
+                    else:
+                        radarimagetemp = parsed_json['radar']['image_url']
+                        radarimageurl1 = radarimagetemp.replace("%26api_key=" + self.bot.common.weatherapikey,
+                                                                "%26time1=" + time.strftime("%H%M%S"))
+                        async with session.get(radarimageurl1) as resp:
+                            if resp.status == 200:
+                                gifout = await resp.read()
+                                with open(radargiflocation, "wb") as giffile:
+                                    giffile.write(gifout)
+                weathercontent.set_image(url='attachment://radar.gif')
+        if "fog" in currentweather.lower():
+            await ctx.send("```IT IS FOG```")
+            await asyncio.sleep(4)
+        elif "snow" in currentweather.lower():
+            await ctx.send("```FUCK SNOW```")
+            await asyncio.sleep(4)
+        await ctx.send(embed=weathercontent, file=discord.File(radargiflocation, 'radar.gif'))
 
     @commands.command(aliases=['ws'], usage=['[zipcode]'])
     async def weatherset(self, ctx, zipcode=None):
