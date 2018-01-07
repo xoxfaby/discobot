@@ -9,3 +9,6 @@ class MyErrors(commands.CommandError):
 
     class DBotExternalError(commands.CommandError):
         pass
+
+    class BotNotWorking(commands.CommandError):
+        pass
