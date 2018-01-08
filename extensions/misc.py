@@ -202,6 +202,8 @@ class Misc:
                         weathercontent.add_field(name="Current Temperature", value=str(temp), inline=True)
                         weathercontent.add_field(name="Humidity", value=str(humidity), inline=True)
                         weathercontent.add_field(name="Wind", value=str(wind), inline=True)
+                    else:
+                        return
             radargiflocation = os.path.join("internalfiles", "temp",
                                             (str(getlocation) + "-" + time.strftime("%Y%m%d-%H%M%S") + "-radar.gif"))
             async with aiohttp.ClientSession() as session:
@@ -214,11 +216,11 @@ class Misc:
                         radarimagetemp = parsed_json['radar']['image_url']
                         radarimageurl1 = radarimagetemp.replace("%26api_key=" + self.bot.common.weatherapikey,
                                                                 "%26time1=" + time.strftime("%H%M%S"))
-                        async with session.get(radarimageurl1) as resp:
-                            if resp.status == 200:
-                                gifout = await resp.read()
+                        async with session.get(radarimageurl1) as resp1:
+                            if resp1.status == 200:
+                                gifout1 = await resp.read()
                                 with open(radargiflocation, "wb") as giffile:
-                                    giffile.write(gifout)
+                                    giffile.write(gifout1)
                 weathercontent.set_image(url='attachment://radar.gif')
         if "fog" in currentweather.lower():
             await ctx.send("```IT IS FOG```")
