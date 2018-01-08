@@ -13,8 +13,8 @@ class Misc:
             file = os.path.join("internalfiles", "images", args)
             return await ctx.send(file=discord.File(fp=file, filename=args))
 
-    @commands.group(hidden=True, aliases=['links'])
-    async def watch(self, ctx):
+    @commands.group(hidden=True, aliases=['watch'])
+    async def links(self, ctx):
         """
         This command allows you to set a list of links that are unique to your discord guild/server.
         This list can be as large or small as you want.
@@ -22,7 +22,6 @@ class Misc:
         By calling `watch` by itself, I will print a list of registered links;
         By calling `watch add` and then listing a link or multiple links separated by spaces, I will add it to the stored list;
         By calling `watch remove` and then listing a link or multiple links separated by spaces, I will remove it from the stored list;
-        By calling `watch removeall` I will remove all stored links;
         """
         if ctx.invoked_subcommand is None:
             # check cache for media links per guild
@@ -57,7 +56,7 @@ class Misc:
             embed.add_field(name="_\n_", value=linktext)
             await ctx.send(embed=embed)
 
-    @watch.command()
+    @links.command()
     async def add(self, ctx, *args):
         cache_key = f'{str(ctx.guild.id)}_links'
         links = (" ".join(args)).split(" ")
@@ -78,7 +77,7 @@ class Misc:
         await self.bot.sql.mysqlcache.delete(key=cache_key)
         await ctx.send("Alright, I've added that to the database.")
 
-    @watch.command()
+    @links.command()
     async def remove(self, ctx, *args):
         cache_key = f'{str(ctx.guild.id)}_links'
         links = (" ".join(args)).split(" ")
@@ -100,7 +99,7 @@ class Misc:
         await self.bot.sql.mysqlcache.delete(key=cache_key)
         await ctx.send("Alright, I've removed the listed links from the database.")
 
-    @watch.command()
+    @links.command()
     async def removeall(self, ctx, *args):
         cache_key = f'{str(ctx.guild.id)}_links'
         await self.bot.sql.mysqlcache.delete(key=cache_key)
@@ -172,10 +171,10 @@ class Misc:
             raise self.bot.myerrors.DBotInternalError("A zipcode or user mention was not given")
 
         tempfull = "http://api.wunderground.com/api/{0}/geolookup/conditions/radar/q/{1}.json"
-        fullurl = tempfull.format(self.bot.common.weatherapikey, getlocation)
+        fullurl = tempfull.format(self.bot.common.weatherapikey, str(getlocation))
         tempradar = ("http://api.wunderground.com/api/{0}/animatedradar/q/{1}.gif?newmaps=1&timelabel=1&timelabel.y=10"
                      "&num=8&delay=75")
-        radarimageurl = tempradar.format(self.bot.common.weatherapikey, getlocation)
+        radarimageurl = tempradar.format(self.bot.common.weatherapikey, str(getlocation))
         weathercontent = discord.Embed()
         parsed_json = {}
         async with ctx.typing():
@@ -191,9 +190,9 @@ class Misc:
                         currentweather = parsed_json['current_observation']['weather']
                         lastupdated = (parsed_json['current_observation']['observation_time'] + " (Local time)")
                         humidity = parsed_json['current_observation']['relative_humidity']
-                        wind = (f"{parsed_json['current_observation']['wind_dir']} at "
-                                f"{parsed_json['current_observation']['wind_mph']}  MPH, gusting to "
-                                f"{parsed_json['current_observation']['wind_gust_mph']} MPH"
+                        wind = (f"{str(parsed_json['current_observation']['wind_dir'])} at "
+                                f"{str(parsed_json['current_observation']['wind_mph'])}  MPH, gusting to "
+                                f"{str(parsed_json['current_observation']['wind_gust_mph'])} MPH"
                                 )
                         weathercontent.title = str(locationfull)
                         weathercontent.colour = discord.Color(0xd6f00c)
@@ -204,7 +203,7 @@ class Misc:
                         weathercontent.add_field(name="Humidity", value=str(humidity), inline=True)
                         weathercontent.add_field(name="Wind", value=str(wind), inline=True)
             radargiflocation = os.path.join("internalfiles", "temp",
-                                            (getlocation + "-" + time.strftime("%Y%m%d-%H%M%S") + "-radar.gif"))
+                                            (str(getlocation) + "-" + time.strftime("%Y%m%d-%H%M%S") + "-radar.gif"))
             async with aiohttp.ClientSession() as session:
                 async with session.get(radarimageurl) as resp:
                     if resp.status == 200:
@@ -405,6 +404,7 @@ class Misc:
 
     @commands.command(aliases=['bigmoji', 'bemoji', 'big'])
     async def bigemoji(self, ctx, emoji):
+        discord.PartialReactionEmoji()
         try:
             newemoji = await commands.EmojiConverter().convert(ctx, emoji)
         except commands.BadArgument:
@@ -445,40 +445,39 @@ class EtcOnMessage:
 
     async def on_message(self, message):
         if (message.content.startswith(self.bot.common.discordbotcommandprefix)) or \
-                (str(message.author.id) == str(self.bot.common.botdiscordid)):
+                (str(message.author.id) == str(self.bot.common.botdiscordid)) or (message.author.bot == True):
             return
-        else:
-            alphabet = {"bmoji": u"\U0001f171", "oksymbol": str("👌"), "fire": str("🔥")}
-            msg = message.content
-            if msg.lower().startswith('ok google') or msg.lower().startswith('okay google'):
-                if msg.lower().startswith('ok google'):
-                    subreplace = re.compile('ok google ', re.IGNORECASE)
-                    newmsg = subreplace.sub("", msg)
-                elif msg.lower().startswith('okay google'):
-                    subreplace = re.compile('okay google ', re.IGNORECASE)
-                    newmsg = subreplace.sub("", msg)
-                else:
-                    newmsg = msg
-                newmesg1 = newmsg.replace(" ", "+")
-                googleurl = (str("https://www.google.com/search?q=") + str(newmesg1))
-                await message.channel.send(str(googleurl))
-            if alphabet["oksymbol"] in msg:
-                firemsg = ""
-                numberoffire = random.randrange(0, 5)
-                if numberoffire == 0:
-                    await message.channel.send("That was not fire at all")
-                else:
-                    for _ in range(numberoffire):
-                        firemsg += alphabet["fire"]
-                    await message.channel.send(firemsg)
-            # if :
-            #     for char in alphabet.keys():
-            #         if char in msg:
-            #             bmsg = msg.replace(char, alphabet[char])
-            #         elif char.upper() in msg:
-            #             bmsg = msg.replace(char.upper(), alphabet[char])
-            #         if msg != message.content:
-            #             await message.send(content=bmsg)
+        alphabet = {"bmoji": u"\U0001f171", "oksymbol": str("👌"), "fire": str("🔥")}
+        msg = message.content
+        if msg.lower().startswith('ok google') or msg.lower().startswith('okay google'):
+            if msg.lower().startswith('ok google'):
+                subreplace = re.compile('ok google ', re.IGNORECASE)
+                newmsg = subreplace.sub("", msg)
+            elif msg.lower().startswith('okay google'):
+                subreplace = re.compile('okay google ', re.IGNORECASE)
+                newmsg = subreplace.sub("", msg)
+            else:
+                newmsg = msg
+            newmesg1 = newmsg.replace(" ", "+")
+            googleurl = (str("https://www.google.com/search?q=") + str(newmesg1))
+            await message.channel.send(str(googleurl))
+        if alphabet["oksymbol"] in msg:
+            firemsg = ""
+            numberoffire = random.randrange(0, 5)
+            if numberoffire == 0:
+                await message.channel.send("That was not fire at all")
+            else:
+                for _ in range(numberoffire):
+                    firemsg += alphabet["fire"]
+                await message.channel.send(firemsg)
+        # if :
+        #     for char in alphabet.keys():
+        #         if char in msg:
+        #             bmsg = msg.replace(char, alphabet[char])
+        #         elif char.upper() in msg:
+        #             bmsg = msg.replace(char.upper(), alphabet[char])
+        #         if msg != message.content:
+        #             await message.send(content=bmsg)
 
 
 def setup(dbot):
