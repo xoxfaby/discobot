@@ -60,6 +60,7 @@ class ImageMemes:
         DO
         NOT
         """
+
         rabbitquestion = bool(random.getrandbits(1))
         if rabbitquestion:
             await self._randomfilechoice(ctx, "rabbit")
@@ -239,10 +240,17 @@ class TextMemes:
 
     @commands.command()
     async def ohgod(self, ctx):
+        """
+        Oh god
+        """
         await ctx.send("ヾ( ﾟДﾟ)ﾉ")
 
     @commands.command()
     async def hug(self, ctx):
+        """
+        Hugs somebody
+        You can mention a user or not
+        """
         if ctx.message.mentions:
             message = f'You need a huggu {ctx.message.mentions[0].mention}~ <3\n(づ｡◕‿‿◕｡)づ'
         else:
@@ -256,6 +264,12 @@ class TextMemes:
 
     @commands.command(aliases=['gay'])
     async def determinegay(self, ctx, *args):
+        """
+        Determines the amount of gay that somebody is;
+        Command is NSFW
+        Accepts a user mention, a string of text, or no arguments
+        If no arguments are specified, the bot selects a random user from the guild
+        """
         with open(os.path.join("internalfiles", 'content', 'textshit', 'gayarray.txt'), mode='r') as infile:
             gayarray = infile.read().split("\n")
         if ctx.message.mentions:
@@ -393,8 +407,10 @@ class TextMemes:
         """
         To invoke the hivemind
         """
-        if str('Direct Message') not in str(ctx.channel):
+        try:
             await ctx.message.delete()
+        except:
+            pass
         partialurl = "https://zalgo.io/api?text="
         mesg = ' '.join(args)
         query = mesg.replace(" ", "+")
@@ -409,6 +425,9 @@ class TextMemes:
 
     @commands.command()
     async def same(self, ctx):
+        """
+        Same
+        """
         try:
             await ctx.message.delete()
         except:
@@ -417,6 +436,9 @@ class TextMemes:
 
     @commands.command()
     async def unsame(self, ctx):
+        """
+        Unsame
+        """
         try:
             await ctx.message.delete()
         except:
@@ -425,6 +447,9 @@ class TextMemes:
 
     @commands.command()
     async def resame(self, ctx):
+        """
+        re:same
+        """
         try:
             await ctx.message.delete()
         except:

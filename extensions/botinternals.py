@@ -21,7 +21,7 @@ class BotInternals:
         elif isinstance(exception, commands.errors.CheckFailure):
             return await ctx.send(content='You do not have the permissions to perform this command.')
         elif isinstance(exception, commands.errors.CommandNotFound):
-            return await ctx.send(content="Command not recognized")
+            return
         elif isinstance(exception, commands.errors.BadArgument):
             return await ctx.send(content="You have provided an invalid argument for this command")
         elif isinstance(exception, commands.errors.UserInputError):
@@ -151,12 +151,12 @@ class BotInfo:
         embed.add_field(name="Web URL", value="[Boat Wiki](https://personalwebsite.website/wiki/noodlebot)")
         embed.set_thumbnail(
             url='https://cdn.discordapp.com/app-icons/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png')
-        embed.add_field(name="Creator", value="`noodle#4660`", inline=False)
+        embed.add_field(name="Creator", value="`noodle#4660`")
         embed.add_field(name="Invite", value="[Invite URL]"
                                              "(https://discordapp.com/oauth2/authorize?client_id=340802627887693825"
-                                             "&scope=bot&permissions=1610083543)", inline=False)
-        embed.add_field(name="Bot Prefix", value="`,` (Comma)", inline=False)
-        embed.add_field(name="Source", value="[Github](https://github.com/jwshields/discobot)", inline=False)
+                                             "&scope=bot&permissions=1610083543)")
+        embed.add_field(name="Bot Prefix", value="`,` (Comma)")
+        embed.add_field(name="Source", value="[Github](https://github.com/jwshields/discobot)")
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -205,12 +205,9 @@ class BotInfo:
         perms.read_message_history = True
         perms.mention_everyone = True
         perms.external_emojis = True
-        perms.connect = True
-        perms.speak = True
         perms.mute_members = True
         perms.deafen_members = True
         perms.move_members = True
-        perms.use_voice_activation = True
         perms.change_nickname = True
         perms.manage_nicknames = True
         perms.manage_roles = True
@@ -422,9 +419,9 @@ class DBotHelp:
                 return
         else:
             return
-        embed = discord.Embed(title="Bot Help", colour=discord.Colour(0x3ba6c9), url=url)
-        embed.set_thumbnail(
-            url="https://cdn.discordapp.com/avatars/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png?size=1024")
+        embed = discord.Embed(title="Bot Help", colour=discord.Colour(0x3ba6c9))
+        # embed.set_thumbnail(
+        #     url="https://cdn.discordapp.com/avatars/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png?size=1024")
         embed.add_field(name=f'Command: `{mycmd}`', value=helptext)
         embed.add_field(name="URL", value=f'<{url}>')
         await ctx.send(embed=embed)
