@@ -409,20 +409,26 @@ class TextMemes:
 
     @commands.command()
     async def same(self, ctx):
-        if str('Direct Message') not in str(ctx.channel):
+        try:
             await ctx.message.delete()
+        except:
+            pass
         await ctx.send('```[✓] same\n[ ] unsame```')
 
     @commands.command()
     async def unsame(self, ctx):
-        if str('Direct Message') not in str(ctx.channel):
+        try:
             await ctx.message.delete()
+        except:
+            pass
         await ctx.send('```[ ] same\n[✓] unsame```')
 
     @commands.command()
     async def resame(self, ctx):
-        if str('Direct Message') not in str(ctx.channel):
+        try:
             await ctx.message.delete()
+        except:
+            pass
         await ctx.send('```[✓] same\n[✓] re:same\n[ ] unsame```')
 
     @commands.command(aliases=['wide', 'fullwidth', 'aesthetic'])
@@ -430,8 +436,10 @@ class TextMemes:
         """ Make your message ａｅｓｔｈｅｔｉｃ"""
         ascii_to_wide = dict((i, chr(i + 0xfee0)) for i in range(0x21, 0x7f))
         ascii_to_wide.update({0x20: u'\u3000', 0x2D: u'\u2212'})
-        if str('Direct Message') not in str(ctx.channel):
+        try:
             await ctx.message.delete()
+        except:
+            pass
         await ctx.send(f'{a_text.translate(ascii_to_wide)}')
 
 

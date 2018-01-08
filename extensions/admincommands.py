@@ -11,7 +11,10 @@ class AdminCommands:
     @commands.command()
     @commands.has_permissions(manage_messages=True)
     async def deletebotmessages(self, ctx, num):
-        await ctx.message.delete()
+        try:
+            await ctx.message.delete()
+        except:
+            pass
         limit = int(0)
         async for msg in ctx.history(limit=100, before=ctx.message):
             if msg.author == ctx.me:
@@ -25,7 +28,10 @@ class AdminCommands:
     async def purge(self, ctx):
         mesg = ctx.message.content.split(" ")
         limit = mesg[1]
-        await ctx.message.delete()
+        try:
+            await ctx.message.delete()
+        except:
+            pass
         await ctx.channel.purge(limit=int(limit))
         return await ctx.send(content='Deleted ' + str(limit) + ' message(s)')
 
@@ -52,8 +58,10 @@ class AdminCommands:
         Sekrit
         """
         mesg = ' '.join(args)
-        if str('Direct Message') not in str(ctx.channel):
+        try:
             await ctx.message.delete()
+        except:
+            pass
         return await ctx.send(mesg)
 
     @commands.command(hidden=True)
@@ -166,6 +174,11 @@ class AdminTesting:
     # async def guildicon(self, ctx):
     #     icon = ctx.guild.icon_url
     #     print(icon)
+
+    @commands.command()
+    async def walkcommands(self, ctx):
+        for cmd in self.bot.walk_commands():
+            print(cmd)
 
 
 def setup(dbot):

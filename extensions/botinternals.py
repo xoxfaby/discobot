@@ -431,11 +431,9 @@ class DBotHelp:
 
 
 def setup(dbot):
-
     @dbot.check
     async def globally_ignore_bots(ctx):
         return not ctx.author.bot
-
     dbot.remove_command("help")
     dbot.add_cog(DBotHelp(dbot))
     dbot.add_cog(BotInternals(dbot))
