@@ -3,6 +3,7 @@ import extensions.utils.common as common
 from extensions.utils.importsfile import *
 from extensions.utils.sqlcommands import InternalSQL
 from extensions.utils.bot_error_helpers import MyErrors
+from extensions.utils.utilfuncs import UtilFuncs
 
 
 class DBot(commands.Bot):
@@ -13,6 +14,7 @@ class DBot(commands.Bot):
         self.common = common.CommonParams()
         self.sql = InternalSQL(self)
         self.myerrors = MyErrors()
+        self.utils = UtilFuncs(self)
 
     async def on_ready(self):
         self.common.logger.info('\nLogged in as %s, id: %s', str(self.user.name), str(self.user.id))

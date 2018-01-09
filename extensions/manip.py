@@ -27,60 +27,55 @@ class ImageManipulation:
                             msglist += [url]
         return msglist
 
-    # async def _corrupt_img(self, ctx):
-    #     async with aiohttp.ClientSession() as sess:
-    #         async with sess.get(imglist[0]) as resp:
-    #             if resp.status == 200:
-    #                 filename, fileext = os.path.splitext(imglist[0])
-    #                 if fileext != ".jpg":
-    #                     raise self.bot.myerrors.BotNotWorking("Image needs to be a jpg\n"
-    #                                                           "Currently other conversions are not working properly.")
-    #                     # resp1 = await resp.read()
-    #                     # im = await Image.open(resp1)
-    #                     # print("after read")
-    #                     # rgb_im = im.convert()
-    #                     # print("before convert")
-    #                     # imglocation = os.path.join("internalfiles", "temp",
-    #                     #                            (time.strftime("%Y%m%d-%H%M%S") + "-new.jpg"))
-    #                     # await rgb_im.save(imglocation)
-    #                     # async with aiofiles.open(imglocation) as newread:
-    #                     #     img_buff = await newread.read()
-    #                 else:
-    #                     imglocation = os.path.join("internalfiles", "temp",
-    #                                                (time.strftime("%Y%m%d-%H%M%S") + "-original" + fileext))
-    #                     img_buff = await resp.read()
-    #                 async with aiofiles.open(imglocation, "wb") as img_file:
-    #                     await img_file.write(img_buff)
-    #                 imglocation1 = os.path.join("internalfiles", "temp",
-    #                                             (time.strftime("%Y%m%d-%H%M%S") + "-corrupt.jpg"))
-    #                 async with aiofiles.open(imglocation, 'rb') as input_image:
-    #                     img = await input_image.read()
-    #                     tobend = bndr.Bndr(img)
-    #                     async with aiofiles.open(imglocation1, 'wb') as out_image:
-    #                         outimage = tobend.process(bndr.ChrisBend())
-    #                         await out_image.write(outimage)
-    #                 await ctx.send(file=discord.File(fp=imglocation1, filename="bent.jpg"))
-    #             else:
-    #                 raise self.bot.myerrors.DBotExternalError("Bad image was given")
+    def _corrupt_img(self, fileext, imagebytes):
+        if fileext != ".jpg":
+            raise self.bot.myerrors.BotNotWorking("Image needs to be a jpg\nCurrently other conversions are not "
+                                                  "working properly.\nMy apologies for the inconvenience.")
+    #         # resp1 = await resp.read()
+    #         # im = await Image.open(resp1)
+    #         # print("after read")
+    #         # rgb_im = im.convert()
+    #         # print("before convert")
+    #         # imglocation = os.path.join("internalfiles", "temp",
+    #         #                            (time.strftime("%Y%m%d-%H%M%S") + "-new.jpg"))
+    #         # await rgb_im.save(imglocation)
+    #         # async with aiofiles.open(imglocation) as newread:
+    #         #     img_buff = yield from resp.content.read()
+        else:
+            imglocation = os.path.join("internalfiles", "temp",
+                                       (time.strftime("%Y%m%d-%H%M%S") + "-original" + fileext))
+        with open(imglocation, "wb") as img_file:
+            img_file.write(imagebytes)
+        imglocation1 = os.path.join("internalfiles", "temp",
+                                    (time.strftime("%Y%m%d-%H%M%S") + "-corrupt.jpg"))
+    #     test_img_to_str = str(img_buff)
+    #     tobend = bndr.Bndr(test_img_to_str)
+    #     with open(imglocation1, 'w') as out_image:
+    #         outimage = tobend.process(bndr.ChrisBend())
+    #         out_image.write(outimage)
+    #     return imglocation1
+    #     # await ctx.send(file=discord.File(fp=imglocation1, filename="bent.jpg"))
     #     # for i in range(random.randint(5, 25)):
     #     #     img_buff[random.randint(0, len(img_buff))] = random.randint(1, 254)
     #     # await ctx.send(file=discord.File(io.BytesIO(img_buff), filename="corrupt.jpg"))
-    #
-    # @commands.command()
-    # async def corrupt(self, ctx, *args):
-    #     """Corrupt an image"""
-    #     imglist = await self._get_recent_images_links(ctx)
-    #     if not imglist:
-    #         raise self.bot.myerrors.DBotExternalError("No images have been posted in the last 25 messages that I "
-    #                                                   "could use.")
-    #     result = await self.bot.loop.run_in_executor(None, self._corrupt_img, args)
-    #     # if result is not None:
-    #     #     pass
-    #     #     # do things with results
-    #     #     # result.pods, result.info, result.assumptions, result.warnings, result.results
-    #     #     # await ctx.send(result)
-    #     # else:
-    #     #     raise self.bot.myerrors.DBotExternalError(f"Sorry, I couldn't calculate `{args}`.")
+
+    @commands.command()
+    async def corrupt(self, ctx):
+        """Corrupt an image"""
+        imglist = await self._get_recent_images_links(ctx)
+        if not imglist:
+            raise self.bot.myerrors.DBotExternalError("No images have been posted in the last 25 messages that I "
+                                                      "could use.")
+        filename, fileext = os.path.splitext(imglist[0])
+        imgbytes = await self.bot.utils._bytes_download(imglist[0])
+        result = await self.bot.loop.run_in_executor(None, self._corrupt_img, fileext, imgbytes)
+        if result is not None:
+            print(result)
+            # do things with results
+            # result.pods, result.info, result.assumptions, result.warnings, result.results
+            # await ctx.send(result)
+        else:
+            raise self.bot.myerrors.DBotExternalError(f"Sorry, the resulting image had an error.")
 
 def setup(dbot):
     dbot.add_cog(ImageManipulation(dbot))
