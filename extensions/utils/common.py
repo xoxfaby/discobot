@@ -46,6 +46,7 @@ class CommonParams:
               'extensions.load',
               'extensions.memecommands',
               'extensions.misc',
+              'extensions.manip',
               'extensions.loops'
               ]
 

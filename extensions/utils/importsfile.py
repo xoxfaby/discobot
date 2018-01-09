@@ -1,6 +1,6 @@
 import asyncio, datetime, glob, hashlib, logging, os, random, time, aiohttp, discord, multiprocessing, re
 import configparser, sys, gzip, json, dataset, io, wolframalpha, strawpoll, janus, aioprocessing, threading
-import pprint, aiomysql, sqlalchemy, csv, builtins, numpy, psutil, aiocache
+import pprint, aiomysql, sqlalchemy, csv, builtins, numpy, psutil, aiocache, base64, bndr, aiofiles
 from discord.ext import commands
 from stuf import stuf
 import PIL
