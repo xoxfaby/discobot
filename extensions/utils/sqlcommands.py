@@ -65,8 +65,8 @@ class InternalSQL:
         content = str(ctx.content)
         messageid = str(ctx.id)
         if ctx.attachments:
-            attachmenturl = ','.join([str(at.url) for at in ctx.attachments])
-            attachmentfilename = ','.join([str(at.filename) for at in ctx.attachments])
+            attachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
+            attachmentfilename = ', '.join([str(at.filename) for at in ctx.attachments])
         else:
             attachmenturl = "None"
             attachmentfilename = "None"
@@ -93,10 +93,10 @@ class InternalSQL:
         aftercontent = str(aftermessage.content)
         messageid = str(ctx.id)
         if ctx.attachments:
-            beforeattachmenturl = ','.join([str(at.url) for at in ctx.attachments])
-            beforeattachmentfilename = ','.join([str(at.filename) for at in ctx.attachments])
-            afterattachmenturl = ','.join([str(at.url) for at in ctx.attachments])
-            afterattachmentfilename = ','.join([str(at.filename) for at in ctx.attachments])
+            beforeattachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
+            beforeattachmentfilename = ', '.join([str(at.filename) for at in ctx.attachments])
+            afterattachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
+            afterattachmentfilename = ', '.join([str(at.filename) for at in ctx.attachments])
         else:
             beforeattachmenturl = "None"
             beforeattachmentfilename = "None"
@@ -127,8 +127,8 @@ class InternalSQL:
         messageid = str(ctx.id)
         originalcreate = str(ctx.created_at)
         if ctx.attachments:
-            attachmenturl = ','.join([str(at.url) for at in ctx.attachments])
-            attachmentfilename = ','.join([str(at.filename) for at in ctx.attachments])
+            attachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
+            attachmentfilename = ', '.join([str(at.filename) for at in ctx.attachments])
         else:
             attachmenturl = "None"
             attachmentfilename = "None"
@@ -151,8 +151,8 @@ class InternalSQL:
         content = str(ctx.content)
         messageid = str(ctx.id)
         if ctx.attachments:
-            attachmenturl = ','.join([str(at.url) for at in ctx.attachments])
-            attachmentfilename = ','.join([str(at.filename) for at in ctx.attachments])
+            attachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
+            attachmentfilename = ', '.join([str(at.filename) for at in ctx.attachments])
         else:
             attachmenturl = "None"
             attachmentfilename = "None"
@@ -175,10 +175,10 @@ class InternalSQL:
         aftercontent = str(aftermessage.content)
         messageid = str(ctx.id)
         if ctx.attachments:
-            beforeattachmenturl = ','.join([str(at.url) for at in ctx.attachments])
+            beforeattachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
             beforeattachmentfilename = ','.join([str(at.filename) for at in ctx.attachments])
-            afterattachmenturl = ','.join([str(at.url) for at in ctx.attachments])
-            afterattachmentfilename = ','.join([str(at.filename) for at in ctx.attachments])
+            afterattachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
+            afterattachmentfilename = ', '.join([str(at.filename) for at in ctx.attachments])
         else:
             beforeattachmenturl = "None"
             beforeattachmentfilename = "None"
@@ -205,8 +205,8 @@ class InternalSQL:
         originalsendtime = str(ctx.created_at)
         messageid = str(ctx.id)
         if ctx.attachments:
-            attachmenturl = ','.join([str(at.url) for at in ctx.attachments])
-            attachmentfilename = ','.join([str(at.filename) for at in ctx.attachments])
+            attachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
+            attachmentfilename = ', '.join([str(at.filename) for at in ctx.attachments])
         else:
             attachmenturl = "None"
             attachmentfilename = "None"
@@ -426,8 +426,8 @@ class InternalSQL:
         """
         new_query = configquery.format(self.bot.common.mysqldb)
         query_data = (guildid, isconfigged, initialchan, whoconfiged, configtime, enablelogging, welcomechanbool,
-                     adminlogchanbool, voicelogchanbool, welcomechan, adminlogchan, voicelogchan, awoochan, enableawoos,
-                     partmessage, joinmessage)
+                      adminlogchanbool, voicelogchanbool, welcomechan, adminlogchan, voicelogchan, awoochan,
+                      enableawoos, partmessage, joinmessage)
         return new_query, query_data
 
     async def statement_get_server_config(self, guild):

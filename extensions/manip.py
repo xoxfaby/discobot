@@ -9,7 +9,7 @@ class ImageManipulation:
         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
 
-    async def _get_recent_images(self, ctx):
+    async def _get_recent_images_links(self, ctx):
         msglist = []
         async for message in ctx.channel.history(limit=25, reverse=False):
             if message.attachments:
@@ -27,26 +27,7 @@ class ImageManipulation:
                             msglist += [url]
         return msglist
 
-    # async def _get_content_of_channel(self, ctx):
-    #     tmp1 = ''
-    #     async for message in ctx.channel.history(limit=25, reverse=False):
-    #         if message.content:
-    #             tmp = message.content
-    #             for char in tmp:
-    #                 tmp1 += char + message.content[::-1] + char + message.content[0:50] + message.content[::-1] + char
-    #     newmsgstr = tmp1 + tmp1[::-1]
-    #     print(len(newmsgstr))
-    #     newstr = base64.b64encode(newmsgstr.encode('utf-8'))
-    #     print(len(newstr))
-    #
-    #     await ctx.send(file=discord.File(io.BytesIO(newimage), filename="lol.jpg"))
-    #
-    # @commands.command()
-    # async def corrupt(self, ctx, *args):
-    #     """Corrupt an image"""
-    #     imglist = await self._get_recent_images(ctx)
-    #     if not imglist:
-    #         raise self.bot.myerrors.DBotExternalError("No images have been posted recently that I could use.")
+    # async def _corrupt_img(self, ctx):
     #     async with aiohttp.ClientSession() as sess:
     #         async with sess.get(imglist[0]) as resp:
     #             if resp.status == 200:
@@ -84,7 +65,22 @@ class ImageManipulation:
     #     # for i in range(random.randint(5, 25)):
     #     #     img_buff[random.randint(0, len(img_buff))] = random.randint(1, 254)
     #     # await ctx.send(file=discord.File(io.BytesIO(img_buff), filename="corrupt.jpg"))
-
+    #
+    # @commands.command()
+    # async def corrupt(self, ctx, *args):
+    #     """Corrupt an image"""
+    #     imglist = await self._get_recent_images_links(ctx)
+    #     if not imglist:
+    #         raise self.bot.myerrors.DBotExternalError("No images have been posted in the last 25 messages that I "
+    #                                                   "could use.")
+    #     result = await self.bot.loop.run_in_executor(None, self._corrupt_img, args)
+    #     # if result is not None:
+    #     #     pass
+    #     #     # do things with results
+    #     #     # result.pods, result.info, result.assumptions, result.warnings, result.results
+    #     #     # await ctx.send(result)
+    #     # else:
+    #     #     raise self.bot.myerrors.DBotExternalError(f"Sorry, I couldn't calculate `{args}`.")
 
 def setup(dbot):
     dbot.add_cog(ImageManipulation(dbot))
