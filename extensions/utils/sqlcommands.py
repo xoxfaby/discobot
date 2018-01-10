@@ -17,7 +17,7 @@ class InternalSQL:
         else:
             pass
         self.mysqlcon = await aiomysql.create_pool(host=self.bot.common.mysqlserver, port=self.bot.common.mysqlport,
-                                                   user=self.bot.common.mysqluser, minsize=5, maxsize=100,
+                                                   user=self.bot.common.mysqluser, minsize=10, maxsize=250,
                                                    use_unicode=True, password=self.bot.common.mysqlpw, db=schema,
                                                    autocommit=True, charset='utf8mb4')
 
