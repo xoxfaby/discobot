@@ -408,15 +408,27 @@ class InternalSQL:
         guildid = str(ctx.guild.id)
         whoconfiged = str(ctx.author)
         initialchan = str(channellist[0].id)
-        welcomechan = str(channellist[1].id)
-        adminlogchan = str(channellist[2].id)
-        voicelogchan = str(channellist[3].id)
-        awoochan = str(channellist[4].id)
         enableawoos = bool(responses[4])
         enablelogging = bool(responses[0])
         welcomechanbool = bool(responses[1])
         adminlogchanbool = bool(responses[2])
         voicelogchanbool = bool(responses[3])
+        if enableawoos:
+            awoochan = str(channellist[4].id)
+        else:
+            awoochan = None
+        if welcomechanbool:
+            welcomechan = str(channellist[1].id)
+        else:
+            welcomechan = None
+        if adminlogchanbool:
+            adminlogchan = str(channellist[2].id)
+        else:
+            adminlogchan = None
+        if voicelogchanbool:
+            voicelogchan = str(channellist[3].id)
+        else:
+            voicelogchan = None
         isconfigged = 1
         configquery = """
         REPLACE INTO `{0}`.`_serverconfig` (`guild-id`, `isconfigged`, `initialchannel`, `whoconfiged`, `lastconfiged`, 
