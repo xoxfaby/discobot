@@ -76,24 +76,104 @@ class AdminCommands:
         customchannel = self.bot.get_channel(id=int(chanid))
         return await customchannel.send(mesg)
 
-    @commands.group(aliases=['server'])
-    async def manage(self, ctx):
-        if ctx.invoked_subcommand is None:
-            await ctx.send("No subcommand was given")
-
-    @manage.group(aliases=['roles'])
-    @commands.has_permissions(manage_roles=True)
-    async def role(self, ctx):
-        if ctx.invoked_subcommand is None:
-            await ctx.send("No subcommand was given")
-
-    @role.command()
-    async def color(self, ctx, role, *color):
+    async def _role_getter(self, ctx, role):
         if not ctx.message.role_mentions:
             role = role.replace("@","")
             mentioned_roles = await commands.RoleConverter().convert(ctx, role)
         else:
             mentioned_roles = ctx.message.role_mentions
+        return mentioned_roles
+
+    async def _user_getter(self, ctx, user):
+        if not ctx.message.mentions:
+            mentioned_users = await commands.UserConverter().convert(ctx, user)
+        else:
+            mentioned_users = ctx.message.mentions
+        return mentioned_users
+
+    @commands.group()
+    async def guildinfo(self, ctx):
+        if ctx.invoked_subcommand is None:
+            embed = discord.Embed(title="Guild Information")
+            embed.add_field(name="Guild Name", value=f'{ctx.guild.name}', inline=True)
+            embed.add_field(name="Guild ID", value=f'{ctx.guild.id}', inline=True)
+            embed.add_field(name="Guild Region", value=f'{ctx.guild.region}', inline=True)
+            embed.add_field(name="Number of Users", value=f'{len(ctx.guild.members)}', inline=True)
+            guildicon = ctx.guild.icon_url_as(format='png', size=1024)
+            embed.add_field(name="Guild Icon", value="_\n_")
+            embed.set_image(url=guildicon)
+            return await ctx.send(embed=embed)
+
+    @guildinfo.command()
+    async def userinfo(self, ctx, user):
+        mentioned_users = await self._user_getter(ctx, user)
+        embed = discord.Embed(Title="User Information")
+        if isinstance(mentioned_users, list):
+            membername = mentioned_users[0].display_name
+            memberid = mentioned_users[0].id
+            userrole = mentioned_users[0].top_role
+            useravatar = mentioned_users[0].avatar_url_as(format='jpg', size=1024)
+            userjoineddisco = mentioned_users[0].created_at
+            userjoinedguild = mentioned_users[0].joined_at
+        elif isinstance(mentioned_users, discord.Member):
+            membername = mentioned_users.display_name
+            memberid = mentioned_users.id
+            userrole = mentioned_users.top_role
+            useravatar = mentioned_users.avatar_url_as(format='jpg', size=1024)
+            userjoineddisco = mentioned_users.created_at
+            userjoinedguild = mentioned_users.joined_at
+        else:
+            return
+        embed.add_field(name="Member Name", value=str(membername))
+        embed.add_field(name="Member ID", value=str(memberid))
+        embed.add_field(name="Top Role of User", value=str(userrole.name))
+        embed.add_field(name="Joined Discord", value=str(userjoineddisco))
+        embed.add_field(name="Joined this Guild/Server", value=str(userjoinedguild))
+        embed.add_field(name="User Avatar", value="_\n_")
+        embed.set_image(url=useravatar)
+        return await ctx.send(embed=embed)
+
+    @guildinfo.command()
+    async def roleinfo(self, ctx, role):
+        mentioned_roles = await self._role_getter(ctx, role)
+        embed = discord.Embed(title="Role Information")
+        if isinstance(mentioned_roles, list):
+            rolecolor = mentioned_roles[0].color
+            mention = mentioned_roles[0].mention
+            numusers = len(mentioned_roles[0].members)
+            roleid = str(mentioned_roles[0].id)
+            rolename = str(mentioned_roles[0].name)
+            rolecreated = str(mentioned_roles[0].created_at)
+        elif isinstance(mentioned_roles, discord.Role):
+            rolecolor = mentioned_roles.color
+            mention = mentioned_roles.mention
+            numusers = len(mentioned_roles.members)
+            roleid = str(mentioned_roles.id)
+            rolename = str(mentioned_roles.name)
+            rolecreated = str(mentioned_roles.created_at)
+        else:
+            return
+        embed.add_field(name="Role Name", value=str(rolename), inline=True)
+        embed.add_field(name="Role ID", value=str(roleid), inline=True)
+        embed.add_field(name="Numer of users with role", value=str(numusers), inline=False)
+        embed.add_field(name="Role Color", value=str(rolecolor), inline=False)
+        embed.add_field(name="Created at", value=str(rolecreated), inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.group(aliases=['server'])
+    async def manage(self, ctx):
+        if ctx.invoked_subcommand is None:
+            raise self.bot.myerrors.DBotExternalError("No subcommand was given")
+
+    @manage.group(aliases=['roles'])
+    @commands.has_permissions(manage_roles=True)
+    async def role(self, ctx):
+        if ctx.invoked_subcommand is None:
+            raise self.bot.myerrors.DBotExternalError("No subcommand was given")
+
+    @role.command()
+    async def color(self, ctx, role, *color):
+        mentioned_roles = await self._role_getter(ctx, role)
         if not color:
             mesg = ''
             if isinstance(mentioned_roles, list):
