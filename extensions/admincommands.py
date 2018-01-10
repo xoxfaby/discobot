@@ -76,40 +76,45 @@ class AdminCommands:
         customchannel = self.bot.get_channel(id=int(chanid))
         return await customchannel.send(mesg)
 
-    @commands.group()
-    @commands.has_permissions(manage_roles=True)
-    async def managerole(self, ctx):
+    @commands.group(aliases=['server'])
+    async def manage(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send("No subcommand was given")
 
-    @managerole.command()
-    async def color(self, ctx, *role):
-        def checkresponse(m):
-            return (m.author == ctx.author) and (m.channel == ctx.channel) and \
-                   (response.content == keys for keys in availablecolors)
-        availablecolors = {
-            'default': 0, 'teal': 0x1abc9c, 'dark_teal': 0x11806a, 'green': 0x2ecc71, 'dark_green': 0x1f8b4c,
-            'blue': 0x3498db, 'dark_blue': 0x206694, 'purple': 0x9b59b6, 'dark_purple': 0x71368a, 'magenta': 0xe91e63,
-            'dark_magenta': 0xad1457, 'gold': 0xf1c40f, 'dark_gold': 0xc27c0e, 'orange': 0xe67e22,
-            'dark_orange': 0xa84300, 'red': 0xe74c3c, 'dark_red': 0x992d22, 'dark_grey': 0x607d8b,
-            'light_grey': 0x979c9f, 'darker_grey': 0x546e7a, 'blurple': 0x7289da, 'greyple': 0x99aab5
-        }
-        messagelist = []
-        colorlist = ''
-        for key in availablecolors:
-            colorlist += f'{key}, '
-        mentioned_roles = ctx.message.role_mentions
-        mymessage = await ctx.send(f'What color would you like to change the role {mentioned_roles[0].mention} to?\n'
-                                   f'Available colors: {str(colorlist)}')
-        response = await self.bot.wait_for('message', check=checkresponse, timeout=60)
-        color = discord.Color(availablecolors[response.content])
-        messagelist.append(response)
-        messagelist.append(mymessage)
-        for role in mentioned_roles:
-            await role.edit(color=color)
-            await ctx.message.add_reaction('✅')
-            await ctx.channel.delete_messages(messagelist)
-        return
+    @manage.group(aliases=['roles'])
+    @commands.has_permissions(manage_roles=True)
+    async def role(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send("No subcommand was given")
+
+    @role.command()
+    async def color(self, ctx, role, *color):
+        if not ctx.message.role_mentions:
+            role = role.replace("@","")
+            mentioned_roles = await commands.RoleConverter().convert(ctx, role)
+        else:
+            mentioned_roles = ctx.message.role_mentions
+        if not color:
+            mesg = ''
+            if isinstance(mentioned_roles, list):
+                for role in mentioned_roles:
+                    mesg += f"Current color for {role.mention}: {role.color}\n"
+                return await ctx.send(mesg)
+            elif isinstance(mentioned_roles, discord.Role):
+                mesg = f"Current color for {mentioned_roles.mention}: {mentioned_roles.color}\n"
+                return await ctx.send(mesg)
+        else:
+            color1 = ''.join(color)
+            color1 = color1.replace("#","")
+            newcolor = discord.Color(int(color1, 16))
+            if type(newcolor) == discord.Color:
+                if isinstance(mentioned_roles, list):
+                    for role in mentioned_roles:
+                        await role.edit(color=newcolor)
+                        return await ctx.message.add_reaction('✅')
+                elif isinstance(mentioned_roles, discord.Role):
+                    await mentioned_roles.edit(color=newcolor)
+                    return await ctx.message.add_reaction('✅')
 
     # @commands.command(hidden=True)
     # @commands.is_owner()

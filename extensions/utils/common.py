@@ -46,8 +46,8 @@ class CommonParams:
               'extensions.load',
               'extensions.memecommands',
               'extensions.misc',
-              'extensions.manip'
-              # 'extensions.loops'
+              'extensions.manip',
+              'extensions.loops'
               ]
 
     uptime = datetime.datetime.utcnow()
