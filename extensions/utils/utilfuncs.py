@@ -10,15 +10,15 @@ class UtilFuncs:
         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
 
-    async def _bytes_download(self, url: str):
+    async def _retrieve_web_file(self, url: str, savelocation):
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as resp:
                     if resp.status == 200:
                         data = await resp.read()
-                        b = io.BytesIO(data)
-                        b.seek(0)
-                        return b
+                        with open(savelocation, "wb") as file:
+                            file.write(data)
+                        return data
                     else:
                         return None
         except:
