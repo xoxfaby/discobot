@@ -100,7 +100,7 @@ class AdminCommands:
             embed.add_field(name="Guild Region", value=f'{ctx.guild.region}', inline=True)
             embed.add_field(name="Number of Users", value=f'{len(ctx.guild.members)}', inline=True)
             guildicon = ctx.guild.icon_url_as(format='png', size=1024)
-            embed.add_field(name="Guild Icon", value="_\n_")
+            embed.add_field(name="Guild Icon", value="_\n_", inline=False)
             embed.set_image(url=guildicon)
             return await ctx.send(embed=embed)
 
@@ -129,7 +129,7 @@ class AdminCommands:
         embed.add_field(name="Top Role of User", value=str(userrole.name))
         embed.add_field(name="Joined Discord", value=str(userjoineddisco))
         embed.add_field(name="Joined this Guild/Server", value=str(userjoinedguild))
-        embed.add_field(name="User Avatar", value="_\n_")
+        embed.add_field(name="User Avatar", value="_\n_", inline=False)
         embed.set_image(url=useravatar)
         return await ctx.send(embed=embed)
 
@@ -170,6 +170,26 @@ class AdminCommands:
     async def role(self, ctx):
         if ctx.invoked_subcommand is None:
             raise self.bot.myerrors.DBotExternalError("No subcommand was given")
+
+    @role.command()
+    async def rolename(self, ctx, role, *rolename):
+        mentioned_roles = await self._role_getter(ctx, role)
+        if not rolename:
+            mesg = f'No new name was submitted for role: {0}'
+            if isinstance(mentioned_roles, list):
+                mesg = mesg.format(mentioned_roles[0].mention)
+            elif isinstance(mentioned_roles, discord.Role):
+                mesg = mesg.format(mentioned_roles.mention)
+            raise self.bot.myerrors.DBotExternalError(mesg)
+        else:
+            newname = ''.join(rolename)
+            if isinstance(mentioned_roles, list):
+                for role in mentioned_roles:
+                    await role.edit(name=newname)
+                    return await ctx.message.add_reaction('✅')
+            elif isinstance(mentioned_roles, discord.Role):
+                await mentioned_roles.edit(name=newname)
+                return await ctx.message.add_reaction('✅')
 
     @role.command()
     async def color(self, ctx, role, *color):
