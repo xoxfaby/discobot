@@ -227,8 +227,7 @@ class BotInfo:
         At the end of the configuration, I will delete messages relating to the config as to not clog up the room with messages.
         """
         def checkauthor(m):
-            return m.author == ctx.author and m.channel == ctx.channel
-        botconfigscript = []
+            return (m.author == ctx.author) and (m.channel == ctx.channel) and (m.conent != "cancel")
         with open(os.path.join("extensions", "utils", "botconfig-lines.txt"), encoding='utf-8', mode='r') as infile:
             botconfigscript = infile.read().split("%%\n")
         yesanswerlist = ['yes', 'y', 'true', 'yeah', 'yup', '1', 't']

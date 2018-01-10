@@ -1,6 +1,7 @@
 Beginning the bot configuration for server: {0}
 After the configuration is done, I will delete my messages so as to not clutter up the channel with noise.
 Please note: each question has a timeout of 60 seconds, if you do not answer within that time, you will need to restart the configuration.
+If you want to exit out of the configuration, type "cancel"
 %%
 As a note, I am marking this channel as the 'initial' channel for this server
 If my creator needs to send an announcement to all servers I am joined to, I will send the message to this channel;

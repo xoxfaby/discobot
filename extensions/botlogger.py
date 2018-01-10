@@ -36,7 +36,7 @@ class BotLoggerDB:
                     else:
                         create_cmd = await self.bot.sql.statement_create_table(table_type, table_name)
                         await cursor.execute(create_cmd)
-            await self.bot.sql.mysqlcache.add(namespace="mysql", key=table_name, value=True)
+                        await self.bot.sql.mysqlcache.add(namespace="mysql", key=table_name, value=True)
             return
 
     async def download_attachment(self, ctx):
