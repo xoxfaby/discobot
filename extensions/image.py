@@ -5,8 +5,7 @@ class ImageManipulation:
     """Image memes"""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     # async def _get_recent_images_links(self, ctx):
     #     msglist = []
@@ -89,7 +88,7 @@ class ImageManipulation:
     #     """Corrupt an image"""
     #     imglist = await self._get_recent_images_links(ctx)
     #     if not imglist:
-    #         raise self.bot.myerrors.DBotExternalError("No images have been posted in the last 25 messages that I "
+    #         raise self.bot.errors.DBotExternalError("No images have been posted in the last 25 messages that I "
     #                                                   "could use.")
     #     imagefilename = (imglist[0]).split('/')[-1].strip().split(".")
     #     imglocation = os.path.join(os.curdir, "internalfiles", "temp", "corrupt", str(time.strftime("%Y%m%d-%H%M%S") +
@@ -101,7 +100,7 @@ class ImageManipulation:
     #     if result is not None:
     #         await ctx.send(file=discord.File(fp=result, filename="corrupt.jpg"))
     #     else:
-    #         raise self.bot.myerrors.DBotExternalError(f"Sorry, there was an error on processing the image.")
+    #         raise self.bot.errors.DBotExternalError(f"Sorry, there was an error on processing the image.")
 
 
 def setup(dbot):

@@ -4,8 +4,7 @@ from extensions.utils.importsfile import *
 class InternalSQL:
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
         self.mysqlcache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="mysql")
         self.bot.loop.create_task(self.mysqlstart())
 
@@ -270,15 +269,15 @@ class InternalSQL:
         else:
             voicechannelname = str(after.channel)
             voicechannelid = str(after.channel.id)
-        SQLQuery = """INSERT INTO `{0}`.`{1}_voice` (`time`, `guild-id`, `guild-name`, `user-id`, `user-name`,
+        sql_query = """INSERT INTO `{0}`.`{1}_voice` (`time`, `guild-id`, `guild-name`, `user-id`, `user-name`,
         `voicechannel-id`, `voicechannel-name`, `selfdeaf`, `selfmute`, `serverdeaf`, `servermute`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
-        NewQuery = SQLQuery.format(self.bot.common.mysqldb, guildid)
-        QueryData = (msgtime, guildid, guildname, memberid, membername, voicechannelid, voicechannelname, selfdeaf,
-                     selfmute, serverdeaf, servermute)
+        new_query = sql_query.format(self.bot.common.mysqldb, guildid)
+        query_data = (msgtime, guildid, guildname, memberid, membername, voicechannelid, voicechannelname, selfdeaf,
+                      selfmute, serverdeaf, servermute)
         tablename = str(guildid + "_voice")
-        return NewQuery, tablename, QueryData
+        return new_query, tablename, query_data
 
     async def statement_insert_guild_member(self, member, secondaryargs, guild):
         msgtime = str(datetime.datetime.now())
@@ -287,14 +286,14 @@ class InternalSQL:
         userid = str(member.id)
         username = str(member)
         action = str(secondaryargs)
-        SQLQuery = """
+        sql_query = """
         INSERT INTO `{0}`.`{1}_memberlog` (`time`, `guild-id`, `guild-name`, `user-id`, `user-name`, `action`)
         VALUES (%s, %s, %s, %s, %s, %s);
         """
-        NewQuery = SQLQuery.format(self.bot.common.mysqldb, guildid)
-        QueryData = (msgtime, guildid, guildname, userid, username, action)
+        new_query = sql_query.format(self.bot.common.mysqldb, guildid)
+        query_data = (msgtime, guildid, guildname, userid, username, action)
         tablename = str(guildid + "_memberlog")
-        return NewQuery, tablename, QueryData
+        return new_query, tablename, query_data
 
     async def statement_insert_guild_log(self, guild, joinleave):
         msgtime = str(datetime.datetime.now())
@@ -304,9 +303,7 @@ class InternalSQL:
         guildownername = str(guild.owner)
         guildownerid = str(guild.owner.id)
         numusersonjoin = str(guild.member_count)
-        guildcreatedUTC = str(guild.created_at)
-        NewQuery = ''
-        QueryData = ()
+        guildcreatedutc = str(guild.created_at)
         leavetime = None
         if joinleave == str("join"):
             guildquery = """
@@ -314,49 +311,51 @@ class InternalSQL:
             `guild-owner-id`, `number-users-on-join`, `guild-created-date-UTC`, `leavetime`)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
-            NewQuery = guildquery.format(self.bot.common.mysqldb)
-            QueryData = (msgtime, guildid, guildname, largeguild, guildownername, guildownerid,
-                         numusersonjoin, guildcreatedUTC, leavetime)
+            new_query = guildquery.format(self.bot.common.mysqldb)
+            query_data = (msgtime, guildid, guildname, largeguild, guildownername, guildownerid,
+                          numusersonjoin, guildcreatedutc, leavetime)
         elif joinleave == str("leave"):
             leavetime = str(datetime.datetime.now())
             guildquery = """
             UPDATE `{0}`.`_guildlog` SET `leavetime` = %s WHERE `guildid` = %s
             """
-            NewQuery = guildquery.format(self.bot.common.mysqldb)
-            QueryData = (leavetime, guildid)
+            new_query = guildquery.format(self.bot.common.mysqldb)
+            query_data = (leavetime, guildid)
+        else:
+            return
         tablename = str("_guildlog")
-        return NewQuery, tablename, QueryData
+        return new_query, tablename, query_data
 
     async def statement_create_table(self, table_type, table_name):
         if table_type == "voice":
-            sqlFilename = "CREATE-voice.sql"
+            sql_filename = "CREATE-voice.sql"
         elif table_type == "member-list":
-            sqlFilename = "CREATE-member-list.sql"
+            sql_filename = "CREATE-member-list.sql"
         elif table_type == "member-log":
-            sqlFilename = "CREATE-member-log.sql"
+            sql_filename = "CREATE-member-log.sql"
         elif table_type == "dm-new":
-            sqlFilename = "CREATE-dm-message.sql"
+            sql_filename = "CREATE-dm-message.sql"
         elif table_type == "dm-edited":
-            sqlFilename = "CREATE-dm-edited.sql"
+            sql_filename = "CREATE-dm-edited.sql"
         elif table_type == "dm-deleted":
-            sqlFilename = "CREATE-dm-deleted.sql"
+            sql_filename = "CREATE-dm-deleted.sql"
         elif table_type == "channel-new":
-            sqlFilename = "CREATE-messages.sql"
+            sql_filename = "CREATE-messages.sql"
         elif table_type == "channel-edited":
-            sqlFilename = "CREATE-edited.sql"
+            sql_filename = "CREATE-edited.sql"
         elif table_type == "channel-deleted":
-            sqlFilename = "CREATE-deleted.sql"
+            sql_filename = "CREATE-deleted.sql"
         else:
-            sqlFilename = None
-        if sqlFilename is None:
-            pass
+            sql_filename = None
+        if sql_filename is None:
+            return None
         else:
-            infile = open(os.path.join("extensions", "db", sqlFilename), 'r')
-            sqlFile = infile.read()
+            infile = open(os.path.join("extensions", "db", sql_filename), 'r')
+            sql_file = infile.read()
             infile.close()
-            sqlCommands1 = sqlFile.replace("tablename", table_name)
-            sqlCommands = sqlCommands1.replace("mysqldb", self.bot.common.mysqldb)
-            return sqlCommands
+            sql_commands1 = sql_file.replace("tablename", table_name)
+            sql_commands = sql_commands1.replace("mysqldb", self.bot.common.mysqldb)
+            return sql_commands
 
     async def statement_insert_encountered_users(self):
         sql_query = """
@@ -477,8 +476,7 @@ class InternalSQL:
 # class MySQLFramework:
 #     def __init__(self, bot):
 #         self.bot = bot
-#         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-#               + ': Addon "{}" loaded'.format(self.__class__.__name__))
+#         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 #
 #     async def tablecreate(self):
 #         pass

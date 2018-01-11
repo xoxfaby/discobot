@@ -5,8 +5,7 @@ class ImageMemes:
     """Image memes"""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     async def _randomfilechoice(self, ctx, args: str):
         async with ctx.typing():
@@ -215,8 +214,7 @@ class TextMemes:
     """Meme commands"""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     @commands.command()
     async def gface(self, ctx):
@@ -421,7 +419,7 @@ class TextMemes:
                     response = await r.text()
                     await ctx.send(response)
                 else:
-                    raise self.bot.myerrors.DBotExternalError("An error occurred when invoking the hivemind.")
+                    raise self.bot.errors.DBotExternalError("An error occurred when invoking the hivemind.")
 
     @commands.command()
     async def same(self, ctx):
@@ -466,7 +464,6 @@ class TextMemes:
         except:
             pass
         await ctx.send(f'{a_text.translate(ascii_to_wide)}')
-
 
 
 def setup(dbot):

@@ -5,8 +5,7 @@ class AdminCommands:
     """Admin shit"""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
@@ -78,7 +77,7 @@ class AdminCommands:
 
     async def _role_getter(self, ctx, role):
         if not ctx.message.role_mentions:
-            role = role.replace("@","")
+            role = role.replace("@", "")
             mentioned_roles = await commands.RoleConverter().convert(ctx, role)
         else:
             mentioned_roles = ctx.message.role_mentions
@@ -139,14 +138,12 @@ class AdminCommands:
         embed = discord.Embed(title="Role Information")
         if isinstance(mentioned_roles, list):
             rolecolor = mentioned_roles[0].color
-            mention = mentioned_roles[0].mention
             numusers = len(mentioned_roles[0].members)
             roleid = str(mentioned_roles[0].id)
             rolename = str(mentioned_roles[0].name)
             rolecreated = str(mentioned_roles[0].created_at)
         elif isinstance(mentioned_roles, discord.Role):
             rolecolor = mentioned_roles.color
-            mention = mentioned_roles.mention
             numusers = len(mentioned_roles.members)
             roleid = str(mentioned_roles.id)
             rolename = str(mentioned_roles.name)
@@ -163,13 +160,13 @@ class AdminCommands:
     @commands.group(aliases=['server'])
     async def manage(self, ctx):
         if ctx.invoked_subcommand is None:
-            raise self.bot.myerrors.DBotExternalError("No subcommand was given")
+            raise self.bot.errors.DBotExternalError("No subcommand was given")
 
     @manage.group(aliases=['roles'])
     @commands.has_permissions(manage_roles=True)
     async def role(self, ctx):
         if ctx.invoked_subcommand is None:
-            raise self.bot.myerrors.DBotExternalError("No subcommand was given")
+            raise self.bot.errors.DBotExternalError("No subcommand was given")
 
     @role.command()
     async def rolename(self, ctx, role, *rolename):
@@ -180,7 +177,7 @@ class AdminCommands:
                 mesg = mesg.format(mentioned_roles[0].mention)
             elif isinstance(mentioned_roles, discord.Role):
                 mesg = mesg.format(mentioned_roles.mention)
-            raise self.bot.myerrors.DBotExternalError(mesg)
+            raise self.bot.errors.DBotExternalError(mesg)
         else:
             newname = ''.join(rolename)
             if isinstance(mentioned_roles, list):
@@ -205,7 +202,7 @@ class AdminCommands:
                 return await ctx.send(mesg)
         else:
             color1 = ''.join(color)
-            color1 = color1.replace("#","")
+            color1 = color1.replace("#", "")
             newcolor = discord.Color(int(color1, 16))
             if type(newcolor) == discord.Color:
                 if isinstance(mentioned_roles, list):
@@ -280,8 +277,7 @@ class AdminTesting:
     """Testing commands lol"""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     @commands.group(hidden=True)
     @commands.is_owner()

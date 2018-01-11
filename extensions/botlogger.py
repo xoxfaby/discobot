@@ -5,8 +5,7 @@ class BotLoggerDB:
     """Logger Class"""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     async def on_command_completion(self, ctx):
         sql_cmd, query_data = await self.bot.sql.statement_insert_cmdtable(ctx)

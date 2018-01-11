@@ -5,16 +5,15 @@ class BotInternals:
     """Bot Internal Shit"""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     async def on_command_error(self, ctx, exception):
         if ctx.author.bot:
             return
         print(str(datetime.datetime.now()) + ': ' + str(exception))
-        if isinstance(exception, self.bot.myerrors.DBotInternalError):
+        if isinstance(exception, self.bot.errors.DBotInternalError):
             return await ctx.send(content=exception)
-        elif isinstance(exception, self.bot.myerrors.DBotExternalError):
+        elif isinstance(exception, self.bot.errors.DBotExternalError):
             return await ctx.send(content=exception)
         elif isinstance(exception, commands.errors.NotOwner):
             return await ctx.send(content="You do not have the permissions to perform this command.")
@@ -26,10 +25,10 @@ class BotInternals:
             return await ctx.send(content="You have provided an invalid argument for this command")
         elif isinstance(exception, commands.errors.UserInputError):
             return await ctx.send(content="You have provided an invalid input for this command")
-        elif isinstance(exception, self.bot.myerrors.BotNotWorking):
+        elif isinstance(exception, self.bot.errors.BotNotWorking):
             return await ctx.send(content=exception)
         else:
-            return await ctx.send(content='Command not recognized')
+            return await ctx.send(content='An unknown error has occurred.')
 
     async def on_voice_state_update(self, member, before, after):
         if str(before.channel) == str(after.channel):
@@ -119,8 +118,7 @@ class BotInfo:
     """Bot Information and configuration"""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     async def on_guild_join(self, guild):
         channel = guild.system_channel
@@ -140,7 +138,10 @@ class BotInfo:
                    "server.\nIn the setup we'll set things such as if and where you want welcome messages and other "
                    "features.\n**Please note, you will need `manage_guild` permissions on this guild in order to run`" +
                    self.bot.common.discordbotcommandprefix + "botconfig`**")
-        await initialchannel.send(message)
+        try:
+            await initialchannel.send(message)
+        except:
+            return
 
     @commands.command()
     async def info(self, ctx):
@@ -182,7 +183,7 @@ class BotInfo:
         t1 = time.perf_counter()
         await ctx.channel.trigger_typing()
         t2 = time.perf_counter()
-        await ctx.channel.send("pseudo-ping: {}ms".format(round((t2-t1)*1000)))
+        await ctx.channel.send(f"pseudo-ping: {round((t2-t1)*1000))}ms")
 
     @commands.command(description="This command can be used to invite the bot to a server")
     async def invite(self, ctx):
@@ -231,7 +232,6 @@ class BotInfo:
         with open(os.path.join("extensions", "utils", "botconfig-lines.txt"), encoding='utf-8', mode='r') as infile:
             botconfigscript = infile.read().split("%%\n")
         yesanswerlist = ['yes', 'y', 'true', 'yeah', 'yup', '1', 't']
-        noanswerlist = ['no', 'n', 'negative', 'false', 'nope', '0', 'f']
         configmessagelist = []
         configmessagelist1 = []
 
@@ -383,8 +383,7 @@ class DBotHelp:
     """Bot help replacement"""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     @commands.command(hidden=True)
     async def help(self, ctx, cmd=None, subcmd=None):

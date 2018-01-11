@@ -90,8 +90,7 @@ class UtilFuncs:
     # Mostly making this cog for small things like aiohttp downloads and file reading/writing
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     async def retrieve_web_file(self, url: str, savelocation):
         try:
@@ -105,7 +104,7 @@ class UtilFuncs:
                     else:
                         return None
         except:
-            raise self.bot.myerrors.DBotExternalError("Failed to retreive requested file.")
+            raise self.bot.errors.DBotExternalError("Failed to retreive requested file.")
 
 
 class MyErrors(commands.CommandError):

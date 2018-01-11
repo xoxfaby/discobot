@@ -7,8 +7,7 @@ class Load:
     """
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -21,7 +20,7 @@ class Load:
             self.bot.load_extension(fullmodule)
             await ctx.message.add_reaction('✅')
         except Exception as e:
-            await ctx.send('💢 Failed!\n```\n{}: {}\n```'.format(type(e).__name__, botmodule))
+            await ctx.send(f'💢 Failed!\n```\n{type(e).__name__}: {botmodule}\n```')
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -37,7 +36,7 @@ class Load:
                 self.bot.unload_extension(fullmodule)
                 await ctx.message.add_reaction('✅')
         except Exception as e:
-            await ctx.send('💢 Failed!\n```\n{}: {}\n```'.format(type(e).__name__, botmodule))
+            await ctx.send(f'💢 Failed!\n```\n{type(e).__name__}: {botmodule}\n```')
 
     @commands.command(hidden=True, aliases=['reload'])
     @commands.is_owner()
@@ -64,7 +63,7 @@ class Load:
                 self.bot.load_extension(fullmodule)
                 await ctx.message.add_reaction('✅')
             except Exception as e:
-                await ctx.send('💢 Failed!\n```\n{}: {}\n```'.format(type(e).__name__, dbotmodule))
+                await ctx.send(f'💢 Failed!\n```\n{type(e).__name__}: {dbotmodule}\n```')
 
     @commands.command(name='listextensions', hidden=True)
     @commands.is_owner()

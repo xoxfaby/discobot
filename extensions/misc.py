@@ -5,8 +5,7 @@ class Misc:
     """Miscellaneous commands for the bot."""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     async def _internalfile(self, ctx, args: str):
         async with ctx.typing():
@@ -45,7 +44,7 @@ class Misc:
                         await cursor.execute(sql_cmd)
                         num_rows = cursor.rowcount
                         if num_rows == 0:
-                            raise self.bot.myerrors.DBotInternalError("Error: this server has no stored links.")
+                            raise self.bot.errors.DBotInternalError("Error: this server has no stored links.")
                         else:
                             linksvalue = await cursor.fetchall()
                             await self.bot.sql.mysqlcache.add(key=cache_key, value=linksvalue)
@@ -100,7 +99,7 @@ class Misc:
         await ctx.send("Alright, I've removed the listed links from the database.")
 
     @links.command()
-    async def removeall(self, ctx, *args):
+    async def removeall(self, ctx):
         cache_key = f'{str(ctx.guild.id)}_links'
         await self.bot.sql.mysqlcache.delete(key=cache_key)
         guildid = str(ctx.guild.id)
@@ -158,17 +157,17 @@ class Misc:
             if getlocation is None:
                 if ctx.message.mentions:
                     message = "The mentioned user has not set their default weather;\nplease try again."
-                    raise self.bot.myerrors.DBotInternalError(message)
+                    raise self.bot.errors.DBotInternalError(message)
                 else:
                     message = ('Please use a zip code when calling this function\n Example: `' +
                                self.bot.common.discordbotcommandprefix + 'weather 98104`\nYou could also set your '
                                'default weather by using the `' + self.bot.common.discordbotcommandprefix +
                                'weatherset zipcode` command')
-                    raise self.bot.myerrors.DBotInternalError(message)
+                    raise self.bot.errors.DBotInternalError(message)
         elif zipcode.isdigit():
             getlocation = str(zipcode)
         else:
-            raise self.bot.myerrors.DBotInternalError("A zipcode or user mention was not given")
+            raise self.bot.errors.DBotInternalError("A zipcode or user mention was not given")
 
         tempfull = "http://api.wunderground.com/api/{0}/geolookup/conditions/radar/q/{1}.json"
         fullurl = tempfull.format(self.bot.common.weatherapikey, str(getlocation))
@@ -176,7 +175,6 @@ class Misc:
                      "&num=8&delay=75")
         radarimageurl = tempradar.format(self.bot.common.weatherapikey, str(getlocation))
         weathercontent = discord.Embed()
-        parsed_json = {}
         async with ctx.typing():
             async with aiohttp.ClientSession() as session:
                 async with session.get(fullurl) as r:
@@ -233,18 +231,17 @@ class Misc:
     @commands.command(aliases=['ws'], usage=['[zipcode]'])
     async def weatherset(self, ctx, zipcode=None):
         if zipcode is None:
-            raise self.bot.myerrors.DBotInternalError("You did not pass a zipcode when calling this command.\nExample: "
-                                                      "`" + self.bot.common.discordbotcommandprefix +
-                                                      "weatherset 98104`")
+            raise self.bot.errors.DBotInternalError(f'You did not pass a zipcode when calling this command.\nExample: '
+                                                    f'`{self.bot.common.discordbotcommandprefix}weatherset 98104`')
         elif zipcode.isdigit():
             sqlquery = await self.bot.sql.statement_upsert_weathertable(str(ctx.author.id), str(zipcode))
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     await cursor.execute(sqlquery)
-            return await ctx.send('Your default weather has been set\nIn the future, you can run `'
-                                  + self.bot.common.discordbotcommandprefix + 'w` to retrieve your local weather')
+            return await ctx.send(f'Your default weather has been set\nIn the future, you can run '
+                                  f'`{self.bot.common.discordbotcommandprefix}w` to retrieve your local weather')
         else:
-            raise self.bot.myerrors.DBotInternalError("A proper zip code was not specified")
+            raise self.bot.errors.DBotInternalError("A proper zip code was not specified")
 
     @commands.command(aliases=['poll'])
     async def straw(self, ctx, *args):
@@ -328,7 +325,7 @@ class Misc:
                     parsed_json = await r.json()
                     await ctx.send(parsed_json['file'])
                 else:
-                    raise self.bot.myerrors.DBotExternalError("An error occurred when calling random.cat")
+                    raise self.bot.errors.DBotExternalError("An error occurred when calling random.cat")
 
     @commands.command(aliases=['yt'])
     async def youtube(self, ctx, *args):
@@ -356,7 +353,7 @@ class Misc:
                         fullurl.append("https://youtu.be/" + result['id']['videoId'])
                         itemcontents.append(str(result['id']['videoId']))
                 else:
-                    raise self.bot.myerrors.DBotExternalError("An error occurred when calling Youtube")
+                    raise self.bot.errors.DBotExternalError("An error occurred when calling Youtube")
         contentslist = ",".join(itemcontents)
         newurl = f'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&' \
                  f'key={self.bot.common.youtubeapikey}&id={contentslist}'
@@ -368,8 +365,8 @@ class Misc:
                     for result in items:
                         templength = (str(result['contentDetails']['duration']).strip("PT"))
                         if "H" in templength:
-                            newlength = templength.replace("H"," hours,").replace("M", " minutes, ").replace("S",
-                                                                                                             " seconds")
+                            newlength = templength.replace("H", " hours,").\
+                                replace("M", " minutes, ").replace("S", " seconds" )
                         elif "H" not in templength:
                             newlength = templength.replace("M", " minutes, ").replace("S", " seconds")
                         elif "M" not in templength:
@@ -406,7 +403,7 @@ class Misc:
 
     @commands.command(aliases=['bigmoji', 'bemoji', 'big'])
     async def bigemoji(self, ctx, emoji):
-        discord.PartialReactionEmoji()
+        # discord.PartialReactionEmoji()
         try:
             newemoji = await commands.EmojiConverter().convert(ctx, emoji)
         except commands.BadArgument:
@@ -417,17 +414,17 @@ class Misc:
             embed.set_image(url=emoji_cdn)
             await ctx.send(embed=embed)
 
-    def _wolf(self, query):
-        """ Non async WolframAlpha lib function """
-        wolframclient = wolframalpha.Client(self.bot.common.wolframapikey)
-        wolframquery = (" ".join(query))
-        results = wolframclient.query(wolframquery)
-        return results
-
+    # def _wolf(self, query):
+    #     """ Non async WolframAlpha lib function """
+    #     wolframclient = wolframalpha.Client(self.bot.common.wolframapikey)
+    #     wolframquery = (" ".join(query))
+    #     results = wolframclient.query(wolframquery)
+    #     return results
+    #
     # @commands.command(aliases=['wolfram', 'alpha', 'calculate'])
     # async def wolframalpha(self, ctx, *, args):
     #     if not args:
-    #         raise self.bot.myerrors.DBotInternalError("You've not entered anything for Wolfram to calculate!")
+    #         raise self.bot.errors.DBotInternalError("You've not entered anything for Wolfram to calculate!")
     #     await ctx.trigger_typing()
     #     result = await self.bot.loop.run_in_executor(None, self._wolf, args)
     #     if result is not None:
@@ -436,18 +433,17 @@ class Misc:
     #         # result.pods, result.info, result.assumptions, result.warnings, result.results
     #         # await ctx.send(result)
     #     else:
-    #         raise self.bot.myerrors.DBotExternalError(f"Sorry, I couldn't calculate `{args}`.")
+    #         raise self.bot.errors.DBotExternalError(f"Sorry, I couldn't calculate `{args}`.")
 
 
 class EtcOnMessage:
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     async def on_message(self, message):
         if (message.content.startswith(self.bot.common.discordbotcommandprefix)) or \
-                (str(message.author.id) == str(self.bot.common.botdiscordid)) or (message.author.bot == True):
+                (str(message.author.id) == str(self.bot.common.botdiscordid)) or (message.author.bot is True):
             return
         alphabet = {"bmoji": u"\U0001f171", "oksymbol": str("👌"), "fire": str("🔥")}
         msg = message.content

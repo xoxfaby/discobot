@@ -5,8 +5,7 @@ class MainServer:
     """Internal Things for Boat's Main Server"""
     def __init__(self, bot):
         self.bot = bot
-        print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-              + ': Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
 
     async def on_guild_join(self, guild):
         await self.guild_logger(guild, str("join"))
