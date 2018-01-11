@@ -10,7 +10,7 @@ class UtilFuncs:
         print(str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
               + ': Addon "{}" loaded'.format(self.__class__.__name__))
 
-    async def _retrieve_web_file(self, url: str, savelocation):
+    async def retrieve_web_file(self, url: str, savelocation):
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as resp:
