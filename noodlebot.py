@@ -1,19 +1,14 @@
-import extensions.utils.common as common
 from extensions.utils.importsfile import *
 from extensions.utils.sqlcommands import InternalSQL
-from extensions.utils.bot_error_helpers import MyErrors
-from extensions.utils.utilfuncs import UtilFuncs
+from extensions.utils.utilfuncs import UtilFuncs, MyErrors, CommonParams
 
 
 class DBot(commands.Bot):
     """A modified discord.ext.commands.Bot class"""
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, description=common.CommonParams.botdescription,
-                         command_prefix=commands.when_mentioned_or(common.CommonParams.discordbotcommandprefix))
-        self.common = common.CommonParams()
-        self.sql = InternalSQL(self)
-        self.myerrors = MyErrors()
-        self.utils = UtilFuncs(self)
+        super().__init__(*args, **kwargs, description=CommonParams.botdescription,
+                         command_prefix=commands.when_mentioned_or(CommonParams.discordbotcommandprefix))
+        self.common, self.sql, self.myerrors, self.utils = CommonParams(), InternalSQL(self), MyErrors(), UtilFuncs(self)
 
     async def on_ready(self):
         self.common.logger.info('\nLogged in as %s, id: %s', str(self.user.name), str(self.user.id))
