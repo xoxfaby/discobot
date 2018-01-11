@@ -11,17 +11,13 @@ class DBot(commands.Bot):
         self.common, self.sql, self.errors, self.utils = CommonParams(), InternalSQL(self), MyErrors(), UtilFuncs(self)
 
     async def on_ready(self):
-        self.common.logger.info('\nLogged in as %s, id: %s', str(self.user), str(self.user.id))
-        print('')
-        print('Logged in as: ' + str(self.user))
-        print('With the id of: ' + str(self.user.id))
-        print('------\n')
+        self.common.logger.info(f'\nLogged in as {str(self.user)}, id: {str(self.user.id)}')
+        print(f'\nLogged in as: {str(self.user)}\nWith the id of: {str(self.user.id)}\n------\n')
 
 
 class Main:
     bot = DBot()
-    loaded_exts = 0
-    total_exts = len(bot.common.addons)
+    loaded_exts, total_exts = 0, len(bot.common.addons)
     for extension in bot.common.addons:
         try:
             bot.load_extension(extension)
@@ -29,7 +25,7 @@ class Main:
         except Exception as e:
             print(f'{extension} failed to load.\n{type(e).__name__}: {e}')
     curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
-    print(curtime + f': {loaded_exts}/{total_exts} extensions and {len(bot.cogs.keys())} cogs have been loaded')
+    print(f'{curtime}: {loaded_exts}/{total_exts} extensions and {len(bot.cogs.keys())} cogs have been loaded')
     bot.run(bot.common.discordbottoken)
     exit(0)
 
