@@ -1,4 +1,5 @@
 from extensions.utils.importsfile import *
+from extensions.utils import dbotchecks
 
 
 class ImageManipulation:
