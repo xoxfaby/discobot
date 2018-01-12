@@ -317,9 +317,10 @@ class AdminTesting:
         for cmd in self.bot.walk_commands():
             print(cmd)
 
-    @commands.command()
-    async def showtasks(self, ctx):
-        pass
+    # @commands.command()
+    # async def showtasks(self, ctx):
+    #     tasks = [*map(asyncio.Task.print_stack, asyncio.Task.all_tasks())]
+    #     print(tasks)
 
 
 def setup(dbot):

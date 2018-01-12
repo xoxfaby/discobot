@@ -27,6 +27,8 @@ class LoopClass:
                 awoo_array += [str(filename)]
         while not self.bot.is_closed():
             waittime = random.choice(timerange)
+            awoowaittime = "awoowaittime"
+            await self.bot.sql.mysqlcache.delete(key=awoowaittime)
             sql_cmd = await self.bot.sql.statement_get_awoolist()
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor(aiomysql.DictCursor) as cursor:
@@ -37,6 +39,10 @@ class LoopClass:
                     random_awoo = random.choice(awoo_array)
                     send_chan = self.bot.get_channel(id=int(chanid))
                     await send_chan.send(file=discord.File(fp=random_awoo, filename="awoo.png"), content="awoo~")
+            curtime = datetime.datetime.now()
+            waittime1 = datetime.timedelta(seconds=int(waittime))
+            projectedtime = curtime + waittime1
+            await self.bot.sql.mysqlcache.add(key=awoowaittime, value=projectedtime)
             await asyncio.sleep(waittime)
 
     async def daychange(self):

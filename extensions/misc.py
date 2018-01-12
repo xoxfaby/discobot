@@ -415,6 +415,16 @@ class Misc:
             embed.set_image(url=emoji_cdn)
             await ctx.send(embed=embed)
 
+    @commands.command()
+    async def awootime(self, ctx):
+        nextawoo = await self.bot.sql.mysqlcache.get(key="awoowaittime")
+        curtime = datetime.datetime.now()
+        delta = (nextawoo - curtime).total_seconds()
+        fmt = f'%H hours, %M minutes, and %S seconds'
+        goodtime = time.strftime(fmt, time.gmtime(delta)).lstrip("0")
+        mesg = f'The next awoo~ will occur in {goodtime}'
+        return await ctx.send(mesg)
+
     # def _wolf(self, query):
     #     """ Non async WolframAlpha lib function """
     #     wolframclient = wolframalpha.Client(self.bot.common.wolframapikey)
