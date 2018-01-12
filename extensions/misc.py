@@ -408,9 +408,17 @@ class Misc:
         nextawoo = await self.bot.sql.mysqlcache.get(key="awoowaittime")
         curtime = datetime.datetime.now()
         delta = (nextawoo - curtime).total_seconds()
-        fmt = f'%H hours, %M minutes, and %S seconds'
-        goodtime = time.strftime(fmt, time.gmtime(delta)).lstrip("0")
-        mesg = f'The next awoo~ will occur in {goodtime}'
+        hours, remainder = divmod(int(delta), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+        temptime = f'{hours}H{minutes}M{seconds}S'
+        if "0H" in temptime:
+            fmt = temptime.replace("0H", "").replace("M", " minutes, and ").replace("S", " seconds")
+        elif "0H0M" in temptime:
+            fmt = temptime.replace("0H", "").replace("0M ", "").replace("S", " seconds")
+        else:
+            fmt = temptime.replace("H", " hours, ").replace("M", " minutes, and ").replace("S", " seconds")
+        mesg = f'The next awoo~ will occur in {fmt}'
         return await ctx.send(mesg)
 
     # def _wolf(self, query):
