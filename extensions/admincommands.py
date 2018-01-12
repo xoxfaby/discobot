@@ -311,16 +311,16 @@ class AdminTesting:
     # async def guildicon(self, ctx):
     #     icon = ctx.guild.icon_url
     #     print(icon)
-
-    @commands.command()
-    async def walkcommands(self, ctx):
-        for cmd in self.bot.walk_commands():
-            print(cmd)
-
+    #
+    # @commands.command()
+    # async def walkcommands(self, ctx):
+    #     for cmd in self.bot.walk_commands():
+    #         print(cmd)
+    #
     # @commands.command()
     # async def showtasks(self, ctx):
-    #     tasks = [*map(asyncio.Task.print_stack, asyncio.Task.all_tasks())]
-    #     print(tasks)
+    #     awoo = self.bot.bg_awoo()
+    #     print(awoo)
 
 
 def setup(dbot):

@@ -7,17 +7,10 @@ class LoopClass:
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
-
-    async def on_ready(self):
-        await self.loopstorun()
-
-    async def loopstorun(self):
-        # pass
-        self.bot.loop.create_task(self.awoo())
-        # self.loop.create_task(self.daychange())
-        # self.loop.create_task(self.mainguild_takeover())
+        self.bot.bg_awoo = self.bot.loop.create_task(self.awoo())
 
     async def awoo(self):
+        await self.bot.wait_until_ready()
         timerange = list(range(7200, 28800, 2))
         awoo_array = []
         awoo_path = os.path.join("internalfiles", "images", "smallawoo", "**")
