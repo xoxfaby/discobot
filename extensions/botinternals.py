@@ -6,7 +6,7 @@ class BotInternals:
     """Bot Internal Shit"""
     def __init__(self, bot):
         self.bot = bot
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def on_command_error(self, ctx, exception):
         if ctx.author.bot:
@@ -119,7 +119,7 @@ class BotInfo:
     """Bot Information and configuration"""
     def __init__(self, bot):
         self.bot = bot
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def on_guild_join(self, guild):
         channel = guild.system_channel
@@ -134,11 +134,11 @@ class BotInfo:
                     pass
         else:
             initialchannel = channel
-        message = ("Hello! I am " + self.bot.common.botdescription + "\nThank you for joining me to this server, "
-                   "please run `" + self.bot.common.discordbotcommandprefix + "botconfig` to run my setup for this "
-                   "server.\nIn the setup we'll set things such as if and where you want welcome messages and other "
-                   "features.\n**Please note, you will need `manage_guild` permissions on this guild in order to run`" +
-                   self.bot.common.discordbotcommandprefix + "botconfig`**")
+        message = (f'Hello! I am {self.bot.common.botdescription}\nThank you for joining me to this server, please run '
+                   f'`{self.bot.common.discordbotcommandprefix}botconfig` to run my setup for this server.\nIn the '
+                   f'setup we\'ll set things such as if and where you want welcome messages and other features.\n'
+                   f'**Please note, you will need `manage_guild` permissions on this guild in order to run`'
+                   f'{self.bot.common.discordbotcommandprefix}botconfig`**')
         try:
             await initialchannel.send(message)
         except:
@@ -184,7 +184,7 @@ class BotInfo:
         t1 = time.perf_counter()
         await ctx.channel.trigger_typing()
         t2 = time.perf_counter()
-        await ctx.channel.send(f"pseudo-ping: {round((t2-t1)*1000))}ms")
+        await ctx.channel.send(f'pseudo-ping: {round((t2-t1)*1000)}ms')
 
     @commands.command(description="This command can be used to invite the bot to a server")
     async def invite(self, ctx):
@@ -235,10 +235,8 @@ class BotInfo:
         yesanswerlist = ['yes', 'y', 'true', 'yeah', 'yup', '1', 't']
         configmessagelist = []
         configmessagelist1 = []
-
         sent_startmsg = await ctx.send(str(botconfigscript[0]).format(str(ctx.guild.name)))
         configmessagelist1.append(sent_startmsg)
-
         sent_thischannelmsg = await ctx.send(botconfigscript[1])
         configmessagelist.append(sent_thischannelmsg)
         thischannelresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
@@ -256,7 +254,6 @@ class BotInfo:
             initialchan = initialchanresp.channel_mentions[0]
             myinitalresp = await ctx.send(botconfigscript[4].format(str(initialchan.mention)))
             configmessagelist.append(myinitalresp)
-
         await asyncio.sleep(0.5)
         sent_usermsgs = await ctx.send(botconfigscript[5])
         configmessagelist.append(sent_usermsgs)
@@ -300,7 +297,6 @@ class BotInfo:
             welcomechanbool = 0
             welcomemessage = None
             leavemessage = None
-
         await asyncio.sleep(0.5)
         sent_adminauditlogmsg = await ctx.send(botconfigscript[9])
         configmessagelist.append(sent_adminauditlogmsg)
@@ -321,7 +317,6 @@ class BotInfo:
             configmessagelist.append(myresp)
             adminlogchan = None
             adminlogchanbool = 0
-
         await asyncio.sleep(0.5)
         sent_voicelogmsg = await ctx.send(botconfigscript[13])
         configmessagelist.append(sent_voicelogmsg)
@@ -342,7 +337,6 @@ class BotInfo:
             configmessagelist.append(myresp1)
             voicelogchan = None
             voicelogchanbool = 0
-
         await asyncio.sleep(0.5)
         sent_awooquestion = await ctx.send(botconfigscript[22])
         configmessagelist.append(sent_awooquestion)
@@ -363,7 +357,6 @@ class BotInfo:
             configmessagelist.append(sent_awoochanquestion)
             enableawoos = 0
             awoochan = None
-
         # add config option to choose what prefix to use
         await ctx.send(botconfigscript[17])
         enablelogging = any([welcomechanbool, adminlogchanbool, voicelogchanbool])
@@ -386,7 +379,7 @@ class DBotHelp:
     """Bot help replacement"""
     def __init__(self, bot):
         self.bot = bot
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     @commands.command(hidden=True)
     async def help(self, ctx, cmd=None, subcmd=None):

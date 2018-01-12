@@ -6,7 +6,7 @@ class AdminCommands:
     """Admin shit"""
     def __init__(self, bot):
         self.bot = bot
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
@@ -278,7 +278,7 @@ class AdminTesting:
     """Testing commands lol"""
     def __init__(self, bot):
         self.bot = bot
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     @commands.group(hidden=True)
     @commands.is_owner()
@@ -316,6 +316,10 @@ class AdminTesting:
     async def walkcommands(self, ctx):
         for cmd in self.bot.walk_commands():
             print(cmd)
+
+    @commands.command()
+    async def showtasks(self, ctx):
+        pass
 
 
 def setup(dbot):

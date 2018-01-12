@@ -5,7 +5,7 @@ from extensions.utils import dbotchecks
 class InternalSQL:
     def __init__(self, bot):
         self.bot = bot
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
         self.mysqlcache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="mysql")
         self.bot.loop.create_task(self.mysqlstart())
 

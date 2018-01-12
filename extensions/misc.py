@@ -6,7 +6,7 @@ class Misc:
     """Miscellaneous commands for the bot."""
     def __init__(self, bot):
         self.bot = bot
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def _internalfile(self, ctx, args: str):
         async with ctx.typing():
@@ -440,7 +440,7 @@ class Misc:
 class EtcOnMessage:
     def __init__(self, bot):
         self.bot = bot
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def on_message(self, message):
         if (message.content.startswith(self.bot.common.discordbotcommandprefix)) or \

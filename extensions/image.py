@@ -6,7 +6,7 @@ class ImageManipulation:
     """Image memes"""
     def __init__(self, bot):
         self.bot = bot
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__)}" loaded')
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     # async def _get_recent_images_links(self, ctx):
     #     msglist = []

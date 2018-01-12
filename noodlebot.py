@@ -1,7 +1,8 @@
 from extensions.utils.importsfile import *
 from extensions.utils import dbotchecks
+from extensions.utils.common import CommonParams
 from extensions.utils.sqlcommands import InternalSQL
-from extensions.utils.utilfuncs import UtilFuncs, MyErrors, CommonParams
+from extensions.utils.utilfuncs import UtilFuncs, MyErrors
 
 
 class DBot(commands.Bot):
@@ -9,7 +10,8 @@ class DBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, description=CommonParams.botdescription,
                          command_prefix=commands.when_mentioned_or(CommonParams.discordbotcommandprefix))
-        self.common, self.sql, self.errors, self.utils = CommonParams(), InternalSQL(self), MyErrors(), UtilFuncs(self)
+        self.common = CommonParams()
+        self.sql, self.errors, self.utils = InternalSQL(self), MyErrors(), UtilFuncs(self)
 
     async def on_ready(self):
         self.common.logger.info(f'\nLogged in as {str(self.user)}, id: {str(self.user.id)}')
@@ -25,6 +27,7 @@ class Main:
             loaded_exts += 1
         except Exception as e:
             print(f'{extension} failed to load.\n{type(e).__name__}: {e}')
+            print(f'{Exception.__doc__}')
     curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
     print(f'{curtime}: {loaded_exts}/{total_exts} extensions and {len(bot.cogs.keys())} cogs have been loaded')
     bot.run(bot.common.discordbottoken)
