@@ -92,9 +92,8 @@ class ImageManipulation:
     #         raise self.bot.errors.DBotExternalError("No images have been posted in the last 25 messages that I "
     #                                                   "could use.")
     #     imagefilename = (imglist[0]).split('/')[-1].strip().split(".")
-    #     imglocation = os.path.join(os.curdir, "internalfiles", "temp", "corrupt", str(time.strftime("%Y%m%d-%H%M%S") +
-    #                                                                                   "-" + imagefilename[0] +
-    #                                                                                   "-original." + imagefilename[1]))
+    #     filename = (f'{time.strftime("%Y%m%d-%H%M%S")}-{imagefilename[0]}-original.{imagefilename[1])}')
+    #     imglocation = os.path.join(os.curdir, "internalfiles", "temp", "corrupt", filename)
     #     await self.bot.utils.retrieve_web_file(imglist[0], imglocation)
     #     async with ctx.typing():
     #         result = await self.bot.loop.run_in_executor(None, self._corrupt_img, imglocation)
