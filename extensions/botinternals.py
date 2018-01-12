@@ -1,4 +1,5 @@
 from extensions.utils.importsfile import *
+from extensions.utils import dbotchecks
 
 
 class BotInternals:
@@ -218,7 +219,7 @@ class BotInfo:
 
     # Yes, I know this command is a mess. I need to rewrite it.
     @commands.command(hidden=True, aliases=['botconfig', 'config'])
-    @commands.has_permissions(manage_guild=True)
+    @dbotchecks.check_server_admin_or_botowner()
     @commands.guild_only()
     async def bot_config(self, ctx):
         """
@@ -370,6 +371,8 @@ class BotInfo:
         responses = [enablelogging, welcomechanbool, adminlogchanbool, voicelogchanbool, enableawoos]
         joinpartmsgs = [welcomemessage, leavemessage]
         sqlquery, querydata = await self.bot.sql.statement_insert_guildconfig(ctx, channellist, responses, joinpartmsgs)
+        member_guild_config = str(f'{str(ctx.guild.id)}_guild_config')
+        await self.bot.sql.mysqlcache.delete(key=member_guild_config)
         async with self.bot.sql.mysqlcon.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(sqlquery, querydata)
@@ -426,9 +429,6 @@ class DBotHelp:
 
 
 def setup(dbot):
-    @dbot.check
-    async def globally_ignore_bots(ctx):
-        return not ctx.author.bot
     dbot.remove_command("help")
     dbot.add_cog(DBotHelp(dbot))
     dbot.add_cog(BotInternals(dbot))
