@@ -146,9 +146,7 @@ class BotInfo:
 
     @commands.command()
     async def info(self, ctx):
-        """
-        This command shows various information about the bot.
-        """
+        """This command shows various information about the bot."""
         embed = discord.Embed(title="Bot Information", description="Noodle Disco-Pybot", color=0x3347ff)
         embed.add_field(name="Web URL", value="[Boat Wiki](https://personalwebsite.website/wiki/noodlebot)")
         embed.set_thumbnail(
@@ -163,9 +161,7 @@ class BotInfo:
 
     @commands.command()
     async def uptime(self, ctx):
-        """
-        This command shows the uptime of the bot.
-        """
+        """This command shows the uptime of the bot."""
         now = datetime.datetime.utcnow()
         delta = now - self.bot.common.uptime
         hours, remainder = divmod(int(delta.total_seconds()), 3600)
@@ -383,9 +379,7 @@ class DBotHelp:
 
     @commands.command(hidden=True)
     async def help(self, ctx, cmd=None, subcmd=None):
-        """
-        Help command
-        """
+        """Help command"""
         if str(cmd) == "help":
             return await ctx.send("Why are you trying to get help for help?")
         elif cmd is None and subcmd is None:

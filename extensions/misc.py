@@ -169,7 +169,6 @@ class Misc:
             getlocation = str(zipcode)
         else:
             raise self.bot.errors.DBotInternalError("A zipcode or user mention was not given")
-
         tempfull = "http://api.wunderground.com/api/{0}/geolookup/conditions/radar/q/{1}.json"
         fullurl = tempfull.format(self.bot.common.weatherapikey, str(getlocation))
         tempradar = ("http://api.wunderground.com/api/{0}/animatedradar/q/{1}.gif?newmaps=1&timelabel=1&timelabel.y=10"
@@ -203,8 +202,8 @@ class Misc:
                         weathercontent.add_field(name="Wind", value=str(wind), inline=True)
                     else:
                         return
-            radargiflocation = os.path.join("internalfiles", "temp",
-                                            (str(getlocation) + "-" + time.strftime("%Y%m%d-%H%M%S") + "-radar.gif"))
+            tempfilename = (f'{str(getlocation)}-{time.strftime("%Y%m%d-%H%M%S")}-radar.gif')
+            radargiflocation = os.path.join("internalfiles", "temp", tempfilename)
             async with aiohttp.ClientSession() as session:
                 async with session.get(radarimageurl) as resp:
                     if resp.status == 200:
@@ -213,8 +212,8 @@ class Misc:
                             giffile.write(gifout)
                     else:
                         radarimagetemp = parsed_json['radar']['image_url']
-                        radarimageurl1 = radarimagetemp.replace("%26api_key=" + self.bot.common.weatherapikey,
-                                                                "%26time1=" + time.strftime("%H%M%S"))
+                        radarimageurl1 = radarimagetemp.replace(f'%26api_key={self.bot.common.weatherapikey}'
+                                                                f'%26time1={time.strftime("%H%M%S")}')
                         async with session.get(radarimageurl1) as resp1:
                             if resp1.status == 200:
                                 gifout1 = await resp.read()
@@ -288,37 +287,27 @@ class Misc:
 
     @commands.command(description='No fighting', aliases=['preciousfriends', 'friends', 'nofight', 'nofite'])
     async def fight(self, ctx):
-        """
-        No fiting aloud
-        """
+        """No fiting aloud"""
         return await self._internalfile(ctx, "V63Hv.jpg")
 
     @commands.command(description='sadpanda', aliases=['panda', 'fuckyou', 'exhentai', 'why'])
     async def sadpanda(self, ctx):
-        """
-        Fuck you why is there a sad panda
-        """
+        """Fuck you why is there a sad panda"""
         return await self._internalfile(ctx, "sadpanda.png")
 
     @commands.command(description='sleep')
     async def sleep(self, ctx):
-        """
-        Awoo sleep
-        """
+        """Awoo sleep"""
         return await self._internalfile(ctx, "awoosleep.png")
 
     @commands.command(aliases=['404'])
     async def fourzerofour(self, ctx):
-        """
-        File not found
-        """
+        """File not found"""
         return await self._internalfile(ctx, "404.gif")
 
     @commands.command()
     async def cat(self, ctx):
-        """
-        Retreives a random cat image from http://random.cat/
-        """
+        """Retreives a random cat image from http://random.cat/"""
         fullurl = "http://random.cat/meow"
         async with aiohttp.ClientSession() as session:
             async with session.get(fullurl) as r:
@@ -332,9 +321,9 @@ class Misc:
     async def youtube(self, ctx, *args):
         mesg = ' '.join(args)
         query = mesg.replace(" ", "+")
-        myurl = f'https://www.googleapis.com/youtube/v3/search?q={query}&type=video&maxResults=5&' \
-                f'part=snippet&safeSearch=None&key={self.bot.common.youtubeapikey}'
-        publicurl = f'https://www.youtube.com/results?search_query={query}'
+        myurl = (f'https://www.googleapis.com/youtube/v3/search?q={query}&type=video&maxResults=5&part=snippet&'
+                 f'safeSearch=None&key={self.bot.common.youtubeapikey}')
+        publicurl = (f'https://www.youtube.com/results?search_query={query}')
         embed = discord.Embed(title=("Youtube search results for " + mesg), url=publicurl, color=0xff0000)
         itemcontents = []
         title = []
@@ -356,8 +345,8 @@ class Misc:
                 else:
                     raise self.bot.errors.DBotExternalError("An error occurred when calling Youtube")
         contentslist = ",".join(itemcontents)
-        newurl = f'https://www.googleapis.com/youtube/v3/videos?part=contentDetails&' \
-                 f'key={self.bot.common.youtubeapikey}&id={contentslist}'
+        newurl = (f'https://www.googleapis.com/youtube/v3/videos?part=contentDetails'
+                  f'&key={self.bot.common.youtubeapikey}&id={contentslist}')
         async with aiohttp.ClientSession() as session:
             async with session.get(newurl) as r:
                 if r.status == 200:
@@ -366,20 +355,19 @@ class Misc:
                     for result in items:
                         templength = (str(result['contentDetails']['duration']).strip("PT"))
                         if "H" in templength:
-                            newlength = templength.replace("H", " hours,").\
-                                replace("M", " minutes, ").replace("S", " seconds" )
+                            newlength = (templength.replace("H", " hours,").replace("M", " minutes, ").replace("S", " seconds" ))
                         elif "H" not in templength:
-                            newlength = templength.replace("M", " minutes, ").replace("S", " seconds")
+                            newlength = (templength.replace("M", " minutes, ").replace("S", " seconds"))
                         elif "M" not in templength:
-                            newlength = templength.replace("S", " seconds")
+                            newlength = (templength.replace("S", " seconds"))
                         else:
                             newlength = templength
                         length.append(str(newlength))
         incnum = 1
         for t, u, v, f, l in zip(title, uploaded, videoid, fullurl, length):
-            videoinfo = f'\nLength: {l}\nURL: {f}'
-            valuedata = t + videoinfo
-            embed.add_field(name=f'Video #{incnum}', value=valuedata, inline=False)
+            videoinfo = (f'\nLength: {l}\nURL: {f}')
+            valuedata = (t + videoinfo)
+            embed.add_field(name=(f'Video #{incnum}'), value=valuedata, inline=False)
             incnum += 1
 
         def checknumber(m):

@@ -28,30 +28,22 @@ class ImageMemes:
 
     @commands.command()
     async def memes(self, ctx):
-        """
-        Posts a nice meme
-        """
+        """Posts a nice meme"""
         await self._randomfilechoice(ctx, "memes")
 
     @commands.command()
     async def pepes(self, ctx):
-        """
-        Posts a rare pepe
-        """
+        """Posts a rare pepe"""
         await self._randomfilechoice(ctx, "pepes")
 
     @commands.command()
     async def mokou(self, ctx):
-        """
-        Posts a mokou
-        """
+        """Posts a mokou"""
         await self._randomfilechoice(ctx, "mokou")
 
     @commands.command()
     async def grill(self, ctx):
-        """
-        Posts a smug anime girl
-        """
+        """Posts a smug anime girl"""
         await self._randomfilechoice(ctx, "smug")
 
     @commands.command()
@@ -60,7 +52,6 @@ class ImageMemes:
         DO
         NOT
         """
-
         rabbitquestion = bool(random.getrandbits(1))
         if rabbitquestion:
             await self._randomfilechoice(ctx, "rabbit")
@@ -69,30 +60,22 @@ class ImageMemes:
 
     @commands.command()
     async def animals(self, ctx):
-        """
-        Posts a cute animal
-        """
+        """Posts a cute animal"""
         await self._randomfilechoice(ctx, "Animals")
 
     @commands.command()
     async def bestgirl(self, ctx):
-        """
-        Posts a nice girl
-        """
+        """Posts a nice girl"""
         await self._randomfilechoice(ctx, "bestgirl")
 
     @commands.command()
     async def miku(self, ctx):
-        """
-        Posts from a selection of Miku images
-        """
+        """Posts from a selection of Miku images"""
         await self._randomfilechoice(ctx, "miku")
 
     @commands.command()
     async def awoo(self, ctx):
-        """
-        Awoo~~~
-        """
+        """Awoo~~~"""
         await self._internalfile(ctx, "3ae.png")
 
     @commands.command()
@@ -113,16 +96,12 @@ class ImageMemes:
 
     @commands.command()
     async def m(self, ctx):
-        """
-        m
-        """
+        """m"""
         await self._internalfile(ctx, "m.jpg")
 
     @commands.command(hidden=True)
     async def superawoo(self, ctx):
-        """
-        Sekrit
-        """
+        """Sekrit"""
         awoofile = os.path.join("internalfiles", "images", "3ae.png")
         if str('Direct Message') not in str(ctx.channel):
             await ctx.message.delete()
@@ -142,16 +121,12 @@ class ImageMemes:
 
     @commands.command()
     async def whatisgoingonhere(self, ctx):
-        """
-        Oh no
-        """
+        """Oh no"""
         await ctx.send("http://i.imgur.com/tnWSXf7.png")
 
     @commands.command()
     async def inspire(self, ctx):
-        """
-        Generates an image from inspirobot
-        """
+        """Generates an image from inspirobot"""
         fullurl = "http://inspirobot.me/api?generate=true"
         async with aiohttp.ClientSession() as session:
             async with session.get(fullurl) as r:
@@ -239,9 +214,7 @@ class TextMemes:
 
     @commands.command()
     async def ohgod(self, ctx):
-        """
-        Oh god
-        """
+        """Oh god"""
         await ctx.send("ヾ( ﾟДﾟ)ﾉ")
 
     @commands.command()
@@ -291,9 +264,7 @@ class TextMemes:
 
     @commands.command(aliases=['pasta', 'emoji', 'daddy'])
     async def emojipasta(self, ctx):
-        """
-        I will call you daddy
-        """
+        """I will call you daddy"""
         pastafile = os.path.join("internalfiles", 'content', 'textshit', 'emojipasta.txt')
         result = []
         results = []
@@ -337,9 +308,7 @@ class TextMemes:
 
     @commands.command()
     async def comrade(self, ctx):
-        """
-        Communism
-        """
+        """Communism"""
         message = '```\n'
         message += '                 !#########       #\n'
         message += '               !########!          ##!\n'
@@ -364,9 +333,7 @@ class TextMemes:
 
     @commands.command()
     async def bigawoo(self, ctx):
-        """
-        AWOO
-        """
+        """AWOO"""
         message = '```\n'
         message += '⣿⣿⣿⣿⣿⣿⡷⣯⢿⣿⣷⣻⢯⣿⡽⣻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⠸⣿⣿⣆⠹⣿⣿⢾⣟⣯⣿⣿⣿⣿⣿⣿⣽⣻⣿⣿⣿⣿⣿⣿⣿⣿⣷⡌\n'
         message += '⣿⣿⣿⣿⣿⣿⣻⣽⡿⣿⣎⠙⣿⣞⣷⡌⢻⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⡄⠹⣿⣿⡆⠻⣿⣟⣯⡿⣽⡿⣿⣿⣿⣿⣽⡷⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿\n'
@@ -403,9 +370,7 @@ class TextMemes:
 
     @commands.command(usage="[the text you want to invoke the hivemind with]")
     async def zalgo(self, ctx, *args: str):
-        """
-        To invoke the hivemind
-        """
+        """To invoke the hivemind"""
         try:
             await ctx.message.delete()
         except:
@@ -424,9 +389,7 @@ class TextMemes:
 
     @commands.command()
     async def same(self, ctx):
-        """
-        Same
-        """
+        """Same"""
         try:
             await ctx.message.delete()
         except:
@@ -435,9 +398,7 @@ class TextMemes:
 
     @commands.command()
     async def unsame(self, ctx):
-        """
-        Unsame
-        """
+        """Unsame"""
         try:
             await ctx.message.delete()
         except:
@@ -446,9 +407,7 @@ class TextMemes:
 
     @commands.command()
     async def resame(self, ctx):
-        """
-        re:same
-        """
+        """re:same"""
         try:
             await ctx.message.delete()
         except:
