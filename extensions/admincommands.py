@@ -38,11 +38,9 @@ class AdminCommands:
     @commands.command(hidden=True)
     @commands.is_owner()
     async def botkill(self, ctx):
-        """
-        This makes the bot shut itself down.
-        """
+        """This makes the bot shut itself down."""
         self.bot.common.logger.info('The botkill command was called at' +
-                                    time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                                     + ' in ' + str(ctx.guild) + '-' + str(ctx.channel))
         if str('Direct Message') not in str(ctx.channel):
             await ctx.message.delete()
@@ -52,11 +50,9 @@ class AdminCommands:
         return await self.bot.logout()
 
     @commands.command(hidden=True)
-    # @commands.check(check_trusted_user)
+    @commands.check(dbotchecks.check_trusted_user)
     async def boatsay(self, ctx, *args):
-        """
-        Sekrit
-        """
+        """Sekrit"""
         mesg = ' '.join(args)
         try:
             await ctx.message.delete()
@@ -65,10 +61,9 @@ class AdminCommands:
         return await ctx.send(mesg)
 
     @commands.command(hidden=True)
+    @commands.check(dbotchecks.check_trusted_user())
     async def adminbotsay(self, ctx, chanid, *args):
-        """
-        Sekrit
-        """
+        """Sekrit"""
         mesg = ' '.join(args)
         if (str('Direct Message') not in str(ctx.channel)) and \
                 (str(ctx.channel.id) != str(self.bot.common.mainserverspamroom[0])):

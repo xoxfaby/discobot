@@ -8,6 +8,10 @@ class BotInternals:
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
+    async def on_ready(self):
+        game = discord.Game(name="noodleboat", url="https://personalwebsite.website/wiki/Noodlebot")
+        await self.bot.change_presence(status=discord.Status.online, game=game)
+
     async def on_command_error(self, ctx, exception):
         if ctx.author.bot:
             return
