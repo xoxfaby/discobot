@@ -145,8 +145,10 @@ class BotInfo:
                    f'{self.bot.common.discordbotcommandprefix}botconfig`**')
         try:
             await initialchannel.send(message)
-        except:
+        except Exception:
             return
+            # fmt = f'On guild {guild.id} - {guild.name} - I was unable to send an initial message.'
+            # raise self.bot.errors.DBotExternalError()
 
     @commands.command()
     async def info(self, ctx):

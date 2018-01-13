@@ -28,7 +28,6 @@ class Main:
             loaded_exts += 1
         except Exception as e:
             print(f'{extension} failed to load.\n{type(e).__name__}: {e}')
-            print(f'{Exception.__doc__}')
     curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     print(f'{curtime}: {loaded_exts}/{total_exts} extensions and {len(bot.cogs.keys())} cogs have been loaded')
     bot.run(bot.common.discordbottoken)
