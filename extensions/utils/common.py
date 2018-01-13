@@ -40,7 +40,7 @@ class CommonParams:
               'extensions.image',
               'extensions.loops'
               ]
-    uptime = datetime.datetime.utcnow()
+    starttime = datetime.datetime.utcnow()
     if not botdescription:
         botdescription = 'discord pybot'
     if not discordbotcommandprefix:

@@ -98,10 +98,15 @@ class AdminCommands:
             embed.add_field(name="Guild Icon", value="_\n_", inline=False)
             embed.set_image(url=guildicon)
             return await ctx.send(embed=embed)
+        else:
+            return
 
     @guildinfo.command()
-    async def userinfo(self, ctx, user):
-        mentioned_users = await self._user_getter(ctx, user)
+    async def userinfo(self, ctx, user=None):
+        if user is None:
+            mentioned_users = ctx.author
+        else:
+            mentioned_users = await self._user_getter(ctx, user)
         embed = discord.Embed(Title="User Information")
         if isinstance(mentioned_users, list):
             membername = mentioned_users[0].display_name
@@ -122,8 +127,9 @@ class AdminCommands:
         embed.add_field(name="Member Name", value=str(membername))
         embed.add_field(name="Member ID", value=str(memberid))
         embed.add_field(name="Top Role of User", value=str(userrole.name))
-        embed.add_field(name="Joined Discord", value=str(userjoineddisco))
-        embed.add_field(name="Joined this Guild/Server", value=str(userjoinedguild))
+        embed.add_field(name="Joined Discord", value=str(userjoineddisco), inline=False)
+        embed.add_field(name="Joined this Guild/Server", value=str(userjoinedguild), inline=False)
+        embed.add_field(name="_\n_", value="_\n_", inline=False)
         embed.add_field(name="User Avatar", value="_\n_", inline=False)
         embed.set_image(url=useravatar)
         return await ctx.send(embed=embed)

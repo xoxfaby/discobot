@@ -169,7 +169,7 @@ class BotInfo:
     async def uptime(self, ctx):
         """This command shows the uptime of the bot."""
         now = datetime.datetime.utcnow()
-        delta = now - self.bot.common.uptime
+        delta = now - self.bot.common.starttime
         hours, remainder = divmod(int(delta.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
