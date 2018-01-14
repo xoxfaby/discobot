@@ -10,18 +10,15 @@ class AdminCommands:
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
-    async def deletebotmessages(self, ctx, num):
+    async def deletebotmessages(self, ctx, num: int):
         try:
             await ctx.message.delete()
         except:
             pass
-        limit = int(0)
-        async for msg in ctx.history(limit=100, before=ctx.message):
-            if msg.author == ctx.me:
-                await msg.delete()
-                limit += int(1)
-                if limit == int(num):
-                    break
+        limit = int(num)
+        messages_list = []
+        messages_list += (x for x in await ctx.history(limit=limit, before=ctx.message).flatten() if x.author == ctx.me)
+        await ctx.channel.delete_messages(messages_list)
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
@@ -286,6 +283,15 @@ class AdminTesting:
     async def fake(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send('Command not recognized')
+
+    @commands.command()
+    @commands.is_owner()
+    async def echo(self, ctx):
+        """Echos a command to the console"""
+        mesg = ctx.message.content
+        print(mesg)
+        await ctx.message.add_reaction("✅")
+        return await ctx.send("Printed to PyCharm console.")
 
     # @commands.command(hidden=True)
     # async def guildchans(self, ctx):

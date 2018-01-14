@@ -10,25 +10,25 @@ trustedusers = (config['dbot']['trustedusers']).split(',')
 mainserver = (config['dbot']['mainserver']).split(',')
 
 
-def check_trusted_user():
+def check_trusted_user(ctx):
     async def predicate(ctx):
         return str(ctx.message.author.id) in trustedusers
     return commands.check(predicate)
 
 
-def check_main_server():
+def check_main_server(ctx):
     async def predicate(ctx):
         return str(ctx.guild.id) in mainserver
     return commands.check(predicate)
 
 
-def globally_ignore_bots():
+def globally_ignore_bots(ctx):
     async def predicate(ctx):
         return not ctx.author.bot
     return commands.check(predicate)
 
 
-def check_server_admin_or_botowner():
+def check_server_admin_or_botowner(ctx):
     async def predicate(ctx):
         return ctx.channel.permissions_for(ctx.guild.me).manage_guild or (ctx.author.id in trustedusers)
     return commands.check(predicate)
