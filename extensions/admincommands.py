@@ -36,13 +36,13 @@ class AdminCommands:
     @commands.is_owner()
     async def botkill(self, ctx):
         """This makes the bot shut itself down."""
-        self.bot.common.logger.info('The botkill command was called at' +
-                                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-                                    + ' in ' + str(ctx.guild) + '-' + str(ctx.channel))
+        mesg = (f'The botkill command was called at {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())} in '
+               f'{str(ctx.guild)} -{str(ctx.channel)}')
+        self.bot.common.logger.info(mesg)
+        print(mesg)
         if str('Direct Message') not in str(ctx.channel):
             await ctx.message.delete()
         await ctx.send('Proceeding with bot shutdown now...')
-        await self.bot.close()
         await self.bot.sql.mysqlcon.close()
         return await self.bot.logout()
 
@@ -282,7 +282,7 @@ class AdminTesting:
     @commands.is_owner()
     async def fake(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctx.send('Command not recognized')
+            return
 
     @commands.command()
     @commands.is_owner()
@@ -290,7 +290,6 @@ class AdminTesting:
         """Echos a command to the console"""
         mesg = ctx.message.content
         print(mesg)
-        await ctx.message.add_reaction("✅")
         return await ctx.send("Printed to PyCharm console.")
 
     # @commands.command(hidden=True)
