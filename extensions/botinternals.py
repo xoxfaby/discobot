@@ -221,7 +221,7 @@ class BotInfo:
 
     # Yes, I know this command is a mess. I need to rewrite it.
     @commands.command(hidden=True, aliases=['botconfig', 'config'])
-    @dbotchecks.check_server_admin_or_botowner()
+    @commands.check(dbotchecks.check_server_admin_or_botowner)
     @commands.guild_only()
     async def bot_config(self, ctx):
         """

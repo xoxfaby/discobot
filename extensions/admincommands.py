@@ -58,7 +58,7 @@ class AdminCommands:
         return await ctx.send(mesg)
 
     @commands.command(hidden=True)
-    @commands.check(dbotchecks.check_trusted_user())
+    @commands.check(dbotchecks.check_trusted_user)
     async def adminbotsay(self, ctx, chanid, *args):
         """Sekrit"""
         mesg = ' '.join(args)
