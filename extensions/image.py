@@ -137,8 +137,7 @@ class ImageManipulation:
         async with ctx.typing():
             convertedfilepath = await self.bot.loop.run_in_executor(None, self._moar_jpg, fulllocation)
         if convertedfilepath is not None:
-            newfn = str("moarjpg" + filename)
-            await ctx.send(file=discord.File(fp=convertedfilepath, filename=newfn))
+            await ctx.send(file=discord.File(fp=convertedfilepath, filename="moar.jpg"))
         else:
             raise self.bot.errors.DBotExternalError(f'Sorry, there was an error on processing the image.')
 
