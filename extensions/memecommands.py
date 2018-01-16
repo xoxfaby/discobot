@@ -173,11 +173,11 @@ class ImageMemes:
     def _sunnytask(self, words):
         if len(words) > 27:
             if " " in words:
-                mesg = []
+                mesg = words.split(" ")
+            else:
+                mesg = list()
                 mesg.append(words[0:27])
                 mesg.append(words[27:])
-            # else:
-            #     mesg = words.split(27, 1)
             line1 = ""
             line2 = ""
             index = 0
@@ -210,7 +210,7 @@ class ImageMemes:
                 image = img.make_blob('png')
         return image
 
-    @commands.command(aliases=['sunny','titlecard'])
+    @commands.command(aliases=['sunny', 'titlecard'])
     async def alwayssunny(self, ctx, *, text: str):
         async with ctx.typing():
             imgfile = await self.bot.loop.run_in_executor(None, self._sunnytask, text)
