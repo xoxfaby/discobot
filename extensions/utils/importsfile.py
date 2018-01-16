@@ -5,6 +5,7 @@ import functools
 from discord.ext import commands
 from stuf import stuf
 import wand
+from wand.color import Color
 from wand.image import Image
 from wand.drawing import Drawing
 from aiocache import SimpleMemoryCache

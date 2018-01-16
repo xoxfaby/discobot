@@ -37,7 +37,7 @@ class AdminCommands:
     async def botkill(self, ctx):
         """This makes the bot shut itself down."""
         mesg = (f'The botkill command was called at {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())} in '
-               f'{str(ctx.guild)} -{str(ctx.channel)}')
+                f'{str(ctx.guild)} -{str(ctx.channel)}')
         self.bot.common.logger.info(mesg)
         print(mesg)
         if str('Direct Message') not in str(ctx.channel):
@@ -62,9 +62,10 @@ class AdminCommands:
     async def adminbotsay(self, ctx, chanid, *args):
         """Sekrit"""
         mesg = ' '.join(args)
-        if (str('Direct Message') not in str(ctx.channel)) and \
-                (str(ctx.channel.id) != str(self.bot.common.mainserverspamroom[0])):
+        try:
             await ctx.message.delete()
+        except:
+            pass
         customchannel = self.bot.get_channel(id=int(chanid))
         return await customchannel.send(mesg)
 

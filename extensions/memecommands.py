@@ -170,20 +170,49 @@ class ImageMemes:
             else:
                 raise commands.errors.UserInputError("User attempted to run memegen with an invalid meme type")
 
-    # @commands.command(aliases=['sunny','titlecard'])
-    # async def alwayssunny(self, ctx, *text: str):
-    #     mesg = ' '.join(text)
-    #     newmesg = mesg[17].replace()
-    #     W, H = (1920, 1080)
-    #     font = ImageFont.truetype(os.path.join("internalfiles", "misc", "textile-webfont.ttf"), 125)
-    #     img = Image.new("RGBA", (W, H), (0, 0, 0))
-    #     draw = ImageDraw.Draw(img)
-    #     w, h = draw.multiline_textsize(mesg)
-    #     draw.multiline_text(((W-w)/2,(H-h)/2), mesg, (255, 255, 255), font=font, align="center")
-    #     savepath = os.path.join("internalfiles", "temp", time.strftime("%Y%m%d-%H%M%S_") + str(ctx.author.id) +
-    #                             "_sunny.png")
-    #     img.save(savepath)
-    #     return await ctx.send(files=[discord.File(fp=savepath, filename="titlecard.png")])
+    def _sunnytask(self, words):
+        if len(words) > 27:
+            mesg = words.split(" ")
+            line1 = ""
+            line2 = ""
+            index = 0
+            while len(line1) < 27:
+                line1 += (mesg[index] + " ")
+                index += 1
+            while index < len(mesg):
+                line2 += (mesg[index] + " ")
+                index += 1
+            multiline = True
+        else:
+            words = ''.join(words)
+            multiline = False
+        W, H = (1920, 1080)
+        black = Color("black")
+        white = Color("white")
+        fontlocation = os.path.join("internalfiles", "misc", "textile-webfont.ttf")
+        with Image(width=W, height=H, background=black) as img:
+            with Drawing() as draw:
+                draw.font = fontlocation
+                draw.font_size = 105
+                draw.stroke_color = white
+                draw.text_alignment = 'center'
+                draw.fill_color = white
+                if multiline:
+                    draw.text(x=int(img.width / 2), y=int((img.height / 2) - 100), body=line1)
+                    draw.text(x=int(img.width / 2), y=int((img.height / 2) + 100), body=line2)
+                else:
+                    draw.text(x=int(img.width / 2), y=int((img.height / 2)), body=words)
+                draw(img)
+                image = img.make_blob('png')
+        return image
+
+    @commands.command(aliases=['sunny','titlecard'])
+    async def alwayssunny(self, ctx, *, text: str):
+        async with ctx.typing():
+            imgfile = await self.bot.loop.run_in_executor(None, self._sunnytask, text)
+        if imgfile is not None:
+            file = io.BytesIO(imgfile)
+            await ctx.send(files=[discord.File(fp=file, filename="Sunny.png")])
 
 
 class TextMemes:
