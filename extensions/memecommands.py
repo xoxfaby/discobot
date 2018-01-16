@@ -172,7 +172,12 @@ class ImageMemes:
 
     def _sunnytask(self, words):
         if len(words) > 27:
-            mesg = words.split(" ")
+            if " " in words:
+                mesg = []
+                mesg.append(words[0:27])
+                mesg.append(words[27:])
+            # else:
+            #     mesg = words.split(27, 1)
             line1 = ""
             line2 = ""
             index = 0
@@ -184,7 +189,6 @@ class ImageMemes:
                 index += 1
             multiline = True
         else:
-            words = ''.join(words)
             multiline = False
         W, H = (1920, 1080)
         black = Color("black")
