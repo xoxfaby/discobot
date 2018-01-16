@@ -1,5 +1,4 @@
 from extensions.utils.importsfile import *
-from extensions.utils import dbotchecks
 from extensions.utils.common import CommonParams
 from extensions.utils.sqlcommands import InternalSQL
 from extensions.utils.utilfuncs import UtilFuncs, MyErrors

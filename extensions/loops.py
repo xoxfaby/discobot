@@ -20,9 +20,9 @@ class LoopClass:
                 awoo_array += [str(filename)]
         while not self.bot.is_closed():
             waittime = random.choice(timerange)
-            awoowaittime = "awoowaittime"
-            await self.bot.sql.mysqlcache.delete(key=awoowaittime)
+            await self.bot.sql.mysqlcache.delete(key="awoowaittime")
             sql_cmd = await self.bot.sql.statement_get_awoolist()
+            msgs = []
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor(aiomysql.DictCursor) as cursor:
                     await cursor.execute(sql_cmd)
@@ -30,13 +30,17 @@ class LoopClass:
             for item in chan_list:
                 for key, chanid in item.items():
                     random_awoo = random.choice(awoo_array)
+                    fp = discord.File(fp=random_awoo, filename="awoo.png")
                     send_chan = self.bot.get_channel(id=int(chanid))
-                    await send_chan.send(file=discord.File(fp=random_awoo, filename="awoo.png"), content="awoo~")
+                    msgs += await send_chan.send(file=fp, content="awoo~")
             curtime = datetime.datetime.now()
             waittime1 = datetime.timedelta(seconds=int(waittime))
             projectedtime = curtime + waittime1
-            await self.bot.sql.mysqlcache.add(key=awoowaittime, value=projectedtime)
+            await self.bot.sql.mysqlcache.add(key="awoowaittime", value=projectedtime)
             await asyncio.sleep(waittime)
+            for msg in msgs:
+                await msg.delete()
+            del msgs
 
     async def daychange(self):
         midnight = time.strftime("0000")
