@@ -4,9 +4,8 @@ import pprint, aiomysql, sqlalchemy, csv, builtins, numpy, psutil, aiocache, bas
 import functools
 from discord.ext import commands
 from stuf import stuf
-import PIL
-from PIL import ImageFont
-from PIL import Image
-from PIL import ImageDraw
+import wand
+from wand.image import Image
+from wand.drawing import Drawing
 from aiocache import SimpleMemoryCache
 from aiocache.serializers import NullSerializer

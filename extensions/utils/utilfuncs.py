@@ -10,14 +10,15 @@ class UtilFuncs:
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
-    async def retrieve_web_file(self, url: str, savelocation):
+    async def retrieve_web_file(self, url: str, savelocation=None):
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as resp:
                     if resp.status == 200:
                         data = await resp.read()
-                        with open(savelocation, "wb") as file:
-                            file.write(data)
+                        if savelocation is not None:
+                            with open(savelocation, "wb") as file:
+                                file.write(data)
                         return data
                     else:
                         return None
