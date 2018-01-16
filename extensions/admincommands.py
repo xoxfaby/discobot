@@ -11,6 +11,7 @@ class AdminCommands:
     @commands.command()
     @commands.has_permissions(manage_messages=True)
     async def deletebotmessages(self, ctx, num: int):
+        """Deletes my last x number of messages"""
         try:
             await ctx.message.delete()
         except:
@@ -22,15 +23,14 @@ class AdminCommands:
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
-    async def purge(self, ctx):
-        mesg = ctx.message.content.split(" ")
-        limit = mesg[1]
+    async def purge(self, ctx, *, num: int):
+        """Purges the last x number of messages from the channel"""
         try:
             await ctx.message.delete()
         except:
             pass
-        await ctx.channel.purge(limit=int(limit))
-        return await ctx.send(content='Deleted ' + str(limit) + ' message(s)')
+        await ctx.channel.purge(limit=int(num))
+        return await ctx.send(content='Deleted ' + str(num) + ' message(s)')
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -86,6 +86,7 @@ class AdminCommands:
 
     @commands.group()
     async def guildinfo(self, ctx):
+        """Info about the discord guild/server"""
         if ctx.invoked_subcommand is None:
             embed = discord.Embed(title="Guild Information")
             embed.add_field(name="Guild Name", value=f'{ctx.guild.name}', inline=True)
@@ -101,6 +102,7 @@ class AdminCommands:
 
     @guildinfo.command()
     async def userinfo(self, ctx, user=None):
+        """Subcommand for the guildinfo command, lists info about a mentioned user"""
         if user is None:
             mentioned_users = ctx.author
         else:
@@ -134,6 +136,7 @@ class AdminCommands:
 
     @guildinfo.command()
     async def roleinfo(self, ctx, role):
+        """Subcommand to guildinfo, lists info about a mentioned role"""
         mentioned_roles = await self._role_getter(ctx, role)
         embed = discord.Embed(title="Role Information")
         if isinstance(mentioned_roles, list):
@@ -159,17 +162,20 @@ class AdminCommands:
 
     @commands.group(aliases=['server'])
     async def manage(self, ctx):
+        """Used to manage the server"""
         if ctx.invoked_subcommand is None:
             raise self.bot.errors.DBotExternalError("No subcommand was given")
 
     @manage.group(aliases=['roles'])
     @commands.has_permissions(manage_roles=True)
     async def role(self, ctx):
+        """Subcommand to manage, can be used to manage a role"""
         if ctx.invoked_subcommand is None:
             raise self.bot.errors.DBotExternalError("No subcommand was given")
 
     @role.command()
     async def rolename(self, ctx, role, *rolename):
+        """Subcommand to `manage role`, can be used to edit a role name"""
         mentioned_roles = await self._role_getter(ctx, role)
         if not rolename:
             mesg = f'No new name was submitted for role: {0}'
@@ -190,6 +196,7 @@ class AdminCommands:
 
     @role.command()
     async def color(self, ctx, role, *color):
+        """Subcommand to `manage role`, can be used to edit a role's color"""
         mentioned_roles = await self._role_getter(ctx, role)
         if not color:
             mesg = ''
@@ -282,6 +289,7 @@ class AdminTesting:
     @commands.group(hidden=True)
     @commands.is_owner()
     async def fake(self, ctx):
+        """Fake dispatch command"""
         if ctx.invoked_subcommand is None:
             return
 

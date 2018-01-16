@@ -69,6 +69,7 @@ class Load:
     @commands.command(name='listextensions', hidden=True)
     @commands.is_owner()
     async def _listmods(self, ctx):
+        """List extensions"""
         modules = self.bot.extensions
         loadedmods = []
         for mod in modules:

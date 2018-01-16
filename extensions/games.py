@@ -15,4 +15,5 @@ class Games:
 
     @commands.command()
     async def werewolf(self, ctx):
+        """The classic werewolf game from IRC"""
         pass

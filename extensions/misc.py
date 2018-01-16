@@ -118,6 +118,7 @@ class Misc:
 
     @commands.command()
     async def fakename(self, ctx):
+        """Generates a fake name"""
         apiurl = "https://uinames.com/api/?ext"
         async with aiohttp.ClientSession() as session:
             async with session.get(apiurl) as r:
@@ -141,6 +142,7 @@ class Misc:
 
     @commands.command(aliases=['w', 'W'], usage="[zipcode]")
     async def weather(self, ctx, zipcode=None):
+        """Retrieves the weather"""
         if (zipcode is None) or ctx.message.mentions:
             if ctx.message.mentions:
                 authorid = ctx.message.mentions[0].id
@@ -230,6 +232,7 @@ class Misc:
 
     @commands.command(aliases=['ws'], usage=['[zipcode]'])
     async def weatherset(self, ctx, zipcode=None):
+        """Set your default weather"""
         if zipcode is None:
             raise self.bot.errors.DBotInternalError(f'You did not pass a zipcode when calling this command.\nExample: '
                                                     f'`{self.bot.common.discordbotcommandprefix}weatherset 98104`')
@@ -261,18 +264,21 @@ class Misc:
 
     @commands.command()
     async def nice(self, ctx):
+        """V naisu"""
         if str('Direct Message') not in str(ctx.channel):
             await ctx.message.delete()
         return await ctx.send("Nice")
 
     @commands.command()
     async def notnice(self, ctx):
+        """Un-nice"""
         if str('Direct Message') not in str(ctx.channel):
             await ctx.message.delete()
         return await ctx.send("That wasn't very nice of you.")
 
     @commands.command()
     async def roll(self, ctx, dice: str):
+        """Roll a dice, use NdN format"""
         try:
             rolls, limit = map(int, dice.split('d'))
         except Exception:
@@ -282,6 +288,7 @@ class Misc:
 
     @commands.command(description='To decide between multiple choices', aliases=['decide'])
     async def choose(self, ctx, *args: str):
+        """Choose between multiple options, split by 'or' """
         options = (" ".join(args)).split(" or ")
         return await ctx.send(random.choice(options))
 
@@ -318,8 +325,9 @@ class Misc:
                     raise self.bot.errors.DBotExternalError("An error occurred when calling random.cat")
 
     @commands.command(aliases=['yt'])
-    async def youtube(self, ctx, *args):
-        mesg = ' '.join(args)
+    async def youtube(self, ctx, *, args):
+        """Search Youtube for a video"""
+        mesg = ''.join(args)
         query = mesg.replace(" ", "+")
         myurl = (f'https://www.googleapis.com/youtube/v3/search?q={query}&type=video&maxResults=5&part=snippet&'
                  f'safeSearch=None&key={self.bot.common.youtubeapikey}')
@@ -384,6 +392,7 @@ class Misc:
 
     @commands.command()
     async def avatar(self, ctx, target: discord.User=None):
+        """Gets a user's avatar"""
         if target is None:
             target = ctx.message.author
         embed = discord.Embed(title="Avatar")
@@ -392,6 +401,7 @@ class Misc:
 
     @commands.command(aliases=['bigmoji', 'bemoji', 'big'])
     async def bigemoji(self, ctx, emoji):
+        """Attempts to make an emoji bigger"""
         # discord.PartialReactionEmoji()
         try:
             newemoji = await commands.EmojiConverter().convert(ctx, emoji)
@@ -405,6 +415,7 @@ class Misc:
 
     @commands.command()
     async def awootime(self, ctx):
+        """Lists the time until the next awoo"""
         nextawoo = await self.bot.sql.mysqlcache.get(key="awoowaittime")
         curtime = datetime.datetime.now()
         delta = (nextawoo - curtime).total_seconds()

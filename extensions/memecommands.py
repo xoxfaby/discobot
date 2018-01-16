@@ -80,18 +80,22 @@ class ImageMemes:
 
     @commands.command()
     async def doubt(self, ctx):
+        """Press x"""
         await self._internalfile(ctx, "AbUWe1d.jpg")
 
     @commands.command()
     async def touhou(self, ctx):
+        """2hu"""
         await self._internalfile(ctx, "touhou.png")
 
     @commands.command()
     async def awesome(self, ctx):
+        """Cool"""
         await self._internalfile(ctx, "2dll9My.png")
 
     @commands.command()
     async def peep(self, ctx):
+        """A rare animated peep"""
         await self._internalfile(ctx, "peep.gif")
 
     @commands.command()
@@ -212,6 +216,7 @@ class ImageMemes:
 
     @commands.command(aliases=['sunny', 'titlecard'])
     async def alwayssunny(self, ctx, *, text: str):
+        """Generates a titlecard from always sunny"""
         async with ctx.typing():
             imgfile = await self.bot.loop.run_in_executor(None, self._sunnytask, text)
         if imgfile is not None:
@@ -227,22 +232,27 @@ class TextMemes:
 
     @commands.command()
     async def gface(self, ctx):
+        """( ≖‿≖)"""
         await ctx.send("( ≖‿≖)")
 
     @commands.command()
     async def poop(self, ctx):
+        """How can you say you love somebody"""
         await ctx.send("ＨＯＷ　ＣＡＮ　ＹＯＵ　ＳＡＹ　ＹＯＵ　ＬＯＶＥ　ＳＯＭＥＢＯＤＹ　ＩＦ　ＹＯＵ　ＷＯＮ’Ｔ　ＥＡＴ　ＴＨＥＩＲ　ＰＯＯＰ？")
 
     @commands.command()
     async def yay(self, ctx):
+        """Happy emoji"""
         await ctx.send("( ⌒‿⌒)")
 
     @commands.command()
     async def derp(self, ctx):
+        """Derp emoji"""
         await ctx.send("（ ｡∀ﾟ ）")
 
     @commands.command()
     async def idk(self, ctx):
+        """idk emoji"""
         await ctx.send("┐('～`；)┌")
 
     @commands.command()
@@ -449,7 +459,7 @@ class TextMemes:
 
     @commands.command(aliases=['wide', 'fullwidth', 'aesthetic'])
     async def fullwidthtext(self, ctx, *, a_text):
-        """ Make your message ａｅｓｔｈｅｔｉｃ"""
+        """Make your message ａｅｓｔｈｅｔｉｃ"""
         ascii_to_wide = dict((i, chr(i + 0xfee0)) for i in range(0x21, 0x7f))
         ascii_to_wide.update({0x20: u'\u3000', 0x2D: u'\u2212'})
         try:

@@ -68,10 +68,10 @@ class BotInternals:
                 return
 
     async def member_bot_message(self, member, secondaryargs, guild):
-        if member == member.guild.me:
+        if member == guild.me:
             return
         else:
-            member_guild_config = str(f'{str(member.guild.id)}_guild_config')
+            member_guild_config = str(f'{str(guild.id)}_guild_config')
             guild_config_exists_in_cache = await self.bot.sql.mysqlcache.exists(key=member_guild_config)
             if guild_config_exists_in_cache:
                 guild_conf = await self.bot.sql.mysqlcache.get(key=member_guild_config)
