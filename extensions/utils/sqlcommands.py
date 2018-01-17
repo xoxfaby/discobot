@@ -55,7 +55,7 @@ class InternalSQL:
         return new_query
 
     async def statement_insert_channel_new(self, ctx):
-        msgtime = str(datetime.datetime.now())
+        createtime = str(ctx.created_at)
         guildid = str(ctx.guild.id)
         guildname = str(ctx.guild.name)
         channelid = str(ctx.channel.id)
@@ -71,19 +71,21 @@ class InternalSQL:
             attachmenturl = "None"
             attachmentfilename = "None"
         sql_query = """
-        INSERT INTO `{0}`.`_messages` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
+        INSERT INTO `{0}`.`_messages` (`create-time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
         `user-id`, `user-name`, `message-id`, `content`, `attachmenturl`, `attachmentfilename`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         new_query = sql_query.format(self.bot.common.mysqldb, guildid, channelid)
-        query_data = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, content,
+        query_data = (createtime, guildid, guildname, channelid, channelname, userid, username, messageid, content,
                       attachmenturl, attachmentfilename)
         table_name = str("_messages")
         return new_query, table_name, query_data
 
     async def statement_insert_channel_edit(self, ctx, aftermessage):
-        msgtime = str(datetime.datetime.now())
+        createtime = str(ctx.created_at)
+        isedited = 1
         guildid = str(ctx.guild.id)
+        edittime = str(aftermessage.edited_at)
         guildname = str(ctx.guild.name)
         channelid = str(ctx.channel.id)
         channelname = str(ctx.channel.name)
@@ -103,15 +105,22 @@ class InternalSQL:
             afterattachmentfilename = "None"
             afterattachmenturl = "None"
         sqlquery = """
-        INSERT INTO `{0}`.`_edited` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
-        `user-id`, `user-name`, `message-id`, `before-content`, `before-attachmenturl`, `before-attachmentfilename`,
-        `after-content`, `after-attachmenturl`, `after-attachmentfilename`)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO `{0}`.`_messages` (`create-time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
+        `user-id`, `user-name`, `message-id`, `content`, `attachmenturl`, `attachmentfilename`, `isedited`, 
+        `edit-time`, `edit-before-content`, `edit-after-content`, `edit-before-attachmenturl`,
+        `edit-before-attachmentfilename`, `edit-after-attachmenturl`, `edit-after-attachmentfilename`) 
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE    
+        `isedited` = %s, `edit-time` = %s, `edit-before-content` = %s, `edit-after-content` = %s,
+        `edit-before-attachmenturl` = %s, `edit-before-attachmentfilename` = %s, 
+        `edit-after-attachmenturl` = %s, `edit-after-attachmentfilename` = %s;
         """
-        newquery = sqlquery.format(self.bot.common.mysqldb, guildid, channelid)
-        querydata = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, beforecontent,
-                     beforeattachmenturl, beforeattachmentfilename, aftercontent, afterattachmenturl,
-                     afterattachmentfilename)
+        newquery = sqlquery.format(self.bot.common.mysqldb)
+        querydata = (createtime, guildid, guildname, channelid, channelname, userid, username, messageid,
+                     beforecontent, beforeattachmenturl, beforeattachmentfilename, isedited, edittime, beforecontent,
+                     aftercontent, beforeattachmenturl, beforeattachmentfilename, afterattachmenturl,
+                     afterattachmentfilename, isedited, edittime, beforecontent, aftercontent, beforeattachmenturl,
+                     beforeattachmentfilename, afterattachmenturl, afterattachmentfilename)
         tablename = str("_edited")
         return newquery, tablename, querydata
 

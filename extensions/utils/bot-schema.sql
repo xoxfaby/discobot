@@ -86,28 +86,11 @@ CREATE TABLE `mysqldb`.`_guild_links` (
   `guild-id` VARCHAR(45) NOT NULL,
   `links` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id_guild_links`))
-  ROW_FORMAT=COMPRESSED;
-
-CREATE TABLE `mysqldb`.`_deleted` (
-  `id_deleted` BIGINT NOT NULL AUTO_INCREMENT,
-  `time` VARCHAR(45) NOT NULL,
-  `guild-id` VARCHAR(45) NOT NULL,
-  `guild-name` LONGTEXT NOT NULL,
-  `channel-id` LONGTEXT NOT NULL,
-  `channel-name` VARCHAR(45) NOT NULL,
-  `user-id` VARCHAR(45) NOT NULL,
-  `user-name` LONGTEXT NOT NULL,
-  `message-id` VARCHAR(45) NOT NULL,
-  `original-send-time` VARCHAR(45) NOT NULL,
-  `content` LONGTEXT NULL,
-  `attachmenturl` LONGTEXT NULL,
-  `attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_deleted`))
 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_messages` (
   `id_messages` BIGINT NOT NULL AUTO_INCREMENT,
-  `time` VARCHAR(45) NOT NULL,
+  `create-time` VARCHAR(45) NOT NULL,
   `guild-id` VARCHAR(45) NOT NULL,
   `guild-name` LONGTEXT NOT NULL,
   `channel-id` VARCHAR(45) NOT NULL,
@@ -118,26 +101,21 @@ CREATE TABLE `mysqldb`.`_messages` (
   `content` LONGTEXT NULL,
   `attachmenturl` LONGTEXT NULL,
   `attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_messages`))
-  ROW_FORMAT=COMPRESSED;
-
-CREATE TABLE `mysqldb`.`_edited` (
-  `id_edited` BIGINT NOT NULL AUTO_INCREMENT,
-  `time` VARCHAR(45) NOT NULL,
-  `guild-id` VARCHAR(45) NOT NULL,
-  `guild-name` LONGTEXT NOT NULL,
-  `channel-id` VARCHAR(45) NOT NULL,
-  `channel-name` VARCHAR(45) NOT NULL,
-  `user-id` VARCHAR(45) NOT NULL,
-  `user-name` LONGTEXT NOT NULL,
-  `message-id` VARCHAR(45) NOT NULL,
-  `before-content` LONGTEXT NULL,
-  `after-content` LONGTEXT NULL,
-  `before-attachmenturl` LONGTEXT NULL,
-  `before-attachmentfilename` LONGTEXT NULL,
-  `after-attachmenturl` LONGTEXT NULL,
-  `after-attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_edited`))
+  `isedited` TINYINT NOT NULL,
+  `isdeleted` TINYINT NOT NULL,
+  `edit-time` VARCHAR(45) NULL,
+  `delete-time` VARCHAR(45) NULL,
+  `edit-before-content` LONGTEXT NULL,
+  `edit-after-content` LONGTEXT NULL,
+  `edit-before-attachmenturl` LONGTEXT NULL,
+  `edit-before-attachmentfilename` LONGTEXT NULL,
+  `edit-after-attachmenturl` LONGTEXT NULL,
+  `edit-after-attachmentfilename` LONGTEXT NULL,
+  PRIMARY KEY (`id_messages`),
+  KEY `idx_messages_guild-id` (`guild-id`),
+  KEY `idx_messages_user-id` (`user-id`),
+  KEY `idx_messages_channel-id` (`channel-id`),
+  KEY `idx_messages_message-id` (`message-id`))
 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_voice` (
@@ -169,43 +147,24 @@ ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_dm_messages` (
   `id_DM` BIGINT NOT NULL AUTO_INCREMENT,
-  `time` VARCHAR(45) NULL,
-  `dm_channel-id` VARCHAR(45) NULL,
-  `user-id` VARCHAR(45) NULL,
-  `user-name` LONGTEXT NULL,
+  `create-time` VARCHAR(45) NOT NULL,
+  `dm_channel-id` VARCHAR(45) NOT NULL,
+  `user-id` VARCHAR(45) NOT NULL,
+  `user-name` LONGTEXT NOT NULL,
   `message-id` VARCHAR(45) NOT NULL,
   `content` LONGTEXT NULL,
   `attachmenturl` LONGTEXT NULL,
   `attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_DM`))
-ROW_FORMAT=COMPRESSED;
-
-CREATE TABLE `mysqldb`.`_dm_edited` (
-  `id_edited` BIGINT NOT NULL AUTO_INCREMENT,
-  `time` VARCHAR(45) NULL,
-  `dm_channel-id` VARCHAR(45) NULL,
-  `user-id` VARCHAR(45) NULL,
-  `user-name` LONGTEXT NULL,
-  `message-id` VARCHAR(45) NOT NULL,
-  `before-content` LONGTEXT NULL,
-  `after-content` LONGTEXT NULL,
-  `before-attachmenturl` LONGTEXT NULL,
-  `before-attachmentfilename` LONGTEXT NULL,
-  `after-attachmenturl` LONGTEXT NULL,
-  `after-attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_edited`))
-ROW_FORMAT=COMPRESSED;
-
-CREATE TABLE `mysqldb`.`_dm_deleted` (
-  `id_deleted` BIGINT NOT NULL AUTO_INCREMENT,
-  `time` VARCHAR(45) NULL,
-  `dm_channel-id` VARCHAR(45) NULL,
-  `user-id` VARCHAR(45) NULL,
-  `user-name` LONGTEXT NULL,
-  `message-id` VARCHAR(45) NOT NULL,
-  `original-send-time` VARCHAR(45) NOT NULL,
-  `content` LONGTEXT NULL,
-  `attachmenturl` LONGTEXT NULL,
-  `attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_deleted`))
+  `isedited` TINYINT NULL,
+  `isdeleted` TINYINT NULL,
+  `edit-time` VARCHAR(45) NULL,
+  `delete-time` VARCHAR(45) NULL,
+  `edit-before-content` LONGTEXT NULL,
+  `edit-after-content` LONGTEXT NULL,
+  `edit-before-attachmenturl` LONGTEXT NULL,
+  `edit-before-attachmentfilename` LONGTEXT NULL,
+  `edit-after-attachmenturl` LONGTEXT NULL,
+  `edit-after-attachmentfilename` LONGTEXT NULL,
+  PRIMARY KEY (`id_DM`),
+  KEY `idx_dm_messages_user-id` (`user-id`))
 ROW_FORMAT=COMPRESSED;
