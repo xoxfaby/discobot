@@ -9,7 +9,7 @@ class AdminCommands:
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     @commands.command()
-    @commands.has_permissions(manage_messages=True)
+    @commands.check(dbotchecks.check_server_admin_or_botowner)
     async def deletebotmessages(self, ctx, num: int):
         """Deletes my last x number of messages"""
         try:
@@ -18,11 +18,11 @@ class AdminCommands:
             pass
         limit = int(num)
         messages_list = []
-        messages_list += (x for x in await ctx.history(limit=limit, before=ctx.message).flatten() if x.author == ctx.me)
+        messages_list += (x for x in await ctx.history(limit=100, before=ctx.message).flatten() if x.author == ctx.me)
         await ctx.channel.delete_messages(messages_list)
 
     @commands.command()
-    @commands.has_permissions(manage_messages=True)
+    @commands.check(dbotchecks.check_server_admin_or_botowner)
     async def purge(self, ctx, *, num: int):
         """Purges the last x number of messages from the channel"""
         try:

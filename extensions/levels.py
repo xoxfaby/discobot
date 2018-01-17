@@ -13,12 +13,14 @@ class LevelSystem:
         goaldict["images"] = int(50)
         goaldict['messages'] = int(100)
         goaldict['onlinetime'] = int(48)
+        goaldict['voicetime'] = int(5)
 
     async def rewards(self):
         rewarddict = dict()
         rewarddict['imagemessage'] = int(2)
         rewarddict['textmessage'] = int(1)
         rewarddict['onlinetimeincrement'] = int(1)
+        rewarddict['voicetime'] = int(1)
 
     async def levelup(self):
         pass
