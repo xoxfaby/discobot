@@ -18,6 +18,7 @@ class CommonParams:
     botowner = int(config['dbot']['botowner'])
     trustedusers = (config['dbot']['trustedusers']).split(',')
     mainserver = (config['dbot']['mainserver']).split(',')
+    mainserverlogchan = (config['dbot']['mainserverlogchan']).split(',')
     mainserverjailrole = int(config['dbot']['mainserverjailrole'])
     mainserverafkchan = int(config['dbot']['mainserverafkchan'])
     mysqlserver = str(config['script']['mysqlserver'])

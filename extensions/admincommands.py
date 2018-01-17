@@ -16,9 +16,9 @@ class AdminCommands:
             await ctx.message.delete()
         except:
             pass
-        limit = int(num)
         messages_list = []
         messages_list += (x for x in await ctx.history(limit=100, before=ctx.message).flatten() if x.author == ctx.me)
+        index = 0
         await ctx.channel.delete_messages(messages_list)
 
     @commands.command()
@@ -92,7 +92,7 @@ class AdminCommands:
             embed.add_field(name="Guild Name", value=f'{ctx.guild.name}', inline=True)
             embed.add_field(name="Guild ID", value=f'{ctx.guild.id}', inline=True)
             embed.add_field(name="Guild Region", value=f'{ctx.guild.region}', inline=True)
-            embed.add_field(name="Number of Users", value=f'{len(ctx.guild.members)}', inline=True)
+            embed.add_field(name="Number of Users", value=f'{ctx.guild.member_count}', inline=True)
             guildicon = ctx.guild.icon_url_as(format='png', size=1024)
             embed.add_field(name="Guild Icon", value="_\n_", inline=False)
             embed.set_image(url=guildicon)
@@ -115,20 +115,27 @@ class AdminCommands:
             useravatar = mentioned_users[0].avatar_url_as(format='jpg', size=1024)
             userjoineddisco = mentioned_users[0].created_at
             userjoinedguild = mentioned_users[0].joined_at
-        elif isinstance(mentioned_users, discord.Member):
+        elif isinstance(mentioned_users, discord.Member) or isinstance(mentioned_users, discord.User):
             membername = mentioned_users.display_name
             memberid = mentioned_users.id
-            userrole = mentioned_users.top_role
+            if isinstance(mentioned_users, discord.Member):
+                userrole = mentioned_users.top_role
+                userjoinedguild = mentioned_users.joined_at
+            else:
+                userrole = "None"
+                userjoinedguild = "None"
             useravatar = mentioned_users.avatar_url_as(format='jpg', size=1024)
             userjoineddisco = mentioned_users.created_at
-            userjoinedguild = mentioned_users.joined_at
+
         else:
             return
         embed.add_field(name="Member Name", value=str(membername))
         embed.add_field(name="Member ID", value=str(memberid))
-        embed.add_field(name="Top Role of User", value=str(userrole.name))
+        if isinstance(mentioned_users, discord.Member):
+            embed.add_field(name="Top Role of User", value=str(userrole.name))
         embed.add_field(name="Joined Discord", value=str(userjoineddisco), inline=False)
-        embed.add_field(name="Joined this Guild/Server", value=str(userjoinedguild), inline=False)
+        if isinstance(mentioned_users, discord.Member):
+            embed.add_field(name="Joined this Guild/Server", value=str(userjoinedguild), inline=False)
         embed.add_field(name="_\n_", value="_\n_", inline=False)
         embed.add_field(name="User Avatar", value="_\n_", inline=False)
         embed.set_image(url=useravatar)
