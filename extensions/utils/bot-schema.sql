@@ -166,5 +166,7 @@ CREATE TABLE `mysqldb`.`_dm_messages` (
   `edit-after-attachmenturl` LONGTEXT NULL,
   `edit-after-attachmentfilename` LONGTEXT NULL,
   PRIMARY KEY (`id_DM`),
-  KEY `idx_dm_messages_user-id` (`user-id`))
+  KEY `idx_dm_messages_user-id` (`user-id`),
+  KEY `idx_dm_messages_channel-id` (`dm_channel-id`),
+  KEY `idx_dm_messages_message-id` (`message-id`))
 ROW_FORMAT=COMPRESSED;
