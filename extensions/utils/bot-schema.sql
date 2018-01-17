@@ -111,11 +111,11 @@ CREATE TABLE `mysqldb`.`_messages` (
   `edit-before-attachmentfilename` LONGTEXT NULL,
   `edit-after-attachmenturl` LONGTEXT NULL,
   `edit-after-attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_messages`),
+  PRIMARY KEY (`message-id`),
   KEY `idx_messages_guild-id` (`guild-id`),
   KEY `idx_messages_user-id` (`user-id`),
   KEY `idx_messages_channel-id` (`channel-id`),
-  KEY `idx_messages_message-id` (`message-id`))
+  KEY `idx_messages_id` (`id_messages`))
 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_voice` (
@@ -165,8 +165,8 @@ CREATE TABLE `mysqldb`.`_dm_messages` (
   `edit-before-attachmentfilename` LONGTEXT NULL,
   `edit-after-attachmenturl` LONGTEXT NULL,
   `edit-after-attachmentfilename` LONGTEXT NULL,
-  PRIMARY KEY (`id_DM`),
+  PRIMARY KEY (`message-id`),
   KEY `idx_dm_messages_user-id` (`user-id`),
   KEY `idx_dm_messages_channel-id` (`dm_channel-id`),
-  KEY `idx_dm_messages_message-id` (`message-id`))
+  KEY `idx_dm_messages_message-id` (`id_DM`))
 ROW_FORMAT=COMPRESSED;
