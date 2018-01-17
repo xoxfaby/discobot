@@ -67,7 +67,7 @@ class BotLoggerDB:
 
     async def guild_member_log(self, member, secondaryargs, guild):
         sql_cmd, table_name, query_data = await self.bot.sql.statement_insert_guild_member(member, secondaryargs, guild)
-        await self.check_table("member-log", table_name)
+        # await self.check_table("member-log", table_name)
         async with self.bot.sql.mysqlcon.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(sql_cmd, query_data)
@@ -87,7 +87,7 @@ class BotLoggerDB:
 
     async def on_voice_state_update(self, member, before, after):
         voice_command, table_name, query_data = await self.bot.sql.statement_insert_voicetable(member, after)
-        await self.check_table("voice", table_name)
+        # await self.check_table("voice", table_name)
         async with self.bot.sql.mysqlcon.acquire() as conn:
             async with conn.cursor() as cursor:
                 return await cursor.execute(voice_command, query_data)
@@ -95,13 +95,13 @@ class BotLoggerDB:
     async def on_message(self, message):
         if str('Direct Message') in str(message.channel):
             dm_sql_cmd, table_name, query_data = await self.bot.sql.statement_insert_dm_new(message)
-            await self.check_table("dm-new", table_name)
+            # await self.check_table("dm-new", table_name)
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     await cursor.execute(dm_sql_cmd, query_data)
         else:
             channel_sql_cmd, table_name, query_data = await self.bot.sql.statement_insert_channel_new(message)
-            await self.check_table("channel-new", table_name)
+            # await self.check_table("channel-new", table_name)
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     await cursor.execute(query=channel_sql_cmd, args=query_data)
@@ -111,14 +111,14 @@ class BotLoggerDB:
     async def on_message_edit(self, beforemessage, aftermessage):
         if str('Direct Message') in str(aftermessage.channel):
             dm_sql_cmd, table_name, query_data = await self.bot.sql.statement_insert_dm_edit(beforemessage, aftermessage)
-            await self.check_table("dm-edited", table_name)
+            # await self.check_table("dm-edited", table_name)
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     return await cursor.execute(dm_sql_cmd, query_data)
         else:
             channel_sql_cmd, table_name, query_data = await self.bot.sql.statement_insert_channel_edit(beforemessage,
                                                                                                        aftermessage)
-            await self.check_table("channel-edited", table_name)
+            # await self.check_table("channel-edited", table_name)
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     return await cursor.execute(channel_sql_cmd, query_data)
@@ -126,13 +126,13 @@ class BotLoggerDB:
     async def on_message_delete(self, message):
         if str('Direct Message') in str(message.channel):
             dm_sql_cmd, table_name, query_data = await self.bot.sql.statement_insert_dm_deleted(message)
-            await self.check_table("dm-deleted", table_name)
+            # await self.check_table("dm-deleted", table_name)
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     return await cursor.execute(dm_sql_cmd, query_data)
         else:
             channel_sql_cmd, table_name, query_data = await self.bot.sql.statement_insert_channel_deleted(message)
-            await self.check_table("channel-deleted", table_name)
+            # await self.check_table("channel-deleted", table_name)
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     return await cursor.execute(channel_sql_cmd, query_data)

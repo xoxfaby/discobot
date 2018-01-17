@@ -37,7 +37,7 @@ class InternalSQL:
             self.bot.common.config.write(towrite)
 
     async def statement_create_bot_schema(self):
-        infile = open(os.path.join("extensions", "db", "CREATE-bot-schema.sql"), 'r')
+        infile = open(os.path.join("extensions", "utils", "bot-schema.sql"), 'r')
         sql_file = infile.read()
         infile.close()
         sql_file1 = sql_file.replace("mysqldb", self.bot.common.mysqldb)
@@ -71,14 +71,14 @@ class InternalSQL:
             attachmenturl = "None"
             attachmentfilename = "None"
         sql_query = """
-        INSERT INTO `{0}`.`{1}_{2}_messages` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
+        INSERT INTO `{0}`.`_messages` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
         `user-id`, `user-name`, `message-id`, `content`, `attachmenturl`, `attachmentfilename`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         new_query = sql_query.format(self.bot.common.mysqldb, guildid, channelid)
         query_data = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, content,
                       attachmenturl, attachmentfilename)
-        table_name = str(guildid + "_" + channelid + "_messages")
+        table_name = str("_messages")
         return new_query, table_name, query_data
 
     async def statement_insert_channel_edit(self, ctx, aftermessage):
@@ -103,7 +103,7 @@ class InternalSQL:
             afterattachmentfilename = "None"
             afterattachmenturl = "None"
         sqlquery = """
-        INSERT INTO `{0}`.`{1}_{2}_edited` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
+        INSERT INTO `{0}`.`_edited` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
         `user-id`, `user-name`, `message-id`, `before-content`, `before-attachmenturl`, `before-attachmentfilename`,
         `after-content`, `after-attachmenturl`, `after-attachmentfilename`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
@@ -112,7 +112,7 @@ class InternalSQL:
         querydata = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, beforecontent,
                      beforeattachmenturl, beforeattachmentfilename, aftercontent, afterattachmenturl,
                      afterattachmentfilename)
-        tablename = str(guildid + "_" + channelid + "_edited")
+        tablename = str("_edited")
         return newquery, tablename, querydata
 
     async def statement_insert_channel_deleted(self, ctx):
@@ -133,14 +133,14 @@ class InternalSQL:
             attachmenturl = "None"
             attachmentfilename = "None"
         sqlquery = """
-        INSERT INTO `{0}`.`{1}_{2}_deleted` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
+        INSERT INTO `{0}`.`_deleted` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
         `user-id`, `user-name`, `message-id`, `original-send-time`, `content`, `attachmenturl`, `attachmentfilename`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         newquery = sqlquery.format(self.bot.common.mysqldb, guildid, channelid)
         querydata = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, originalcreate,
                      content, str(attachmenturl), str(attachmentfilename))
-        tablename = str(guildid + "_" + channelid + "_deleted")
+        tablename = str("_deleted")
         return newquery, tablename, querydata
 
     async def statement_insert_dm_new(self, ctx):
@@ -157,13 +157,13 @@ class InternalSQL:
             attachmenturl = "None"
             attachmentfilename = "None"
         sqlquery = """
-        INSERT INTO `{0}`.`dm_{1}_messages` (`time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`,
+        INSERT INTO `{0}`.`_dm_messages` (`time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`,
         `content`, `attachmenturl`, `attachmentfilename`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
         """
         newquery = sqlquery.format(self.bot.common.mysqldb, userid)
         querydata = (msgtime, channelid, userid, username, messageid, content, attachmenturl, attachmentfilename)
-        tablename = str("dm_" + userid + "_messages")
+        tablename = str("_dm_messages")
         return newquery, tablename, querydata
 
     async def statement_insert_dm_edit(self, ctx, aftermessage):
@@ -185,7 +185,7 @@ class InternalSQL:
             afterattachmentfilename = "None"
             afterattachmenturl = "None"
         sqlquery = """
-        INSERT INTO `{0}`.`dm_{1}_edited` (`time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`, 
+        INSERT INTO `{0}`.`_dm_edited` (`time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`, 
         `before-content`, `before-attachmenturl`, `before-attachmentfilename`, `after-content`, `after-attachmenturl`, 
         `after-attachmentfilename`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
@@ -193,7 +193,7 @@ class InternalSQL:
         newquery = sqlquery.format(self.bot.common.mysqldb, userid)
         querydata = (msgtime, channelid, userid, username, messageid, beforecontent, beforeattachmenturl,
                      beforeattachmentfilename, aftercontent, afterattachmenturl, afterattachmentfilename)
-        tablename = str("dm_" + userid + "_edited")
+        tablename = str("_dm_edited")
         return newquery, tablename, querydata
 
     async def statement_insert_dm_deleted(self, ctx):
@@ -211,14 +211,14 @@ class InternalSQL:
             attachmenturl = "None"
             attachmentfilename = "None"
         sqlquery = """
-        INSERT INTO `{0}`.`dm_{1}_deleted` (`time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`, 
+        INSERT INTO `{0}`.`_dm_deleted` (`time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`, 
         `original-send-time`, `content`, `attachmenturl`, `attachmentfilename`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         newquery = sqlquery.format(self.bot.common.mysqldb, userid)
         querydata = (msgtime, channelid, userid, username, messageid, originalsendtime, content, attachmenturl,
                      attachmentfilename)
-        tablename = str("dm_" + userid + "_deleted")
+        tablename = str("_dm_deleted")
         return newquery, tablename, querydata
 
     async def statement_insert_errorlog(self, ctx, exception):
@@ -239,7 +239,7 @@ class InternalSQL:
         """
         newquery = sqlquery.format(self.bot.common.mysqldb)
         querydata = (msgtime, guildid, userid, username, messageid, content, errormessage)
-        tablename = str(guildid + "_errorlog")
+        tablename = str("_errorlog")
         return newquery, tablename, querydata
 
     async def statement_insert_voicetable(self, member, after):
@@ -270,14 +270,14 @@ class InternalSQL:
         else:
             voicechannelname = str(after.channel)
             voicechannelid = str(after.channel.id)
-        sql_query = """INSERT INTO `{0}`.`{1}_voice` (`time`, `guild-id`, `guild-name`, `user-id`, `user-name`,
+        sql_query = """INSERT INTO `{0}`.`_voice` (`time`, `guild-id`, `guild-name`, `user-id`, `user-name`,
         `voicechannel-id`, `voicechannel-name`, `selfdeaf`, `selfmute`, `serverdeaf`, `servermute`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         new_query = sql_query.format(self.bot.common.mysqldb, guildid)
         query_data = (msgtime, guildid, guildname, memberid, membername, voicechannelid, voicechannelname, selfdeaf,
                       selfmute, serverdeaf, servermute)
-        tablename = str(guildid + "_voice")
+        tablename = str("_voice")
         return new_query, tablename, query_data
 
     async def statement_insert_guild_member(self, member, secondaryargs, guild):
@@ -288,12 +288,12 @@ class InternalSQL:
         username = str(member)
         action = str(secondaryargs)
         sql_query = """
-        INSERT INTO `{0}`.`{1}_memberlog` (`time`, `guild-id`, `guild-name`, `user-id`, `user-name`, `action`)
+        INSERT INTO `{0}`.`_memberlog` (`time`, `guild-id`, `guild-name`, `user-id`, `user-name`, `action`)
         VALUES (%s, %s, %s, %s, %s, %s);
         """
         new_query = sql_query.format(self.bot.common.mysqldb, guildid)
         query_data = (msgtime, guildid, guildname, userid, username, action)
-        tablename = str(guildid + "_memberlog")
+        tablename = str("_memberlog")
         return new_query, tablename, query_data
 
     async def statement_insert_guild_log(self, guild, joinleave):
@@ -326,37 +326,6 @@ class InternalSQL:
             return
         tablename = str("_guildlog")
         return new_query, tablename, query_data
-
-    async def statement_create_table(self, table_type, table_name):
-        if table_type == "voice":
-            sql_filename = "CREATE-voice.sql"
-        elif table_type == "member-list":
-            sql_filename = "CREATE-member-list.sql"
-        elif table_type == "member-log":
-            sql_filename = "CREATE-member-log.sql"
-        elif table_type == "dm-new":
-            sql_filename = "CREATE-dm-message.sql"
-        elif table_type == "dm-edited":
-            sql_filename = "CREATE-dm-edited.sql"
-        elif table_type == "dm-deleted":
-            sql_filename = "CREATE-dm-deleted.sql"
-        elif table_type == "channel-new":
-            sql_filename = "CREATE-messages.sql"
-        elif table_type == "channel-edited":
-            sql_filename = "CREATE-edited.sql"
-        elif table_type == "channel-deleted":
-            sql_filename = "CREATE-deleted.sql"
-        else:
-            sql_filename = None
-        if sql_filename is None:
-            return None
-        else:
-            infile = open(os.path.join("extensions", "db", sql_filename), 'r')
-            sql_file = infile.read()
-            infile.close()
-            sql_commands1 = sql_file.replace("tablename", table_name)
-            sql_commands = sql_commands1.replace("mysqldb", self.bot.common.mysqldb)
-            return sql_commands
 
     async def statement_insert_encountered_users(self):
         sql_query = """
