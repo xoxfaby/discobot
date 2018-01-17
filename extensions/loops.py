@@ -7,10 +7,11 @@ class LoopClass:
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
-        self.bot.bg_awoo = self.bot.loop.create_task(self.awoo())
+        self.bot.loop.create_task(self.awoo())
 
     async def awoo(self):
         await self.bot.wait_until_ready()
+        await asyncio.sleep(5)
         timerange = list(range(7200, 28800, 2))
         awoo_array = []
         awoo_path = os.path.join("internalfiles", "images", "smallawoo", "**")
