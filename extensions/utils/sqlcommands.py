@@ -121,11 +121,13 @@ class InternalSQL:
                      aftercontent, beforeattachmenturl, beforeattachmentfilename, afterattachmenturl,
                      afterattachmentfilename, isedited, edittime, beforecontent, aftercontent, beforeattachmenturl,
                      beforeattachmentfilename, afterattachmenturl, afterattachmentfilename)
-        tablename = str("_edited")
+        tablename = str("_messages")
         return newquery, tablename, querydata
 
     async def statement_insert_channel_deleted(self, ctx):
-        msgtime = str(datetime.datetime.now())
+        createtime = str(ctx.created_at)
+        isdeleted = 1
+        deletetime = str(datetime.datetime.now())
         guildid = str(ctx.guild.id)
         guildname = str(ctx.guild.name)
         channelid = str(ctx.channel.id)
@@ -142,18 +144,21 @@ class InternalSQL:
             attachmenturl = "None"
             attachmentfilename = "None"
         sqlquery = """
-        INSERT INTO `{0}`.`_deleted` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
-        `user-id`, `user-name`, `message-id`, `original-send-time`, `content`, `attachmenturl`, `attachmentfilename`)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO `{0}`.`_messages` (`create-time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
+        `user-id`, `user-name`, `message-id`, `content`, `attachmenturl`, `attachmentfilename`, `isdeleted`, 
+        `delete-time`) 
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE    
+        `isdeleted` = %s, `delete-time` = %s;
         """
-        newquery = sqlquery.format(self.bot.common.mysqldb, guildid, channelid)
-        querydata = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, originalcreate,
-                     content, str(attachmenturl), str(attachmentfilename))
-        tablename = str("_deleted")
+        newquery = sqlquery.format(self.bot.common.mysqldb)
+        querydata = (createtime, guildid, guildname, channelid, channelname, userid, username, messageid, content,
+                     str(attachmenturl), str(attachmentfilename), isdeleted, deletetime, isdeleted, deletetime)
+        tablename = str("_messages")
         return newquery, tablename, querydata
 
     async def statement_insert_dm_new(self, ctx):
-        msgtime = str(datetime.datetime.now())
+        createtime = str(ctx.created_at)
         channelid = str(ctx.channel.id)
         userid = str(ctx.author.id)
         username = str(ctx.author)
@@ -165,27 +170,29 @@ class InternalSQL:
         else:
             attachmenturl = "None"
             attachmentfilename = "None"
-        sqlquery = """
-        INSERT INTO `{0}`.`_dm_messages` (`time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`,
-        `content`, `attachmenturl`, `attachmentfilename`)
+        sql_query = """
+        INSERT INTO `{0}`.`_dm_messages` (`create-time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`, `content`, 
+        `attachmenturl`, `attachmentfilename`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
         """
-        newquery = sqlquery.format(self.bot.common.mysqldb, userid)
-        querydata = (msgtime, channelid, userid, username, messageid, content, attachmenturl, attachmentfilename)
-        tablename = str("_dm_messages")
-        return newquery, tablename, querydata
+        new_query = sql_query.format(self.bot.common.mysqldb)
+        query_data = (createtime, channelid, userid, username, messageid, content, attachmenturl, attachmentfilename)
+        table_name = str("_dm_messages")
+        return new_query, table_name, query_data
 
     async def statement_insert_dm_edit(self, ctx, aftermessage):
-        msgtime = str(datetime.datetime.now())
+        createtime = str(ctx.created_at)
+        isedited = 1
         channelid = str(ctx.channel.id)
         userid = str(ctx.author.id)
         username = str(ctx.author)
         beforecontent = str(ctx.content)
         aftercontent = str(aftermessage.content)
         messageid = str(ctx.id)
+        edittime = str(aftermessage.edited_at)
         if ctx.attachments:
             beforeattachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
-            beforeattachmentfilename = ','.join([str(at.filename) for at in ctx.attachments])
+            beforeattachmentfilename = ', '.join([str(at.filename) for at in ctx.attachments])
             afterattachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
             afterattachmentfilename = ', '.join([str(at.filename) for at in ctx.attachments])
         else:
@@ -194,24 +201,33 @@ class InternalSQL:
             afterattachmentfilename = "None"
             afterattachmenturl = "None"
         sqlquery = """
-        INSERT INTO `{0}`.`_dm_edited` (`time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`, 
-        `before-content`, `before-attachmenturl`, `before-attachmentfilename`, `after-content`, `after-attachmenturl`, 
-        `after-attachmentfilename`)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO `{0}`.`_dm_messages` (`create-time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`, `content`,
+        `attachmenturl`, `attachmentfilename`, `isedited`, `edit-time`, `edit-before-content`, `edit-after-content`,
+        `edit-before-attachmenturl`,`edit-before-attachmentfilename`, `edit-after-attachmenturl`,
+        `edit-after-attachmentfilename`) 
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE    
+        `isedited` = %s, `edit-time` = %s, `edit-before-content` = %s, `edit-after-content` = %s,
+        `edit-before-attachmenturl` = %s, `edit-before-attachmentfilename` = %s, 
+        `edit-after-attachmenturl` = %s, `edit-after-attachmentfilename` = %s
         """
-        newquery = sqlquery.format(self.bot.common.mysqldb, userid)
-        querydata = (msgtime, channelid, userid, username, messageid, beforecontent, beforeattachmenturl,
-                     beforeattachmentfilename, aftercontent, afterattachmenturl, afterattachmentfilename)
-        tablename = str("_dm_edited")
+        newquery = sqlquery.format(self.bot.common.mysqldb)
+        querydata = (createtime, channelid, userid, username, messageid, beforecontent, beforeattachmenturl,
+                     beforeattachmentfilename, isedited, edittime, beforecontent, aftercontent, beforeattachmenturl,
+                     beforeattachmentfilename, afterattachmenturl, afterattachmentfilename, isedited, edittime,
+                     beforecontent, aftercontent, beforeattachmenturl, beforeattachmentfilename, afterattachmenturl,
+                     afterattachmentfilename)
+        tablename = str("_dm_messages")
         return newquery, tablename, querydata
 
     async def statement_insert_dm_deleted(self, ctx):
-        msgtime = str(datetime.datetime.now())
+        createtime = str(ctx.created_at)
+        isdeleted = 1
+        deletetime = str(datetime.datetime.now())
         channelid = str(ctx.channel.id)
         userid = str(ctx.author.id)
         username = str(ctx.author)
         content = str(ctx.content)
-        originalsendtime = str(ctx.created_at)
         messageid = str(ctx.id)
         if ctx.attachments:
             attachmenturl = ', '.join([str(at.url) for at in ctx.attachments])
@@ -220,14 +236,16 @@ class InternalSQL:
             attachmenturl = "None"
             attachmentfilename = "None"
         sqlquery = """
-        INSERT INTO `{0}`.`_dm_deleted` (`time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`, 
-        `original-send-time`, `content`, `attachmenturl`, `attachmentfilename`)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO `{0}`.`_dm_messages` (`create-time`, `dm_channel-id`, `user-id`, `user-name`, `message-id`, `content`,
+        `attachmenturl`, `attachmentfilename`, `isdeleted`, `delete-time`) 
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE    
+        `isdeleted` = %s, `delete-time` = %s;
         """
-        newquery = sqlquery.format(self.bot.common.mysqldb, userid)
-        querydata = (msgtime, channelid, userid, username, messageid, originalsendtime, content, attachmenturl,
-                     attachmentfilename)
-        tablename = str("_dm_deleted")
+        newquery = sqlquery.format(self.bot.common.mysqldb)
+        querydata = (createtime, channelid, userid, username, messageid, content, str(attachmenturl),
+                     str(attachmentfilename), isdeleted, deletetime, isdeleted, deletetime)
+        tablename = str("_dm_messages")
         return newquery, tablename, querydata
 
     async def statement_insert_errorlog(self, ctx, exception):
