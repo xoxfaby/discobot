@@ -45,9 +45,16 @@ class InternalSQL:
         return sql_commands
 
     async def statement_upsert_weathertable(self, authorid, zipcode):
-        sql_query = """REPLACE INTO `{0}`.`_weathertable` (`user-id`, `zipcode`) VALUES ('{1}', '{2}');"""
-        new_query = sql_query.format(self.bot.common.mysqldb, str(authorid), str(zipcode))
-        return new_query
+        sqlquery = """
+                INSERT INTO `{0}`.`_weathertable` (`user-id`, `zipcode`)
+                VALUES(%s, %s)
+                ON DUPLICATE KEY UPDATE    
+                `zipcode` = %s
+                """
+        newquery = sqlquery.format(self.bot.common.mysqldb)
+        querydata = (authorid, zipcode, zipcode)
+        tablename = str("_weathertable")
+        return newquery, tablename, querydata
 
     async def statement_get_weather_single_user(self, authorid):
         sql_query = """SELECT `zipcode` FROM `{0}`.`_weathertable` WHERE `user-id` = '{1}';"""
@@ -340,15 +347,20 @@ class InternalSQL:
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             new_query = guildquery.format(self.bot.common.mysqldb)
-            query_data = (msgtime, guildid, guildname, largeguild, guildownername, guildownerid,
-                          numusersonjoin, guildcreatedutc, leavetime)
+            query_data = (msgtime, guildid, guildname, largeguild, guildownername, guildownerid, numusersonjoin,
+                          guildcreatedutc, leavetime)
         elif joinleave == str("leave"):
             leavetime = str(datetime.datetime.now())
             guildquery = """
-            UPDATE `{0}`.`_guildlog` SET `leavetime` = %s WHERE `guildid` = %s
+            INSERT  INTO `{0}`.`_guildlog` (`firstseen`, `guildid`, `guildname`, `largeguild`, `guild-owner-name`,
+            `guild-owner-id`, `number-users-on-join`, `guild-created-date-UTC`, `leavetime`)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE    
+            `leavetime` = %s;
             """
             new_query = guildquery.format(self.bot.common.mysqldb)
-            query_data = (leavetime, guildid)
+            query_data = (msgtime, guildid, guildname, largeguild, guildownername, guildownerid, numusersonjoin,
+                          guildcreatedutc, leavetime, leavetime)
         else:
             return
         tablename = str("_guildlog")
@@ -427,15 +439,21 @@ class InternalSQL:
             voicelogchan = None
         isconfigged = 1
         configquery = """
-        REPLACE INTO `{0}`.`_serverconfig` (`guild-id`, `isconfigged`, `initialchannel`, `whoconfiged`, `lastconfiged`, 
+        INSERT INTO `{0}`.`_serverconfig` (`guild-id`, `isconfigged`, `initialchannel`, `whoconfiged`, `lastconfiged`, 
         `enablelogging`, `enableusewelcome`, `enableadminlogs`, `enablevoicelogs`, `welcomechannel`, `adminchannel`,
         `voicelogchannel`, `awoochannel`, `enableawoo`, `partmessage`, `welcomemessage`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE 
+        `initialchannel` = %s, `whoconfiged` = %s, `lastconfiged` = %s, `enablelogging` = %s, `enableusewelcome` = %s,
+        `enableadminlogs` = %s, `enablevoicelogs` = %s, `welcomechannel` = %s, `adminchannel` = %s,
+        `voicelogchannel` = %s, `awoochannel` = %s, `enableawoo` = %s, `partmessage` = %s, `welcomemessage` = %s
         """
         new_query = configquery.format(self.bot.common.mysqldb)
         query_data = (guildid, isconfigged, initialchan, whoconfiged, configtime, enablelogging, welcomechanbool,
                       adminlogchanbool, voicelogchanbool, welcomechan, adminlogchan, voicelogchan, awoochan,
-                      enableawoos, partmessage, joinmessage)
+                      enableawoos, partmessage, joinmessage, initialchan, whoconfiged, configtime, enablelogging,
+                      welcomechanbool, adminlogchanbool, voicelogchanbool, welcomechan, adminlogchan, voicelogchan,
+                      awoochan, enableawoos, partmessage, joinmessage)
         return new_query, query_data
 
     async def statement_get_server_config(self, guild):

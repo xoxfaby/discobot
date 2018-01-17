@@ -11,7 +11,7 @@ CREATE TABLE `mysqldb`.`_guildlog` (
   `guild-owner-id` VARCHAR(45) NOT NULL,
   `number-users-on-join` INT NOT NULL,
   `guild-created-date-UTC` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id_guildlog`),
+  PRIMARY KEY (`guildid`),
   UNIQUE INDEX `guildid_UNIQUE` (`guildid` ASC))
 ROW_FORMAT=COMPRESSED;
 
@@ -31,7 +31,7 @@ CREATE TABLE `mysqldb`.`_weathertable` (
   `id_weathertable` INT NOT NULL AUTO_INCREMENT,
   `user-id` VARCHAR(45) NOT NULL,
   `zipcode` INT NOT NULL,
-  PRIMARY KEY (`id_weathertable`),
+  PRIMARY KEY (`user-id`),
   UNIQUE INDEX `user-id_UNIQUE` (`user-id` ASC))
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci
@@ -42,7 +42,7 @@ CREATE TABLE `mysqldb`.`_encountered-users` (
   `firstseen` VARCHAR(45) NOT NULL,
   `user-id` VARCHAR(45) NOT NULL,
   `user-name` LONGTEXT NOT NULL,
-  PRIMARY KEY (`id_encountered-users`),
+  PRIMARY KEY (`user-id`),
   UNIQUE INDEX `user-id_UNIQUE` (`user-id` ASC))
   ROW_FORMAT=COMPRESSED;
 
@@ -77,7 +77,7 @@ CREATE TABLE `mysqldb`.`_serverconfig` (
   `awoochannel` varchar(45) DEFAULT NULL,
   `partmessage` varchar(2000) NOT NULL DEFAULT 'ok bye {0}',
   `welcomemessage` varchar(2000) NOT NULL DEFAULT 'welcome to {1}, {0}~',
-  PRIMARY KEY (`id_serverconfig`),
+  PRIMARY KEY (`guild-id`),
   UNIQUE KEY `guild-id_UNIQUE` (`guild-id`))
   ROW_FORMAT=COMPRESSED;
 

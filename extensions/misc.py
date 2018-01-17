@@ -237,10 +237,10 @@ class Misc:
             raise self.bot.errors.DBotInternalError(f'You did not pass a zipcode when calling this command.\nExample: '
                                                     f'`{self.bot.common.discordbotcommandprefix}weatherset 98104`')
         elif zipcode.isdigit():
-            sqlquery = await self.bot.sql.statement_upsert_weathertable(str(ctx.author.id), str(zipcode))
+            sqlquery, tablename, querydata = await self.bot.sql.statement_upsert_weathertable(str(ctx.author.id), str(zipcode))
             async with self.bot.sql.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    await cursor.execute(sqlquery)
+                    await cursor.execute(sqlquery, querydata)
             return await ctx.send(f'Your default weather has been set\nIn the future, you can run '
                                   f'`{self.bot.common.discordbotcommandprefix}w` to retrieve your local weather')
         else:
