@@ -416,7 +416,7 @@ class Misc:
     @commands.command()
     async def awootime(self, ctx):
         """Lists the time until the next awoo"""
-        nextawoo = await self.bot.mysqlcache.get(key="awoowaittime")
+        nextawoo = await self.bot.misccache.get(key="awoowaittime")
         curtime = datetime.datetime.now()
         delta = (nextawoo - curtime).total_seconds()
         hours, remainder = divmod(int(delta), 3600)

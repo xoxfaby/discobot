@@ -78,30 +78,28 @@ class AdminCommands:
 
     async def _user_getter(self, ctx, user):
         if not ctx.message.mentions:
-            mentioned_users = await commands.UserConverter().convert(ctx, user)
+            mentioned_users = await commands.MemberConverter().convert(ctx, user)
         else:
             mentioned_users = ctx.message.mentions
         return mentioned_users
 
-    @commands.group()
+    @commands.command()
     async def guildinfo(self, ctx):
         """Info about the discord guild/server"""
-        if ctx.invoked_subcommand is None:
-            embed = discord.Embed(title="Guild Information")
-            embed.add_field(name="Guild Name", value=f'{ctx.guild.name}', inline=True)
-            embed.add_field(name="Guild ID", value=f'{ctx.guild.id}', inline=True)
-            embed.add_field(name="Guild Region", value=f'{ctx.guild.region}', inline=True)
-            embed.add_field(name="Number of Users", value=f'{ctx.guild.member_count}', inline=True)
-            guildicon = ctx.guild.icon_url_as(format='png', size=1024)
-            embed.add_field(name="Guild Icon", value="_\n_", inline=False)
-            embed.set_image(url=guildicon)
-            return await ctx.send(embed=embed)
-        else:
-            return
+        guild = ctx.guild
+        embed = discord.Embed(title="Guild Information")
+        embed.add_field(name="Guild Name", value=f'{guild.name}', inline=True)
+        embed.add_field(name="Guild ID", value=f'{guild.id}', inline=True)
+        embed.add_field(name="Guild Region", value=f'{guild.region}', inline=True)
+        embed.add_field(name="Number of Users", value=f'{guild.member_count}', inline=True)
+        guildicon = ctx.guild.icon_url_as(format='png', size=1024)
+        embed.add_field(name="Guild Icon", value="_\n_", inline=False)
+        embed.set_image(url=guildicon)
+        return await ctx.send(embed=embed)
 
-    @guildinfo.command()
+    @commands.command()
     async def userinfo(self, ctx, user=None):
-        """Subcommand for the guildinfo command, lists info about a mentioned user"""
+        """lists info about a mentioned user"""
         if user is None:
             mentioned_users = ctx.author
         else:
@@ -140,7 +138,7 @@ class AdminCommands:
         embed.set_image(url=useravatar)
         return await ctx.send(embed=embed)
 
-    @guildinfo.command()
+    @commands.command()
     async def roleinfo(self, ctx, role):
         """Subcommand to guildinfo, lists info about a mentioned role"""
         mentioned_roles = await self._role_getter(ctx, role)

@@ -8,6 +8,7 @@ class UtilFuncs:
     # Mostly making this cog for small things like aiohttp downloads and file reading/writing
     def __init__(self, bot):
         self.bot = bot
+        self.bot.utils = self
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def retrieve_web_file(self, url: str, savelocation=None):
@@ -27,7 +28,13 @@ class UtilFuncs:
 
 
 class MyErrors(commands.CommandError):
-    pass
+    """
+    Subclassing error commands because why not.
+    """
+    def __init__(self, bot):
+        self.bot = bot
+        self.bot.errors = self
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     class DBotInternalError(commands.CommandError):
         pass
@@ -40,3 +47,8 @@ class MyErrors(commands.CommandError):
 
     class NotOwnerError(commands.CommandError):
         pass
+
+
+def setup(dbot):
+    dbot.add_cog(UtilFuncs(dbot))
+    dbot.add_cog(MyErrors)

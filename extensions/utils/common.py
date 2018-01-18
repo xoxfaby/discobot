@@ -32,6 +32,7 @@ class CommonParams:
     imgflipusername = str(config['imgflip']['imgusername'])
     imgflippassword = str(config['imgflip']['imgpassword'])
     addons = ['extensions.utils.sqlcommands',
+              'extensions.utils.utilfuncs',
               'extensions.botlogger',
               'extensions.botinternals',
               'extensions.mainserver',
@@ -42,7 +43,7 @@ class CommonParams:
               'extensions.image',
               'extensions.loops'
               ]
-    starttime = datetime.datetime.utcnow()
+
     if not botdescription:
         botdescription = 'discord pybot'
     if not discordbotcommandprefix:
