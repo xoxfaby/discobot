@@ -44,7 +44,7 @@ CREATE TABLE `mysqldb`.`_encountered-users` (
   `user-name` LONGTEXT NOT NULL,
   PRIMARY KEY (`user-id`),
   UNIQUE INDEX `user-id_UNIQUE` (`user-id` ASC))
-  ROW_FORMAT=COMPRESSED;
+ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_commandtable` (
   `id_commandtable` INT NOT NULL AUTO_INCREMENT,
@@ -58,7 +58,7 @@ CREATE TABLE `mysqldb`.`_commandtable` (
   `message-id` VARCHAR(45) NOT NULL,
   `content` LONGTEXT NOT NULL,
   PRIMARY KEY (`id_commandtable`))
-  ROW_FORMAT=COMPRESSED;
+ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_serverconfig` (
   `id_serverconfig` INT NOT NULL AUTO_INCREMENT,
@@ -79,7 +79,7 @@ CREATE TABLE `mysqldb`.`_serverconfig` (
   `welcomemessage` varchar(2000) NOT NULL DEFAULT 'welcome to {1}, {0}~',
   PRIMARY KEY (`guild-id`),
   UNIQUE KEY `guild-id_UNIQUE` (`guild-id`))
-  ROW_FORMAT=COMPRESSED;
+ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_guild_links` (
   `id_guild_links` INT NOT NULL,

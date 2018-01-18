@@ -11,7 +11,7 @@ class DBot(commands.Bot):
 
     async def on_ready(self):
         curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-        print(f'\n{curtime}: Logged in as "{str(self.user)}" with the id of "{str(self.user.id)}"\n------\n')
+        print(f'{curtime}: Logged in as "{str(self.user)}" with the id of "{str(self.user.id)}"\n------\n')
 
 
 class Main:
@@ -26,7 +26,7 @@ class Main:
             print(f'{extension} failed to load.\n{type(e).__name__}: {e}')
     curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     print(f'{bot.starttime}: {loaded_exts}/{total_exts} extensions and {len(bot.cogs.keys())} cogs have been loaded\n'
-          f'Proceeding with login to Discord now...')
+          f'Proceeding with login to Discord now...\n')
     bot.run(bot.common.discordbottoken)
     exit(0)
 

@@ -43,7 +43,6 @@ class CommonParams:
               'extensions.image',
               'extensions.loops'
               ]
-
     if not botdescription:
         botdescription = 'discord pybot'
     if not discordbotcommandprefix:
