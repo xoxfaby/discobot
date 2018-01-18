@@ -6,6 +6,7 @@ class BotInternals:
     """Bot Internal Shit"""
     def __init__(self, bot):
         self.bot = bot
+        self.bot.misccache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="misc")
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def on_ready(self):
@@ -40,22 +41,22 @@ class BotInternals:
             return
         else:
             member_guild_config = str(f'{str(member.guild.id)}_guild_config')
-            guild_config_exists_in_cache = await self.bot.sql.mysqlcache.exists(key=member_guild_config)
+            guild_config_exists_in_cache = await self.bot.mysqlcache.exists(key=member_guild_config)
             if guild_config_exists_in_cache:
-                guild_conf = await self.bot.sql.mysqlcache.get(key=member_guild_config)
+                guild_conf = await self.bot.mysqlcache.get(key=member_guild_config)
                 if bool(guild_conf['isconfigged']):
                     enable_voice_logs = bool(guild_conf['enablevoicelogs'])
                 else:
                     return
             else:
                 sql_cmd, table_name = await self.bot.sql.statement_get_server_config(member.guild)
-                async with self.bot.sql.mysqlcon.acquire() as conn:
+                async with self.bot.mysqlcon.acquire() as conn:
                     async with conn.cursor(aiomysql.DictCursor) as cursor:
                         await cursor.execute(sql_cmd)
                         rowcount = cursor.rowcount
                         if rowcount == 1:
                             guild_conf = await cursor.fetchone()
-                            await self.bot.sql.mysqlcache.add(key=member_guild_config, value=guild_conf)
+                            await self.bot.mysqlcache.add(key=member_guild_config, value=guild_conf)
                             enable_voice_logs = bool(guild_conf['enablevoicelogs'])
                         else:
                             return
@@ -72,19 +73,19 @@ class BotInternals:
             return
         else:
             member_guild_config = str(f'{str(guild.id)}_guild_config')
-            guild_config_exists_in_cache = await self.bot.sql.mysqlcache.exists(key=member_guild_config)
+            guild_config_exists_in_cache = await self.bot.mysqlcache.exists(key=member_guild_config)
             if guild_config_exists_in_cache:
-                guild_conf = await self.bot.sql.mysqlcache.get(key=member_guild_config)
+                guild_conf = await self.bot.mysqlcache.get(key=member_guild_config)
                 run_next = bool(guild_conf['isconfigged'])
             else:
                 sql_cmd, table_name = await self.bot.sql.statement_get_server_config(guild)
-                async with self.bot.sql.mysqlcon.acquire() as conn:
+                async with self.bot.mysqlcon.acquire() as conn:
                     async with conn.cursor(aiomysql.DictCursor) as cursor:
                         await cursor.execute(sql_cmd)
                         rowcount = cursor.rowcount
                         if rowcount == 1:
                             guild_conf = await cursor.fetchone()
-                            await self.bot.sql.mysqlcache.add(key=member_guild_config, value=guild_conf)
+                            await self.bot.mysqlcache.add(key=member_guild_config, value=guild_conf)
                             run_next = bool(guild_conf['isconfigged'])
                         else:
                             return
@@ -367,8 +368,8 @@ class BotInfo:
         joinpartmsgs = [welcomemessage, leavemessage]
         sqlquery, querydata = await self.bot.sql.statement_insert_guildconfig(ctx, channellist, responses, joinpartmsgs)
         member_guild_config = str(f'{str(ctx.guild.id)}_guild_config')
-        await self.bot.sql.mysqlcache.delete(key=member_guild_config)
-        async with self.bot.sql.mysqlcon.acquire() as conn:
+        await self.bot.mysqlcache.delete(key=member_guild_config)
+        async with self.bot.mysqlcon.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(sqlquery, querydata)
         await asyncio.sleep(1)

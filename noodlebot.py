@@ -1,6 +1,5 @@
 from extensions.utils.importsfile import *
 from extensions.utils.common import CommonParams
-from extensions.utils.sqlcommands import InternalSQL
 from extensions.utils.utilfuncs import UtilFuncs, MyErrors
 
 
@@ -10,7 +9,7 @@ class DBot(commands.Bot):
         super().__init__(*args, **kwargs, description=CommonParams.botdescription,
                          command_prefix=commands.when_mentioned_or(CommonParams.discordbotcommandprefix))
         self.common = CommonParams()
-        self.sql, self.errors, self.utils = InternalSQL(self), MyErrors(), UtilFuncs(self)
+        self.errors, self.utils = MyErrors(), UtilFuncs(self)
 
     async def on_ready(self):
         self.common.logger.info(f'\nLogged in as {str(self.user)}, id: {str(self.user.id)}')

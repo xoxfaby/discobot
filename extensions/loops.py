@@ -7,7 +7,11 @@ class LoopClass:
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
-        self.bot.loop.create_task(self.awoo())
+        self.awootask = self.bot.loop.create_task(self.awoo())
+
+    def __unload(self):
+        """I will clean up stuff!"""
+        self.awootask.cancel()
 
     async def awoo(self):
         await self.bot.wait_until_ready()
@@ -21,9 +25,9 @@ class LoopClass:
                 awoo_array += [str(filename)]
         while not self.bot.is_closed():
             waittime = random.choice(timerange)
-            await self.bot.sql.mysqlcache.delete(key="awoowaittime")
+            await self.bot.misccache.delete(key="awoowaittime")
             sql_cmd = await self.bot.sql.statement_get_awoolist()
-            async with self.bot.sql.mysqlcon.acquire() as conn:
+            async with self.bot.mysqlcon.acquire() as conn:
                 async with conn.cursor(aiomysql.DictCursor) as cursor:
                     await cursor.execute(sql_cmd)
                     chan_list = await cursor.fetchall()
@@ -36,7 +40,7 @@ class LoopClass:
             curtime = datetime.datetime.now()
             waittime1 = datetime.timedelta(seconds=int(waittime))
             projectedtime = curtime + waittime1
-            await self.bot.sql.mysqlcache.add(key="awoowaittime", value=projectedtime)
+            await self.bot.misccache.add(key="awoowaittime", value=projectedtime)
             await asyncio.sleep(waittime)
 
     async def daychange(self):

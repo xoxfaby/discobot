@@ -5,9 +5,18 @@ from extensions.utils import dbotchecks
 class InternalSQL:
     def __init__(self, bot):
         self.bot = bot
+        self.bot.sql = self
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
-        self.mysqlcache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="mysql")
-        self.bot.loop.create_task(self.mysqlstart())
+        self.bot.mysqlcache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="mysql")
+        self.bot.mysqltask = self.bot.loop.create_task(self.mysqlstart())
+
+    def __unload(self):
+        """I will clean up stuff!"""
+        self.bot.loop.run_until_complete(self.mysqlclose())
+
+    async def mysqlclose(self):
+        await self.bot.mysqlcon.close()
+        await self.bot.mysqlcon.wait_closed()
 
     async def mysqlstart(self):
         mysqlconfigured = self.bot.common.config.getboolean('DONOTTOUCH', 'mysqlconfigured')
@@ -16,7 +25,7 @@ class InternalSQL:
             await self.schemacreate()
         else:
             pass
-        self.mysqlcon = await aiomysql.create_pool(host=self.bot.common.mysqlserver, port=self.bot.common.mysqlport,
+        self.bot.mysqlcon = await aiomysql.create_pool(host=self.bot.common.mysqlserver, port=self.bot.common.mysqlport,
                                                    user=self.bot.common.mysqluser, minsize=10, maxsize=250,
                                                    use_unicode=True, password=self.bot.common.mysqlpw, db=schema,
                                                    autocommit=True, charset='utf8mb4')
@@ -501,3 +510,7 @@ class InternalSQL:
 #
 #     async def statement_generator(self):
 #         pass
+
+
+def setup(dbot):
+    dbot.add_cog(InternalSQL(dbot))

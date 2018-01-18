@@ -26,9 +26,9 @@ class Misc:
         if ctx.invoked_subcommand is None:
             # check cache for media links per guild
             cache_key = f'{str(ctx.guild.id)}_links'
-            guild_links_exists_in_cache = await self.bot.sql.mysqlcache.exists(key=cache_key)
+            guild_links_exists_in_cache = await self.bot.mysqlcache.exists(key=cache_key)
             if guild_links_exists_in_cache:
-                linksvalue = await self.bot.sql.mysqlcache.get(key=cache_key)
+                linksvalue = await self.bot.mysqlcache.get(key=cache_key)
                 get_from_db = False
             else:
                 linksvalue = None
@@ -40,7 +40,7 @@ class Misc:
                 SELECT `links` FROM {0} WHERE `guild-id` = '{1}'
                 """
                 sql_cmd = sqlquery.format(table_name, ctx.guild.id)
-                async with self.bot.sql.mysqlcon.acquire() as conn:
+                async with self.bot.mysqlcon.acquire() as conn:
                     async with conn.cursor(aiomysql.DictCursor) as cursor:
                         await cursor.execute(sql_cmd)
                         num_rows = cursor.rowcount
@@ -48,7 +48,7 @@ class Misc:
                             raise self.bot.errors.DBotInternalError("Error: this server has no stored links.")
                         else:
                             linksvalue = await cursor.fetchall()
-                            await self.bot.sql.mysqlcache.add(key=cache_key, value=linksvalue)
+                            await self.bot.mysqlcache.add(key=cache_key, value=linksvalue)
             linktext = ""
             for row in linksvalue:
                 linktext += str(row['links'] + "\n")
@@ -71,10 +71,10 @@ class Misc:
         for link in links:
             data = (str(guildid), str(link))
             querydata.append(data)
-        async with self.bot.sql.mysqlcon.acquire() as conn:
+        async with self.bot.mysqlcon.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.executemany(sql_cmd, querydata)
-        await self.bot.sql.mysqlcache.delete(key=cache_key)
+        await self.bot.mysqlcache.delete(key=cache_key)
         await ctx.send("Alright, I've added that to the database.")
 
     @links.command()
@@ -93,16 +93,16 @@ class Misc:
         for link in links:
             data = (str(link))
             querydata.append(data)
-        async with self.bot.sql.mysqlcon.acquire() as conn:
+        async with self.bot.mysqlcon.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.executemany(sql_cmd, querydata)
-        await self.bot.sql.mysqlcache.delete(key=cache_key)
+        await self.bot.mysqlcache.delete(key=cache_key)
         await ctx.send("Alright, I've removed the listed links from the database.")
 
     @links.command()
     async def removeall(self, ctx):
         cache_key = f'{str(ctx.guild.id)}_links'
-        await self.bot.sql.mysqlcache.delete(key=cache_key)
+        await self.bot.mysqlcache.delete(key=cache_key)
         guildid = str(ctx.guild.id)
         table_name = f'`{str(self.bot.common.mysqldb)}`.`_guild_links`'
         sqlquery = """
@@ -110,10 +110,10 @@ class Misc:
                WHERE `guild-id` = '{1}'
                """
         sql_cmd = sqlquery.format(table_name, str(guildid))
-        async with self.bot.sql.mysqlcon.acquire() as conn:
+        async with self.bot.mysqlcon.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(sql_cmd)
-        await self.bot.sql.mysqlcache.delete(key=cache_key)
+        await self.bot.mysqlcache.delete(key=cache_key)
         await ctx.send("Alright, I've removed all links from the database.")
 
     @commands.command()
@@ -149,7 +149,7 @@ class Misc:
             else:
                 authorid = ctx.author.id
             sqlcmd = await self.bot.sql.statement_get_weather_single_user(authorid)
-            async with self.bot.sql.mysqlcon.acquire() as conn:
+            async with self.bot.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     await cursor.execute(sqlcmd)
                     num_rows = cursor.rowcount
@@ -238,7 +238,7 @@ class Misc:
                                                     f'`{self.bot.common.discordbotcommandprefix}weatherset 98104`')
         elif zipcode.isdigit():
             sqlquery, tablename, querydata = await self.bot.sql.statement_upsert_weathertable(str(ctx.author.id), str(zipcode))
-            async with self.bot.sql.mysqlcon.acquire() as conn:
+            async with self.bot.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     await cursor.execute(sqlquery, querydata)
             return await ctx.send(f'Your default weather has been set\nIn the future, you can run '
@@ -416,7 +416,7 @@ class Misc:
     @commands.command()
     async def awootime(self, ctx):
         """Lists the time until the next awoo"""
-        nextawoo = await self.bot.sql.mysqlcache.get(key="awoowaittime")
+        nextawoo = await self.bot.mysqlcache.get(key="awoowaittime")
         curtime = datetime.datetime.now()
         delta = (nextawoo - curtime).total_seconds()
         hours, remainder = divmod(int(delta), 3600)

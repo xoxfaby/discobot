@@ -43,7 +43,6 @@ class AdminCommands:
         if str('Direct Message') not in str(ctx.channel):
             await ctx.message.delete()
         await ctx.send('Proceeding with bot shutdown now...')
-        await self.bot.sql.mysqlcon.close()
         return await self.bot.logout()
 
     @commands.command(hidden=True)
@@ -232,7 +231,7 @@ class AdminCommands:
     # async def allguildbroadcast(self, ctx, *, message):
     #     if str(ctx.author.id) == str(self.bot.common.botowner):
     #         sqlcmd = await self.bot.sql.statement_get_initialchannel()
-    #         async with self.bot.sql.mysqlcon.acquire() as conn:
+    #         async with self.bot.mysqlcon.acquire() as conn:
     #             async with conn.cursor(aiomysql.DictCursor) as cursor:
     #                 await cursor.execute(sqlcmd)
     #                 rowcount = cursor.rowcount

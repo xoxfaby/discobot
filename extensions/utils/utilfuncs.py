@@ -37,3 +37,6 @@ class MyErrors(commands.CommandError):
 
     class BotNotWorking(commands.CommandError):
         pass
+
+    class NotOwnerError(commands.CommandError):
+        pass

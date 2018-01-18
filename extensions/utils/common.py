@@ -31,7 +31,8 @@ class CommonParams:
     youtubeapikey = str(config['youtube']['youtubeapikey'])
     imgflipusername = str(config['imgflip']['imgusername'])
     imgflippassword = str(config['imgflip']['imgpassword'])
-    addons = ['extensions.botlogger',
+    addons = ['extensions.utils.sqlcommands',
+              'extensions.botlogger',
               'extensions.botinternals',
               'extensions.mainserver',
               'extensions.admincommands',
