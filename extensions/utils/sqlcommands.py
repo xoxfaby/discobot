@@ -11,7 +11,7 @@ class InternalSQL:
         self.bot.mysqltask = self.bot.loop.create_task(self.mysqlstart())
 
     def __unload(self):
-        """I will clean up stuff!"""
+        """cleans up sql connections"""
         self.bot.loop.run_until_complete(self.mysqlclose())
 
     async def mysqlclose(self):
