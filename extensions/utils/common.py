@@ -2,6 +2,10 @@ from extensions.utils.importsfile import *
 
 
 class CommonParams:
+    """Things for common parameters"""
+    def __init__(self):
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
+
     config = configparser.ConfigParser()
     internalfilesdir = os.path.join(os.curdir, "internalfiles")
     configfile = os.path.join(internalfilesdir, "botconf.ini")
@@ -77,3 +81,31 @@ class CommonParams:
     handler = logging.FileHandler(filename=fulllog, encoding='utf-8', mode='w+')
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     logger.addHandler(handler)
+
+
+class PrefixStuff:
+    """Things for custom prefixes"""
+    def __init__(self, bot):
+        self.bot = bot
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
+
+    async def load_all_prefixes(self):
+        prefixdictexist = await self.bot.mysqlcache.exists(key="prefixes")
+        if prefixdictexist:
+            self.bot.mysqlcache.delete(key="prefixes")
+        sqlcmd = self.bot.sql.statement_get_prefixes()
+        async with self.bot.mysqlcon.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(sqlcmd)
+                results = await cursor.fetchall()
+                self.bot.prefixdict = {}
+                for item in results:
+                    for guildid, prefix in item.items():
+                        self.bot.prefixdict[guildid] = prefix
+                await self.bot.mysqlcache.add(key="prefixes", value=self.bot.prefixdict)
+
+    async def get_prefix(self, message):
+        try:
+            return self.bot.prefixdict[message.guild.id]
+        except (KeyError, AttributeError):
+            return self.bot.common.discordbotcommandprefix

@@ -374,6 +374,19 @@ class BotInfo:
             await ctx.channel.delete_messages(configmessagelist1)
             await ctx.channel.delete_messages(configmessagelist)
 
+    @commands.command()
+    async def setprefix(self, ctx, *, prefix):
+        # await self.bot.sql.statement_get_prefixes()
+        pass
+        # your current prefix is 'x', you would like to change it to 'y', correct?
+        # verify with single backtick if prefix is proper
+        # if yes, insert, else return
+        # async with self.bot.mysqlcon.acquire() as conn:
+        #     async with conn.cursor(aiomysql.DictCursor) as cursor:
+        #         await cursor.execute(newcmd)
+        #         prefixdict = await cursor.fetchall()
+        #         await self.bot.mysqlcache.add(key="prefixes", value=prefixdict)
+
 
 class DBotHelp:
     """Bot help replacement"""

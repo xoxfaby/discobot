@@ -16,7 +16,6 @@ class InternalSQL:
 
     async def mysqlclose(self):
         await self.bot.mysqlcon.close()
-        await self.bot.mysqlcon.wait_closed()
 
     async def mysqlstart(self):
         mysqlconfigured = self.bot.common.config.getboolean('DONOTTOUCH', 'mysqlconfigured')
@@ -26,9 +25,26 @@ class InternalSQL:
         else:
             pass
         self.bot.mysqlcon = await aiomysql.create_pool(host=self.bot.common.mysqlserver, port=self.bot.common.mysqlport,
-                                                   user=self.bot.common.mysqluser, minsize=10, maxsize=250,
-                                                   use_unicode=True, password=self.bot.common.mysqlpw, db=schema,
-                                                   autocommit=True, charset='utf8mb4')
+                                                       user=self.bot.common.mysqluser, minsize=10, maxsize=250,
+                                                       use_unicode=True, password=self.bot.common.mysqlpw, db=schema,
+                                                       autocommit=True, charset='utf8mb4')
+        # await self.bot.common.load_all_prefixes()
+
+    async def statement_get_prefixes(self):
+        sqlcmd = """SELECT `guildid`, `prefix` FROM `{0}`.`prefixes` """
+        newcmd = sqlcmd.format(self.bot.common.mysqldb)
+        return newcmd
+
+    async def statement_insert_prefix(self, ctx, prefix):
+        guildid = str(ctx.guild.id)
+        sqlcmd = """INSERT INTO `{0}`.`prefixes` (`guildid`, `prefix`)
+        VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE
+        `guildid` = %s, `prefix` = %s;
+        """
+        newcmd = sqlcmd.format(self.bot.common.mysqldb)
+        querydata = (guildid, prefix, guildid, prefix)
+        return newcmd, querydata
 
     async def schemacreate(self):
         print("MySQL isn't configured yet...\nCreating tables in the Database now...")

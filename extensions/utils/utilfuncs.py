@@ -27,28 +27,5 @@ class UtilFuncs:
             raise self.bot.errors.DBotExternalError("Failed to retreive requested file.")
 
 
-class MyErrors(commands.CommandError):
-    """
-    Subclassing error commands because why not.
-    """
-    def __init__(self, bot):
-        self.bot = bot
-        self.bot.errors = self
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
-
-    class DBotInternalError(commands.CommandError):
-        pass
-
-    class DBotExternalError(commands.CommandError):
-        pass
-
-    class BotNotWorking(commands.CommandError):
-        pass
-
-    class NotOwnerError(commands.CommandError):
-        pass
-
-
 def setup(dbot):
     dbot.add_cog(UtilFuncs(dbot))
-    dbot.add_cog(MyErrors)

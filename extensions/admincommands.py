@@ -305,6 +305,12 @@ class AdminTesting:
         print(mesg)
         return await ctx.send("Printed to PyCharm console.")
 
+    # @commands.command()
+    # async def showprefix(self, ctx):
+    #     prefixdict = await self.bot.mysqlcache.get(key="prefixes")
+    #     print(type(prefixdict))
+    #     print(prefixdict['guildid'])
+
     # @commands.command(hidden=True)
     # async def guildchans(self, ctx):
     #     guildchannels = ctx.guild.channels

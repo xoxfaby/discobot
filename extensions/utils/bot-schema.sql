@@ -170,3 +170,12 @@ CREATE TABLE `mysqldb`.`_dm_messages` (
   KEY `idx_dm_messages_channel-id` (`dm_channel-id`),
   KEY `idx_dm_messages_message-id` (`id_DM`))
 ROW_FORMAT=COMPRESSED;
+
+CREATE TABLE `discobot`.`prefixes` (
+  `idprefixes` INT NOT NULL AUTO_INCREMENT,
+  `guildid` VARCHAR(45) NOT NULL,
+  `prefix` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`guildid`),
+  UNIQUE INDEX `guildid_UNIQUE` (`guildid` ASC),
+  UNIQUE INDEX `idprefixes_UNIQUE` (`idprefixes` ASC))
+ROW_FORMAT=COMPRESSED;
