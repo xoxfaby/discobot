@@ -90,22 +90,48 @@ class PrefixStuff:
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def load_all_prefixes(self):
+        mysqlconnected = await self.bot.mysqlcache.exists(key="mysqlcon")
+        while not mysqlconnected:
+            await asyncio.sleep(0.2)
+            mysqlconnected = await self.bot.mysqlcache.exists(key="mysqlcon")
         prefixdictexist = await self.bot.mysqlcache.exists(key="prefixes")
         if prefixdictexist:
-            self.bot.mysqlcache.delete(key="prefixes")
-        sqlcmd = self.bot.sql.statement_get_prefixes()
+            await self.bot.mysqlcache.delete(key="prefixes")
+        sqlcmd = await self.bot.sql.statement_get_prefixes()
         async with self.bot.mysqlcon.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(sqlcmd)
                 results = await cursor.fetchall()
                 self.bot.prefixdict = {}
                 for item in results:
-                    for guildid, prefix in item.items():
-                        self.bot.prefixdict[guildid] = prefix
+                    self.bot.prefixdict[item['guildid']] = item['prefix']
                 await self.bot.mysqlcache.add(key="prefixes", value=self.bot.prefixdict)
 
-    async def get_prefix(self, message):
+    async def reload_prefix_cache(self):
+        prefixdictexist = await self.bot.mysqlcache.exists(key="prefixes")
+        if prefixdictexist:
+            await self.bot.mysqlcache.delete(key="prefixes")
+        sqlcmd = await self.bot.sql.statement_get_prefixes()
+        async with self.bot.mysqlcon.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(sqlcmd)
+                results = await cursor.fetchall()
+                self.bot.prefixdict = {}
+                for item in results:
+                    self.bot.prefixdict[item['guildid']] = item['prefix']
+                await self.bot.mysqlcache.add(key="prefixes", value=self.bot.prefixdict)
+
+    async def prefix_for(self, guildid):
+        prefixdict = await self.bot.mysqlcache.get(key="prefixes")
         try:
-            return self.bot.prefixdict[message.guild.id]
+            prefix = prefixdict[str(guildid)]
+        except (KeyError, AttributeError, TypeError):
+            prefix = self.bot.common.discordbotcommandprefix
+        return prefix
+
+    async def get_prefix(self, bot, message):
+        try:
+            prefix = [await self.prefix_for(message.guild.id)]
+            return commands.when_mentioned_or(*prefix)(bot, message)
         except (KeyError, AttributeError):
             return self.bot.common.discordbotcommandprefix

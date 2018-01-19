@@ -7,8 +7,7 @@ class DBot(commands.Bot):
     """A modified discord.ext.commands.Bot class"""
     def __init__(self, *args, **kwargs):
         self.common, self.errors, self.prefixstuff = CommonParams(), MyErrors, PrefixStuff(self)
-        # self.myprefix = commands.when_mentioned_or(self.prefixstuff.get_prefix)
-        self.myprefix = self.common.discordbotcommandprefix
+        self.myprefix = self.prefixstuff.get_prefix
         super().__init__(*args, **kwargs, description=CommonParams.botdescription, command_prefix=self.myprefix)
 
     async def on_ready(self):
@@ -26,8 +25,7 @@ class Main:
         except Exception as e:
             print(f'{extension} failed to load.\n{type(e).__name__}: {e}')
     bot.starttime = datetime.datetime.utcnow()
-    # time.sleep(2)
-    # bot.loop.run_until_complete(bot.prefixstuff.load_all_prefixes())
+    bot.loop.create_task(bot.prefixstuff.load_all_prefixes())
     curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     print(f'{curtime}: {loaded_exts}/{total_exts} extensions and {len(bot.cogs.keys())} cogs have been loaded\n\n'
           f'Proceeding with login to Discord now...\n')

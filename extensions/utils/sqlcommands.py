@@ -28,22 +28,25 @@ class InternalSQL:
                                                        user=self.bot.common.mysqluser, minsize=10, maxsize=250,
                                                        use_unicode=True, password=self.bot.common.mysqlpw, db=schema,
                                                        autocommit=True, charset='utf8mb4')
-        # await self.bot.common.load_all_prefixes()
+        await self.bot.prefixstuff.load_all_prefixes()
 
     async def statement_get_prefixes(self):
         sqlcmd = """SELECT `guildid`, `prefix` FROM `{0}`.`prefixes` """
         newcmd = sqlcmd.format(self.bot.common.mysqldb)
         return newcmd
 
-    async def statement_insert_prefix(self, ctx, prefix):
-        guildid = str(ctx.guild.id)
+    async def statement_get_single_prefix(self):
+        sqlcmd = """SELECT `prefix` FROM `{0}`.`prefixes` WHERE `guildid` = '{1}'"""
+        return sqlcmd
+
+    async def statement_insert_prefix(self, guildid, prefix):
         sqlcmd = """INSERT INTO `{0}`.`prefixes` (`guildid`, `prefix`)
         VALUES (%s, %s)
-        ON DUPLICATE KEY UPDATE
+        ON DUPLICATE KEY UPDATE    
         `guildid` = %s, `prefix` = %s;
         """
-        newcmd = sqlcmd.format(self.bot.common.mysqldb)
-        querydata = (guildid, prefix, guildid, prefix)
+        newcmd = sqlcmd.format(self.bot.common.mysqldb).replace("\n","")
+        querydata = (str(guildid), str(prefix), str(guildid), str(prefix))
         return newcmd, querydata
 
     async def schemacreate(self):

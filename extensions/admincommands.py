@@ -17,7 +17,7 @@ class AdminCommands:
         except:
             pass
         messages_list = []
-        messages_list += (x for x in await ctx.history(limit=100, before=ctx.message).flatten() if x.author == ctx.me)
+        messages_list += (x for x in await ctx.history(limit=num, before=ctx.message).flatten() if x.author == ctx.me)
         index = 0
         await ctx.channel.delete_messages(messages_list)
 
@@ -223,6 +223,47 @@ class AdminCommands:
                 elif isinstance(mentioned_roles, discord.Role):
                     await mentioned_roles.edit(color=newcolor)
                     return await ctx.message.add_reaction('✅')
+
+    @commands.group(aliases=['getprefix', 'showprefix'])
+    async def prefix(self, ctx):
+        if ctx.invoked_subcommand is None:
+            return await ctx.send("Available subcommands are `set` or `show`")
+
+    @prefix.command()
+    async def set(self, ctx, *, newprefix):
+        newcmd, querydata = await self.bot.sql.statement_insert_prefix(str(ctx.guild.id), str(newprefix))
+        async with self.bot.mysqlcon.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(newcmd, querydata)
+        mesg = (f'Alright, I have set the custom prefix for this guild to be `{newprefix}`.\nPlease use that to use me'
+                f'from now on. You can also view my prefix at any time by mentioning me and using the `showprefix`'
+                f' command')
+        await self.bot.prefixstuff.reload_prefix_cache()
+        await ctx.send(mesg)
+
+    @prefix.command()
+    async def show(self, ctx):
+        await self.bot.prefixstuff.reload_prefix_cache()
+        sqlcmd = await self.bot.sql.statement_get_single_prefix()
+        newcmd = sqlcmd.format(self.bot.common.mysqldb, ctx.guild.id)
+        async with self.bot.mysqlcon.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(newcmd)
+                num_rows = cursor.rowcount
+                if num_rows:
+                    prefix = (await cursor.fetchone())['prefix']
+                else:
+                    prefix = None
+        if prefix is None:
+            mesg = (f'You have not set a custom prefix on this server.\nMy default command prefix is `'
+                    f'{self.bot.common.discordbotcommandprefix}` (Comma)\nYou can use '
+                    f'`{self.bot.common.discordbotcommandprefix}prefix set mynewprefixhere` to set a new custom '
+                    f'prefix.')
+        else:
+            mesg = (f'The prefix for this server is `{prefix}`\nTo run a command, you must either '
+                    f'prepend this to the command, or mention me.\nTo set a new custom prefix, please use '
+                    f'`{prefix}prefix set mynewprefixhere`;')
+        await ctx.send(mesg)
 
     # @commands.command(hidden=True)
     # @commands.is_owner()
