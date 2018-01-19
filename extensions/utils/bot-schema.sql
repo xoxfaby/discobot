@@ -12,6 +12,7 @@ CREATE TABLE `mysqldb`.`_guildlog` (
   `number-users-on-join` INT NOT NULL,
   `guild-created-date-UTC` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`guildid`),
+  KEY `idx_id_guildlog` (`id_guildlog`),
   UNIQUE INDEX `guildid_UNIQUE` (`guildid` ASC))
 ROW_FORMAT=COMPRESSED;
 
@@ -24,7 +25,8 @@ CREATE TABLE `mysqldb`.`_errorlog` (
   `message-id` VARCHAR(45) NOT NULL,
   `errormessage` LONGTEXT NOT NULL,
   `content` LONGTEXT NOT NULL,
-  PRIMARY KEY (`id_errorlog`))
+  PRIMARY KEY (`id_errorlog`),
+  KEY `idx_id_errorlog` (`id_errorlog`))
 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_weathertable` (
@@ -32,9 +34,8 @@ CREATE TABLE `mysqldb`.`_weathertable` (
   `user-id` VARCHAR(45) NOT NULL,
   `zipcode` INT NOT NULL,
   PRIMARY KEY (`user-id`),
+  KEY `idx_id_weathertable` (`id_weathertable`),
   UNIQUE INDEX `user-id_UNIQUE` (`user-id` ASC))
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci
 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_encountered-users` (
@@ -43,6 +44,7 @@ CREATE TABLE `mysqldb`.`_encountered-users` (
   `user-id` VARCHAR(45) NOT NULL,
   `user-name` LONGTEXT NOT NULL,
   PRIMARY KEY (`user-id`),
+  KEY `idx_id_encountered-users` (`id_encountered-users`),
   UNIQUE INDEX `user-id_UNIQUE` (`user-id` ASC))
 ROW_FORMAT=COMPRESSED;
 
@@ -78,6 +80,7 @@ CREATE TABLE `mysqldb`.`_serverconfig` (
   `partmessage` varchar(2000) NOT NULL DEFAULT 'ok bye {0}',
   `welcomemessage` varchar(2000) NOT NULL DEFAULT 'welcome to {1}, {0}~',
   PRIMARY KEY (`guild-id`),
+  KEY `idx_id_serverconfig` (`id_serverconfig`),
   UNIQUE KEY `guild-id_UNIQUE` (`guild-id`))
 ROW_FORMAT=COMPRESSED;
 
@@ -85,7 +88,8 @@ CREATE TABLE `mysqldb`.`_guild_links` (
   `id_guild_links` INT NOT NULL,
   `guild-id` VARCHAR(45) NOT NULL,
   `links` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id_guild_links`))
+  PRIMARY KEY (`guild-id`),
+  KEY `idx_id_guild_links`(`id_guild_links`))
 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `mysqldb`.`_messages` (
@@ -155,8 +159,8 @@ CREATE TABLE `mysqldb`.`_dm_messages` (
   `content` LONGTEXT NULL,
   `attachmenturl` LONGTEXT NULL,
   `attachmentfilename` LONGTEXT NULL,
-  `isedited` TINYINT NULL,
-  `isdeleted` TINYINT NULL,
+  `isedited` TINYINT NULL DEFAULT '0',
+  `isdeleted` TINYINT NULL DEFAULT '0',
   `edit-time` VARCHAR(45) NULL,
   `delete-time` VARCHAR(45) NULL,
   `edit-before-content` LONGTEXT NULL,
@@ -171,7 +175,7 @@ CREATE TABLE `mysqldb`.`_dm_messages` (
   KEY `idx_dm_messages_message-id` (`id_DM`))
 ROW_FORMAT=COMPRESSED;
 
-CREATE TABLE `discobot`.`prefixes` (
+CREATE TABLE `mysqldb`.`prefixes` (
   `idprefixes` INT NOT NULL AUTO_INCREMENT,
   `guildid` VARCHAR(45) NOT NULL,
   `prefix` VARCHAR(45) NOT NULL,

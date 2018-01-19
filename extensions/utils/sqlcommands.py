@@ -47,16 +47,13 @@ class InternalSQL:
         return newcmd, querydata
 
     async def schemacreate(self):
-        print("MySQL isn't configured yet...\nCreating tables in the Database now...")
         schemacommands = await self.bot.sql.statement_create_bot_schema()
         temp_con = await aiomysql.connect(host=self.bot.common.mysqlserver, port=self.bot.common.mysqlport,
                                           user=self.bot.common.mysqluser, password=self.bot.common.mysqlpw,
                                           charset='utf8mb4', use_unicode=True, autocommit=True)
-        async with temp_con.cursor() as cursor:
-            for command in schemacommands:
+        for command in schemacommands:
+            async with temp_con.cursor() as cursor:
                 await cursor.execute(command)
-            await cursor.close()
-        temp_con.close()
         self.bot.common.config.set('DONOTTOUCH', 'mysqlconfigured', 'True')
         with open(self.bot.common.configfile, 'w') as towrite:
             self.bot.common.config.write(towrite)
@@ -67,6 +64,9 @@ class InternalSQL:
         infile.close()
         sql_file1 = sql_file.replace("mysqldb", self.bot.common.mysqldb)
         sql_commands = sql_file1.strip('\n').split(';')[:-1]
+        newsql = []
+        for line in sql_commands:
+            newsql += [line.replace("\n","")]
         return sql_commands
 
     async def statement_upsert_weathertable(self, authorid, zipcode):
