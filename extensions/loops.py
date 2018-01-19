@@ -16,7 +16,7 @@ class LoopClass:
     async def awoo(self):
         await self.bot.wait_until_ready()
         await asyncio.sleep(5)
-        timerange = list(range(7200, 28800, 2))
+        timerange = list(range(14400, 43200, 2))
         awoo_array = []
         awoo_path = os.path.join("internalfiles", "images", "smallawoo", "**")
         file_exts = '.png', '.jpg', '.jpeg', '.gif'

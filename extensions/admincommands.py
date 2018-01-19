@@ -336,10 +336,6 @@ class AdminTesting:
     #     for cmd in self.bot.walk_commands():
     #         print(cmd)
     #
-    # @commands.command()
-    # async def showtasks(self, ctx):
-    #     awoo = self.bot.bg_awoo()
-    #     print(awoo)
 
 
 def setup(dbot):

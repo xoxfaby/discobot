@@ -199,7 +199,6 @@ class BotInfo:
         perms.create_instant_invite = True
         perms.kick_members = True
         perms.ban_members = True
-        perms.manage_channels = True
         perms.add_reactions = True
         perms.view_audit_log = True
         perms.read_messages = True
@@ -208,15 +207,13 @@ class BotInfo:
         perms.embed_links = True
         perms.attach_files = True
         perms.read_message_history = True
-        perms.mention_everyone = True
-        perms.external_emojis = True
         perms.mute_members = True
         perms.deafen_members = True
         perms.move_members = True
         perms.change_nickname = True
-        perms.manage_nicknames = True
         perms.manage_roles = True
-        perms.manage_emojis = True
+        # URL should come out to be this:
+        # https://discordapp.com/oauth2/authorize?client_id=340802627887693825&scope=bot&permissions=365030599
         await ctx.send('Please click on this link to invite me to your server.\n'
                        + f'<{discord.utils.oauth_url(str(self.bot.common.botdiscordid), perms)}>')
 
