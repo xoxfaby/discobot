@@ -58,6 +58,7 @@ CREATE TABLE `mysqldb`.`_commandtable` (
   `user-id` VARCHAR(45) NOT NULL,
   `user-name` LONGTEXT NOT NULL,
   `message-id` VARCHAR(45) NOT NULL,
+  `command` VARCHAR(45) NOT NULL,
   `content` LONGTEXT NOT NULL,
   PRIMARY KEY (`id_commandtable`))
 ROW_FORMAT=COMPRESSED;

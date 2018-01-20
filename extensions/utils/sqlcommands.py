@@ -409,6 +409,7 @@ class InternalSQL:
 
     async def statement_insert_cmdtable(self, ctx):
         msgtime = str(datetime.datetime.now())
+        command = ctx.invoked_with
         if str("Direct Message") in str(ctx.channel):
             channelid = "DM"
             channelname = "DM"
@@ -424,11 +425,11 @@ class InternalSQL:
         content = str(ctx.message.content)
         messageid = str(ctx.message.id)
         sqlquery = """INSERT INTO `{0}`.`_commandtable` (`time`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, 
-        `user-id`, `user-name`, `message-id`, `content`)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+        `user-id`, `user-name`, `message-id`, `command`, `content`)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         new_query = sqlquery.format(self.bot.common.mysqldb)
-        query_data = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, content)
+        query_data = (msgtime, guildid, guildname, channelid, channelname, userid, username, messageid, command, content)
         return new_query, query_data
 
     async def statement_insert_guildconfig(self, ctx, channellist: list, responses: list, joinpartmsgs: list):
