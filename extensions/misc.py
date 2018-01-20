@@ -162,10 +162,9 @@ class Misc:
                     message = "The mentioned user has not set their default weather;\nplease try again."
                     raise self.bot.errors.DBotInternalError(message)
                 else:
-                    message = ('Please use a zip code when calling this function\n Example: `' +
-                               self.bot.common.discordbotcommandprefix + 'weather 98104`\nYou could also set your '
-                               'default weather by using the `' + self.bot.common.discordbotcommandprefix +
-                               'weatherset zipcode` command')
+                    message = (f'Please use a zip code when calling this function\n Example: `{ctx.prefix}weather 98104'
+                               f'`\nYou could also set your default weather by using the `{ctx.prefix}weatherset '
+                               f'zipcode` command')
                     raise self.bot.errors.DBotInternalError(message)
         elif zipcode.isdigit():
             getlocation = str(zipcode)
@@ -205,7 +204,7 @@ class Misc:
                     else:
                         return
             tempfilename = (f'{str(getlocation)}-{time.strftime("%Y%m%d-%H%M%S")}-radar.gif')
-            radargiflocation = os.path.join("internalfiles", "temp", tempfilename)
+            radargiflocation = os.path.join("internalfiles", "temp", "weather", tempfilename)
             async with aiohttp.ClientSession() as session:
                 async with session.get(radarimageurl) as resp:
                     if resp.status == 200:
@@ -235,14 +234,14 @@ class Misc:
         """Set your default weather"""
         if zipcode is None:
             raise self.bot.errors.DBotInternalError(f'You did not pass a zipcode when calling this command.\nExample: '
-                                                    f'`{self.bot.common.discordbotcommandprefix}weatherset 98104`')
+                                                    f'`{ctx.prefix}weatherset 98104`')
         elif zipcode.isdigit():
-            sqlquery, tablename, querydata = await self.bot.sql.statement_upsert_weathertable(str(ctx.author.id), str(zipcode))
+            sqlquery, querydata = await self.bot.sql.statement_upsert_weathertable(str(ctx.author.id), str(zipcode))
             async with self.bot.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
                     await cursor.execute(sqlquery, querydata)
             return await ctx.send(f'Your default weather has been set\nIn the future, you can run '
-                                  f'`{self.bot.common.discordbotcommandprefix}w` to retrieve your local weather')
+                                  f'`{ctx.prefix}w` to retrieve your local weather')
         else:
             raise self.bot.errors.DBotInternalError("A proper zip code was not specified")
 

@@ -81,8 +81,7 @@ class InternalSQL:
                 """
         newquery = sqlquery.format(self.bot.common.mysqldb)
         querydata = (authorid, zipcode, zipcode)
-        tablename = str("_weathertable")
-        return newquery, tablename, querydata
+        return newquery, querydata
 
     async def statement_get_weather_single_user(self, authorid):
         sql_query = """SELECT `zipcode` FROM `{0}`.`_weathertable` WHERE `user-id` = '{1}';"""
