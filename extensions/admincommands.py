@@ -225,13 +225,13 @@ class AdminCommands:
                     return await ctx.message.add_reaction('✅')
 
     @commands.group(aliases=['getprefix', 'showprefix'])
-    @commands.check(dbotchecks.check_server_admin_or_botowner)
     async def prefix(self, ctx):
         """A group command to manage the prefix for the bot."""
         if ctx.invoked_subcommand is None:
             return await ctx.send("Available subcommands are `set` or `show`")
 
     @prefix.command()
+    @commands.check(dbotchecks.check_server_admin_or_botowner)
     async def set(self, ctx, *, newprefix):
         """Set a new prefix for the bot, unique to this server"""
         newcmd, querydata = await self.bot.sql.statement_insert_prefix(str(ctx.guild.id), str(newprefix))
