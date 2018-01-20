@@ -56,6 +56,11 @@ class ImageManipulation:
                 draw.text(x=int(300), y=int((560)), body=text)
                 draw(original)
                 image = original.make_blob('png')
+                curtime = str(time.strftime("%Y_%m_%d %H_%M_%S", time.localtime()))
+                filename = (f'{curtime}_okdoge.png')
+                file = os.path.join("internalfiles", "temp", "okdoge", filename)
+                with open(file, mode="wb+") as fp:
+                    original.save(fp)
             return image
 
     # def _corrupt_img(self, imglocation):
