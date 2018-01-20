@@ -7,8 +7,7 @@ class DBot(commands.Bot):
     """A modified discord.ext.commands.Bot class"""
     def __init__(self, *args, **kwargs):
         self.common, self.errors, self.prefixstuff = CommonParams(), MyErrors, PrefixStuff(self)
-        self.myprefix = self.prefixstuff.get_prefix
-        super().__init__(*args, **kwargs, description=CommonParams.botdescription, command_prefix=self.myprefix)
+        super().__init__(*args, **kwargs, description=self.common.botdescription, command_prefix=self.prefixstuff.get_prefix)
 
     async def on_ready(self):
         curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))

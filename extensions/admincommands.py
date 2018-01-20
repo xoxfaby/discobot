@@ -11,7 +11,7 @@ class AdminCommands:
     @commands.command()
     @commands.check(dbotchecks.check_server_admin_or_botowner)
     async def deletebotmessages(self, ctx, num: int):
-        """Deletes my last x number of messages"""
+        """Gets the last few messages from the channel history, and if they are from myself, I will delete the amount you specify"""
         try:
             await ctx.message.delete()
         except:
@@ -225,12 +225,15 @@ class AdminCommands:
                     return await ctx.message.add_reaction('✅')
 
     @commands.group(aliases=['getprefix', 'showprefix'])
+    @commands.check(dbotchecks.check_server_admin_or_botowner)
     async def prefix(self, ctx):
+        """A group command to manage the prefix for the bot."""
         if ctx.invoked_subcommand is None:
             return await ctx.send("Available subcommands are `set` or `show`")
 
     @prefix.command()
     async def set(self, ctx, *, newprefix):
+        """Set a new prefix for the bot, unique to this server"""
         newcmd, querydata = await self.bot.sql.statement_insert_prefix(str(ctx.guild.id), str(newprefix))
         async with self.bot.mysqlcon.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
@@ -243,6 +246,7 @@ class AdminCommands:
 
     @prefix.command()
     async def show(self, ctx):
+        """The bot will retrieve and show the prefix listed for this server"""
         await self.bot.prefixstuff.reload_prefix_cache()
         sqlcmd = await self.bot.sql.statement_get_single_prefix()
         newcmd = sqlcmd.format(self.bot.common.mysqldb, ctx.guild.id)

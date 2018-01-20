@@ -10,7 +10,7 @@ class BotInternals:
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def on_ready(self):
-        game = discord.Game(name="noodleboat", url="https://personalwebsite.website/wiki/Noodlebot")
+        game = discord.Game(name="https://personalwebsite.website/wiki/Noodlebot")
         await self.bot.change_presence(status=discord.Status.online, game=game)
 
     async def on_command_error(self, ctx, exception):
@@ -373,19 +373,6 @@ class BotInfo:
         async with ctx.typing():
             await ctx.channel.delete_messages(configmessagelist1)
             await ctx.channel.delete_messages(configmessagelist)
-
-    @commands.command()
-    async def setprefix(self, ctx, *, prefix):
-        # await self.bot.sql.statement_get_prefixes()
-        pass
-        # your current prefix is 'x', you would like to change it to 'y', correct?
-        # verify with single backtick if prefix is proper
-        # if yes, insert, else return
-        # async with self.bot.mysqlcon.acquire() as conn:
-        #     async with conn.cursor(aiomysql.DictCursor) as cursor:
-        #         await cursor.execute(newcmd)
-        #         prefixdict = await cursor.fetchall()
-        #         await self.bot.mysqlcache.add(key="prefixes", value=prefixdict)
 
 
 class DBotHelp:
