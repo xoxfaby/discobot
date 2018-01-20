@@ -41,6 +41,23 @@ class ImageManipulation:
                     filepath.close()
         return convertedfilepath
 
+    def _ok_doge(self, text):
+        originalimage = os.path.join(os.curdir, "internalfiles", "images", "Doge.png")
+        with Image(filename=originalimage) as original:
+            with Drawing() as draw:
+                fontlocation = os.path.join("internalfiles", "misc", "impact.ttf")
+                draw.font = fontlocation
+                black = Color("black")
+                white = Color("white")
+                draw.font_size = 90
+                draw.stroke_color = white
+                draw.text_alignment = 'center'
+                draw.fill_color = white
+                draw.text(x=int(300), y=int((560)), body=text)
+                draw(original)
+                image = original.make_blob('png')
+            return image
+
     # def _corrupt_img(self, imglocation):
     #     # Majority of code absorbed from:
     #     # https://github.com/GlitchTools/batch_wordpad_glitch/blob/master/wordpad_glitch.py
@@ -140,6 +157,18 @@ class ImageManipulation:
             await ctx.send(file=discord.File(fp=convertedfilepath, filename="moar.jpg"))
         else:
             raise self.bot.errors.DBotExternalError(f'Sorry, there was an error on processing the image.')
+
+    @commands.command(aliases=['doge'])
+    async def ok(self, ctx, *, text):
+        """Ok"""
+        imglocation = os.path.join(os.curdir, "internalfiles", "temp", "okdoge")
+        if not os.path.exists(imglocation):
+            os.makedirs(imglocation)
+        async with ctx.typing():
+            convertedfilepath = await self.bot.loop.run_in_executor(None, self._ok_doge, text)
+        if convertedfilepath is not None:
+            file = io.BytesIO(convertedfilepath)
+            await ctx.send(files=[discord.File(fp=file, filename="ok.png")])
 
 
 def setup(dbot):
