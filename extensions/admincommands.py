@@ -68,6 +68,38 @@ class AdminCommands:
         customchannel = self.bot.get_channel(id=int(chanid))
         return await customchannel.send(mesg)
 
+    @commands.command()
+    async def feedback(self, ctx, *, feedback):
+        feedbackuserid = str(ctx.author.id)
+        feedbackusername = str(ctx.author)
+        sendtime = str(datetime.datetime.now())
+        if str('Direct Message') in str(ctx.channel):
+            channelid = str(ctx.channel.id)
+            channelname = "DM"
+        else:
+            channelid = str(ctx.channel.id)
+            channelname = str(ctx.channel.name)
+        content = str(feedback)
+        mesg = ("Alright, I've sent this feedback to my owner, thank you!")
+        sql_query = """
+        INSERT INTO `{0}`.`_feedback` (`time`, `user-id`, `user-name`, `channel-id`, `channel-name`, `content`)
+        VALUES (%s, %s, %s, %s, %s, %s);
+        """
+        new_query = sql_query.format(str(self.bot.common.mysqldb))
+        query_data = (sendtime, feedbackuserid, feedbackusername, channelid, channelname, content)
+        async with self.bot.mysqlcon.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(new_query, query_data)
+        await ctx.send(mesg)
+        mesg1 = f"I've recieved feedback from somebody! See below:\n"
+        mesg1 += f"```\n"
+        mesg1 += f"Username: {feedbackusername} - UserID: {feedbackuserid}\n"
+        mesg1 += f'Content:\n{content}\n'
+        mesg1 += f'```'
+        for channel in self.bot.common.mainserverlogchan:
+            chan = self.bot.get_channel(id=int(channel))
+            await chan.send(mesg1)
+
     async def _role_getter(self, ctx, role):
         if not ctx.message.role_mentions:
             role = role.replace("@", "")

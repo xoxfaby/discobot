@@ -438,8 +438,7 @@ class Misc:
     @commands.command(aliases=['xmyy', 'thatreallyxmyy'])
     async def thatreally(self, ctx):
         """That really x my y"""
-        # variables lifted from https://github.com/Chewsterchew/API
-        # on 2018-01-18
+        # variables lifted from https://github.com/Chewsterchew/API on 2018-01-18
         word1 = ["bites", "highs", "burns", "ruins", "humids", "leans", "quiets", "traffics", "homes", "crashes",
                  "trumps", "backs", "salts", "xboxs", "closes", "records", "stops", "sevens", "pollutes", "kills",
                  "rents", "cleans", "extras", "boggles", "Taylor's", "snaps", "questions", "coffee's", "clicks", "pops",

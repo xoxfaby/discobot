@@ -184,3 +184,15 @@ CREATE TABLE `mysqldb`.`prefixes` (
   UNIQUE INDEX `guildid_UNIQUE` (`guildid` ASC),
   UNIQUE INDEX `idprefixes_UNIQUE` (`idprefixes` ASC))
 ROW_FORMAT=COMPRESSED;
+
+CREATE TABLE `discobot`.`_feedback` (
+  `id_feedback` INT NOT NULL AUTO_INCREMENT,
+  `time` VARCHAR(45) NOT NULL,
+  `user-id` VARCHAR(45) NOT NULL,
+  `user-name` VARCHAR(45) NOT NULL,
+  `channel-id` VARCHAR(45) NOT NULL,
+  `channel-name` VARCHAR(45) NOT NULL,
+  `content` LONGTEXT NOT NULL,
+  PRIMARY KEY (`id_feedback`),
+  UNIQUE INDEX `id_feedback_UNIQUE` (`id_feedback` ASC))
+ROW_FORMAT=COMPRESSED;

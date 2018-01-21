@@ -160,10 +160,18 @@ class BotInfo:
             url='https://cdn.discordapp.com/app-icons/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png')
         embed.add_field(name="Creator", value="`noodle#4660`")
         embed.add_field(name="Invite", value="[Invite URL]"
-                                             "(https://discordapp.com/oauth2/authorize?client_id=340802627887693825"
-                                             "&scope=bot&permissions=1610083543)")
+                                             "(https://discordapp.com/oauth2/authorize?client_id=340802627887693825&"
+                                             "scope=bot&permissions=365030599)")
         embed.add_field(name="Bot Prefix", value="`,` (Comma)")
         embed.add_field(name="Source", value="[Github](https://github.com/jwshields/discobot)")
+        now = datetime.datetime.utcnow()
+        delta = now - self.bot.starttime
+        hours, remainder = divmod(int(delta.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+        fmt = '{h} hours, {m} minutes, and {s} seconds'
+        fmt_new = fmt.format(h=hours, m=minutes, s=seconds)
+        embed.add_field(name="Uptime", value=fmt_new)
         await ctx.send(embed=embed)
 
     @commands.command()
