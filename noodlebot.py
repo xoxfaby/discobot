@@ -1,6 +1,5 @@
 from extensions.utils.importsfile import *
-from extensions.utils.common import CommonParams, PrefixStuff
-from extensions.utils.errors import MyErrors
+from extensions.utils.common import CommonParams, PrefixStuff, MyErrors
 
 
 class DBot(commands.Bot):

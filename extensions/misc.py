@@ -362,7 +362,7 @@ class Misc:
                     for result in items:
                         templength = (str(result['contentDetails']['duration']).strip("PT"))
                         if "H" in templength:
-                            newlength = (templength.replace("H", " hours,").replace("M", " minutes, ").replace("S", " seconds" ))
+                            newlength = (templength.replace("H", " hours,").replace("M", " minutes, ").replace("S", " seconds"))
                         elif "H" not in templength:
                             newlength = (templength.replace("M", " minutes, ").replace("S", " seconds"))
                         elif "M" not in templength:

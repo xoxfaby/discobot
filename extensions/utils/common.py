@@ -135,3 +135,19 @@ class PrefixStuff:
             return commands.when_mentioned_or(*prefix)(bot, message)
         except (KeyError, AttributeError):
             return self.bot.common.discordbotcommandprefix
+
+
+class MyErrors(commands.CommandError):
+    pass
+
+    class DBotInternalError(commands.CommandError):
+        pass
+
+    class DBotExternalError(commands.CommandError):
+        pass
+
+    class BotNotWorking(commands.CommandError):
+        pass
+
+    class NotOwnerError(commands.CommandError):
+        pass

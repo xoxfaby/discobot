@@ -45,7 +45,7 @@ class InternalSQL:
         ON DUPLICATE KEY UPDATE    
         `guildid` = %s, `prefix` = %s;
         """
-        newcmd = sqlcmd.format(self.bot.common.mysqldb).replace("\n","")
+        newcmd = sqlcmd.format(self.bot.common.mysqldb).replace("\n", "")
         querydata = (str(guildid), str(prefix), str(guildid), str(prefix))
         return newcmd, querydata
 
@@ -69,7 +69,7 @@ class InternalSQL:
         sql_commands = sql_file1.strip('\n').split(';')[:-1]
         newsql = []
         for line in sql_commands:
-            newsql += [line.replace("\n","")]
+            newsql += [line.replace("\n", "")]
         return sql_commands
 
     async def statement_upsert_weathertable(self, authorid, zipcode):
