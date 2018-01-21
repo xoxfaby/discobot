@@ -9,7 +9,7 @@ class AdminCommands:
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     @commands.command()
-    @commands.check(dbotchecks.check_server_admin_or_botowner)
+    @dbotchecks.check_server_admin_or_botowner()
     async def deletebotmessages(self, ctx, num: int):
         """Gets the last few messages from the channel history, and if they are from myself, I will delete the amount you specify"""
         try:
@@ -22,12 +22,12 @@ class AdminCommands:
         await ctx.channel.delete_messages(messages_list)
 
     @commands.command()
-    @commands.check(dbotchecks.check_server_admin_or_botowner)
+    @dbotchecks.check_server_admin_or_botowner()
     async def purge(self, ctx, *, num: int):
         """Purges the last x number of messages from the channel"""
         try:
             await ctx.message.delete()
-        except:
+        except Exception as e:
             pass
         await ctx.channel.purge(limit=int(num))
         return await ctx.send(content='Deleted ' + str(num) + ' message(s)')
@@ -46,7 +46,7 @@ class AdminCommands:
         return await self.bot.logout()
 
     @commands.command(hidden=True)
-    @commands.check(dbotchecks.check_trusted_user)
+    @dbotchecks.check_trusted_user()
     async def boatsay(self, ctx, *args):
         """Sekrit"""
         mesg = ' '.join(args)
@@ -57,7 +57,7 @@ class AdminCommands:
         return await ctx.send(mesg)
 
     @commands.command(hidden=True)
-    @commands.check(dbotchecks.check_trusted_user)
+    @dbotchecks.check_trusted_user()
     async def adminbotsay(self, ctx, chanid, *args):
         """Sekrit"""
         mesg = ' '.join(args)
@@ -207,10 +207,9 @@ class AdminCommands:
             if isinstance(mentioned_roles, list):
                 for role in mentioned_roles:
                     mesg += f"Current color for {role.mention}: {role.color}\n"
-                return await ctx.send(mesg)
             elif isinstance(mentioned_roles, discord.Role):
                 mesg = f"Current color for {mentioned_roles.mention}: {mentioned_roles.color}\n"
-                return await ctx.send(mesg)
+            return await ctx.send(mesg)
         else:
             color1 = ''.join(color)
             color1 = color1.replace("#", "")
@@ -231,7 +230,7 @@ class AdminCommands:
             return await ctx.send("Available subcommands are `set` or `show`")
 
     @prefix.command()
-    @commands.check(dbotchecks.check_server_admin_or_botowner)
+    @dbotchecks.check_server_admin_or_botowner()
     async def set(self, ctx, *, newprefix):
         """Set a new prefix for the bot, unique to this server"""
         newcmd, querydata = await self.bot.sql.statement_insert_prefix(str(ctx.guild.id), str(newprefix))
@@ -241,13 +240,13 @@ class AdminCommands:
         mesg = (f'Alright, I have set the custom prefix for this guild to be `{newprefix}`.\nPlease use that to use me'
                 f'from now on. You can also view my prefix at any time by mentioning me and using the `showprefix`'
                 f' command')
-        await self.bot.prefixstuff.reload_prefix_cache()
+        await self.bot.pref.reload_prefix_cache()
         await ctx.send(mesg)
 
     @prefix.command()
     async def show(self, ctx):
         """The bot will retrieve and show the prefix listed for this server"""
-        await self.bot.prefixstuff.reload_prefix_cache()
+        await self.bot.pref.reload_prefix_cache()
         sqlcmd = await self.bot.sql.statement_get_single_prefix()
         newcmd = sqlcmd.format(self.bot.common.mysqldb, ctx.guild.id)
         async with self.bot.mysqlcon.acquire() as conn:
@@ -349,6 +348,14 @@ class AdminTesting:
         mesg = ctx.message.content
         print(mesg)
         return await ctx.send("Printed to PyCharm console.")
+
+    @commands.command()
+    async def testperms(self, ctx):
+        print(ctx.author)
+        aaa = any([ctx.channel.permissions_for(ctx.author).manage_guild, (ctx.author in self.bot.common.trustedusers)])
+        print(aaa)
+        print(ctx.author.id in self.bot.common.trustedusers)
+        print(ctx.channel.permissions_for(ctx.author).manage_guild)
 
     # @commands.command()
     # async def showprefix(self, ctx):

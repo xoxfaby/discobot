@@ -467,7 +467,7 @@ class Misc:
                  "brows", "limits", "toasts", "towers", "volume", "tracks", "wears", "bones", "oragamies", "zones",
                  "kills", "money", "bells", "ups", "radios", "ways", "Donald's", "springs", "elections", "walls",
                  "corn", "dudes", "filters", "rolls", "tongues"]
-        sentence = (f'That really {random.choice(word1)} my {random.choice(word2)}.')
+        sentence = f'That really {random.choice(word1)} my {random.choice(word2)}.'
         await ctx.send(sentence)
 
     # def _wolf(self, query):

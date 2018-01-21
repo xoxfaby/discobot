@@ -35,7 +35,7 @@ class LevelSystem:
         pass
 
     @commands.command()
-    @commands.check(dbotchecks.check_server_admin_or_botowner)
+    @dbotchecks.check_server_admin_or_botowner()
     async def levelgoals(self, ctx, user):
         pass
 
