@@ -30,7 +30,7 @@ def globally_ignore_bots():
 
 def check_server_admin_or_botowner():
     async def predicate(ctx):
-        return any([ctx.channel.permissions_for(ctx.author).manage_guild, (ctx.author.id in trustedusers)])
+        return any([ctx.channel.permissions_for(ctx.author).manage_guild, (str(ctx.author.id) in trustedusers)])
     return commands.check(predicate)
 
 

@@ -192,7 +192,7 @@ class Misc:
                         wind = (f"{str(parsed_json['current_observation']['wind_dir'])} at "
                                 f"{str(parsed_json['current_observation']['wind_mph'])}  MPH, gusting to "
                                 f"{str(parsed_json['current_observation']['wind_gust_mph'])} MPH"
-                                )
+                               )
                         weathercontent.title = str(locationfull)
                         weathercontent.colour = discord.Color(0xd6f00c)
                         weathercontent.url = str(weburl)
@@ -330,7 +330,7 @@ class Misc:
         query = mesg.replace(" ", "+")
         myurl = (f'https://www.googleapis.com/youtube/v3/search?q={query}&type=video&maxResults=5&part=snippet&'
                  f'safeSearch=None&key={self.bot.common.youtubeapikey}')
-        publicurl = (f'https://www.youtube.com/results?search_query={query}')
+        publicurl = f'https://www.youtube.com/results?search_query={query}'
         embed = discord.Embed(title=("Youtube search results for " + mesg), url=publicurl, color=0xff0000)
         itemcontents = []
         title = []
@@ -372,13 +372,13 @@ class Misc:
                         length.append(str(newlength))
         incnum = 1
         for t, u, v, f, l in zip(title, uploaded, videoid, fullurl, length):
-            videoinfo = (f'\nLength: {l}\nURL: {f}')
+            videoinfo = f'\nLength: {l}\nURL: {f}'
             valuedata = (t + videoinfo)
-            embed.add_field(name=(f'Video #{incnum}'), value=valuedata, inline=False)
+            embed.add_field(name=f'Video #{incnum}', value=valuedata, inline=False)
             incnum += 1
 
         def checknumber(m):
-            return (m.author == ctx.author) and (int(m.content) < int(len(contentslist))) and \
+            return (m.author == ctx.author) and (int(m.content) < int(len(contentslist) + 1)) and \
                    (m.channel.id == ctx.channel.id)
 
         botmessage = await ctx.send(embed=embed)
@@ -386,7 +386,10 @@ class Misc:
         numberresponse = await self.bot.wait_for('message', check=checknumber, timeout=30)
         newcontent = fullurl[(int(numberresponse.content) - 1)]
         await questionmesg.delete()
-        await numberresponse.delete()
+        try:
+            await numberresponse.delete()
+        except Exception as e:
+            pass
         await botmessage.edit(content=newcontent, embed=None)
 
     @commands.command()
@@ -415,7 +418,8 @@ class Misc:
     @commands.command()
     async def awootime(self, ctx):
         """Lists the time until the next awoo"""
-        nextawoo = await self.bot.misccache.get(key="awoowaittime")
+        key = "awootime"
+        nextawoo = await self.bot.misccache.get(key=key)
         curtime = datetime.datetime.now()
         delta = (nextawoo - curtime).total_seconds()
         hours, remainder = divmod(int(delta), 3600)

@@ -32,7 +32,7 @@ class AdminCommands:
         await ctx.channel.purge(limit=int(num))
         return await ctx.send(content='Deleted ' + str(num) + ' message(s)')
 
-    @commands.command(hidden=True)
+    @commands.command(hidden=True, aliases=['die'])
     @commands.is_owner()
     async def botkill(self, ctx):
         """This makes the bot shut itself down."""
@@ -352,10 +352,29 @@ class AdminTesting:
     @commands.command()
     async def testperms(self, ctx):
         print(ctx.author)
-        aaa = any([ctx.channel.permissions_for(ctx.author).manage_guild, (ctx.author in self.bot.common.trustedusers)])
-        print(aaa)
-        print(ctx.author.id in self.bot.common.trustedusers)
+        print(any([ctx.channel.permissions_for(ctx.author).manage_guild, (str(ctx.author.id) in self.bot.common.trustedusers)]))
+        print(str(ctx.author.id) in self.bot.common.trustedusers)
+        print(type(self.bot.common.trustedusers[0]))
         print(ctx.channel.permissions_for(ctx.author).manage_guild)
+
+    @commands.command()
+    async def testcache(self, ctx):
+        timerange = list(range(14400, 43200, 2))
+        waittime = random.choice(timerange)
+        curtime = datetime.datetime.now()
+        waittime1 = datetime.timedelta(seconds=int(waittime))
+        projectedtime = curtime + waittime1
+        key = "testawootime"
+        if await self.bot.misccache.exists(key=key):
+            print("in exists")
+            print(projectedtime)
+            await self.bot.misccache.set(key=key, value=projectedtime)
+        else:
+            print("in else")
+            await self.bot.misccache.add(key=key, value=projectedtime)
+        print("out")
+        keyout = await self.bot.misccache.get(key=key)
+        print(keyout)
 
     # @commands.command()
     # async def showprefix(self, ctx):

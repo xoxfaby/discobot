@@ -5,8 +5,9 @@ import functools
 from discord.ext import commands
 from stuf import stuf
 import wand
+import pickle
 from wand.color import Color
 from wand.image import Image
 from wand.drawing import Drawing
 from aiocache import SimpleMemoryCache
-from aiocache.serializers import NullSerializer
+from aiocache.serializers import NullSerializer, PickleSerializer
