@@ -174,55 +174,6 @@ class ImageMemes:
             else:
                 raise commands.errors.UserInputError("User attempted to run memegen with an invalid meme type")
 
-    def _sunnytask(self, words):
-        if len(words) > 27:
-            if " " in words:
-                mesg = words.split(" ")
-            else:
-                mesg = list()
-                mesg.append(words[0:27])
-                mesg.append(words[27:])
-            line1 = ""
-            line2 = ""
-            index = 0
-            while len(line1) < 27:
-                line1 += (mesg[index] + " ")
-                index += 1
-            while index < len(mesg):
-                line2 += (mesg[index] + " ")
-                index += 1
-            multiline = True
-        else:
-            multiline = False
-        W, H = (1920, 1080)
-        black = Color("black")
-        white = Color("white")
-        fontlocation = os.path.join("internalfiles", "misc", "textile-webfont.ttf")
-        with Image(width=W, height=H, background=black) as img:
-            with Drawing() as draw:
-                draw.font = fontlocation
-                draw.font_size = 105
-                draw.stroke_color = white
-                draw.text_alignment = 'center'
-                draw.fill_color = white
-                if multiline:
-                    draw.text(x=int(img.width / 2), y=int((img.height / 2) - 100), body=line1)
-                    draw.text(x=int(img.width / 2), y=int((img.height / 2) + 100), body=line2)
-                else:
-                    draw.text(x=int(img.width / 2), y=int((img.height / 2)), body=words)
-                draw(img)
-                image = img.make_blob('png')
-        return image
-
-    @commands.command(aliases=['sunny', 'titlecard'])
-    async def alwayssunny(self, ctx, *, text: str):
-        """Generates a titlecard from always sunny"""
-        async with ctx.typing():
-            imgfile = await self.bot.loop.run_in_executor(None, self._sunnytask, text)
-        if imgfile is not None:
-            file = io.BytesIO(imgfile)
-            await ctx.send(files=[discord.File(fp=file, filename="Sunny.png")])
-
 
 class TextMemes:
     """Meme commands"""
