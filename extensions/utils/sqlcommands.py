@@ -512,6 +512,15 @@ class InternalSQL:
         new_query = sql_query.format(self.bot.common.mysqldb)
         return new_query
 
+    async def statement_remove_guild_config(self, guild):
+        guildid = str(guild.id)
+        sql_query = """
+        DELETE FROM `{0}`.`_serverconfig`
+        WHERE `guild-id` = {1};
+        """
+        new_query = sql_query.format(self.bot.common.mysqldb, str(guildid))
+        return new_query
+
 
 # beginning framework for dynamic table, row, column, and statement generator
 # this is going to be messy

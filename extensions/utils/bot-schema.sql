@@ -81,7 +81,7 @@ CREATE TABLE `mysqldb`.`_serverconfig` (
   `partmessage` varchar(2000) NOT NULL DEFAULT 'ok bye {0}',
   `welcomemessage` varchar(2000) NOT NULL DEFAULT 'welcome to {1}, {0}~',
   PRIMARY KEY (`guild-id`),
-  KEY `idx_id_serverconfig` (`id_serverconfig`),
+  UNIQUE KEY `idx_id_serverconfig` (`id_serverconfig`),
   UNIQUE KEY `guild-id_UNIQUE` (`guild-id`))
 ROW_FORMAT=COMPRESSED;
 

@@ -101,6 +101,10 @@ class BotLoggerDB:
 
     async def on_guild_remove(self, guild):
         await self.log_guild(guild, str("leave"))
+        sql_cmd = await self.bot.sql.statement_remove_guild_config(guild)
+        async with self.bot.mysqlcon.acquire() as conn:
+            async with conn.cursor() as cursor:
+                return await cursor.execute(sql_cmd)
 
     async def log_encountered_users(self, user):
         sql_cmd = await self.bot.sql.statement_insert_encountered_users()

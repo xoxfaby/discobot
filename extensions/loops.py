@@ -15,7 +15,6 @@ class LoopClass:
 
     async def awoo(self):
         await self.bot.wait_until_ready()
-        await asyncio.sleep(2)
         timerange = list(range(14400, 43200, 2))
         awoo_array = []
         awoo_path = os.path.join("internalfiles", "images", "smallawoo", "**")
@@ -24,20 +23,19 @@ class LoopClass:
             if filename.endswith(file_exts):
                 awoo_array += [str(filename)]
         while not self.bot.is_closed():
+            curtime = datetime.datetime.now()
             waittime = random.choice(timerange)
+            waittime1 = datetime.timedelta(seconds=int(waittime))
+            projectedtime = curtime + waittime1
+            key = "awootime"
+            if await self.bot.misccache.exists(key=key):
+                await self.bot.misccache.delete(key=key)
+            await self.bot.misccache.add(key=key, value=projectedtime)
             sql_cmd = await self.bot.sql.statement_get_awoolist()
             async with self.bot.mysqlcon.acquire() as conn:
                 async with conn.cursor(aiomysql.DictCursor) as cursor:
                     await cursor.execute(sql_cmd)
                     chan_list = await cursor.fetchall()
-            curtime = datetime.datetime.now()
-            waittime1 = datetime.timedelta(seconds=int(waittime))
-            projectedtime = curtime + waittime1
-            key = "awootime"
-            if await self.bot.misccache.exists(key=key):
-                await self.bot.misccache.set(key=key, value=projectedtime)
-            else:
-                await self.bot.misccache.add(key=key, value=projectedtime)
             for item in chan_list:
                 for key, chanid in item.items():
                     random_awoo = random.choice(awoo_array)

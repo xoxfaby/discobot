@@ -242,13 +242,14 @@ class BotInfo:
             botconfigscript = infile.read().split("%%\n")
         yesanswerlist = ['yes', 'y', 'true', 'yeah', 'yup', '1', 't']
         configmessagelist = []
+        userresp = []
         configmessagelist1 = []
         sent_startmsg = await ctx.send(str(botconfigscript[0]).format(str(ctx.guild.name)))
         configmessagelist1.append(sent_startmsg)
         sent_thischannelmsg = await ctx.send(botconfigscript[1])
         configmessagelist.append(sent_thischannelmsg)
         thischannelresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-        configmessagelist.append(thischannelresp)
+        userresp.append(thischannelresp)
         thischannelresp1 = thischannelresp.content.lower()
         if thischannelresp1 in yesanswerlist:
             announcemsg1 = await ctx.send(botconfigscript[2])
@@ -258,7 +259,7 @@ class BotInfo:
             announcemsg1 = await ctx.send(botconfigscript[3])
             configmessagelist.append(announcemsg1)
             initialchanresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-            configmessagelist.append(initialchanresp)
+            userresp.append(initialchanresp)
             initialchan = initialchanresp.channel_mentions[0]
             myinitalresp = await ctx.send(botconfigscript[4].format(str(initialchan.mention)))
             configmessagelist.append(myinitalresp)
@@ -266,13 +267,13 @@ class BotInfo:
         sent_usermsgs = await ctx.send(botconfigscript[5])
         configmessagelist.append(sent_usermsgs)
         enableloggingresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-        configmessagelist.append(enableloggingresp)
+        userresp.append(enableloggingresp)
         loggingresp = enableloggingresp.content.lower()
         if loggingresp in yesanswerlist:
             myloggingresp = await ctx.send(botconfigscript[6])
             configmessagelist.append(myloggingresp)
             welcomechanmessage = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-            configmessagelist.append(welcomechanmessage)
+            userresp.append(welcomechanmessage)
             welcomechan = welcomechanmessage.channel_mentions[0]
             mywelcomeresp = await ctx.send(botconfigscript[7].format(str(welcomechan.mention)))
             configmessagelist.append(mywelcomeresp)
@@ -280,18 +281,18 @@ class BotInfo:
             sent_defaultmessages = await ctx.send(botconfigscript[18])
             configmessagelist.append(sent_defaultmessages)
             defaultmessagesresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-            configmessagelist.append(defaultmessagesresp)
+            userresp.append(defaultmessagesresp)
             secondresp = defaultmessagesresp.content.lower()
             if secondresp in yesanswerlist:
                 sent_asknewwelcome = await ctx.send(botconfigscript[19])
                 configmessagelist.append(sent_asknewwelcome)
                 newwelcomeresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-                configmessagelist.append(newwelcomeresp)
+                userresp.append(newwelcomeresp)
                 welcomemessage = newwelcomeresp.content
                 sent_asknewpart = await ctx.send(botconfigscript[20])
                 configmessagelist.append(sent_asknewpart)
                 newleaveresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-                configmessagelist.append(newleaveresp)
+                userresp.append(newleaveresp)
                 leavemessage = newleaveresp.content
             else:
                 sent_nochangemessages = await ctx.send(botconfigscript[21])
@@ -309,13 +310,13 @@ class BotInfo:
         sent_adminauditlogmsg = await ctx.send(botconfigscript[9])
         configmessagelist.append(sent_adminauditlogmsg)
         adminauditlogresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-        configmessagelist.append(adminauditlogresp)
+        userresp.append(adminauditlogresp)
         auditresp = adminauditlogresp.content.lower()
         if auditresp in yesanswerlist:
             sent_adminlogchanmsg = await ctx.send(botconfigscript[10])
             configmessagelist.append(sent_adminlogchanmsg)
             adminlogchanresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-            configmessagelist.append(adminlogchanresp)
+            userresp.append(adminlogchanresp)
             adminlogchan = adminlogchanresp.channel_mentions[0]
             myresp = await ctx.send(botconfigscript[11].format(str(adminlogchan.mention)))
             configmessagelist.append(myresp)
@@ -329,13 +330,13 @@ class BotInfo:
         sent_voicelogmsg = await ctx.send(botconfigscript[13])
         configmessagelist.append(sent_voicelogmsg)
         voicelogmsgresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-        configmessagelist.append(voicelogmsgresp)
+        userresp.append(voicelogmsgresp)
         voiceresp = voicelogmsgresp.content.lower()
         if voiceresp in yesanswerlist:
             sent_voicelogchanmsg = await ctx.send(botconfigscript[14])
             configmessagelist.append(sent_voicelogchanmsg)
             voicelogchanresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-            configmessagelist.append(voicelogchanresp)
+            userresp.append(voicelogchanresp)
             voicelogchan = voicelogchanresp.channel_mentions[0]
             myresp1 = await ctx.send(botconfigscript[15].format(str(voicelogchan.mention)))
             configmessagelist.append(myresp1)
@@ -349,13 +350,13 @@ class BotInfo:
         sent_awooquestion = await ctx.send(botconfigscript[22])
         configmessagelist.append(sent_awooquestion)
         awooresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-        configmessagelist.append(awooresp)
+        userresp.append(awooresp)
         awoorespcontent = awooresp.content.lower()
         if awoorespcontent in yesanswerlist:
             sent_awoochanquestion = await ctx.send(botconfigscript[23])
             configmessagelist.append(sent_awoochanquestion)
             awoochanresp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
-            configmessagelist.append(awoochanresp)
+            userresp.append(awoochanresp)
             awoochan = awoochanresp.channel_mentions[0]
             myresp1 = await ctx.send(botconfigscript[27].format(str(awoochan.mention)))
             configmessagelist.append(myresp1)
@@ -367,7 +368,7 @@ class BotInfo:
             awoochan = None
         # add config option to choose what prefix to use
         await ctx.send(botconfigscript[17])
-        enablelogging = any([welcomechanbool, adminlogchanbool, voicelogchanbool])
+        enablelogging = any([welcomechanbool, adminlogchanbool, voicelogchanbool, enableawoos])
         channellist = [initialchan, welcomechan, adminlogchan, voicelogchan, awoochan]
         responses = [enablelogging, welcomechanbool, adminlogchanbool, voicelogchanbool, enableawoos]
         joinpartmsgs = [welcomemessage, leavemessage]
@@ -381,6 +382,10 @@ class BotInfo:
         async with ctx.typing():
             await ctx.channel.delete_messages(configmessagelist1)
             await ctx.channel.delete_messages(configmessagelist)
+            try:
+                await ctx.channel.delete_messages(userresp)
+            except Exception as e:
+                pass
 
 
 class DBotHelp:
