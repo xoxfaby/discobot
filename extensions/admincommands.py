@@ -69,32 +69,42 @@ class AdminCommands:
         return await customchannel.send(mesg)
 
     @commands.command()
-    async def feedback(self, ctx, *, feedback):
+    async def feedback(self, ctx, *, feedback: str):
         feedbackuserid = str(ctx.author.id)
         feedbackusername = str(ctx.author)
-        sendtime = str(datetime.datetime.now())
+        sendtime = f'{datetime.datetime.now()}'
         if str('Direct Message') in str(ctx.channel):
             channelid = str(ctx.channel.id)
-            channelname = "DM"
+            channelname = f"DM"
+            guildid = f"DM"
+            guildname = f"DM"
         else:
+            guildid = str(ctx.guild.id)
+            guildname = str(ctx.guild.name)
             channelid = str(ctx.channel.id)
             channelname = str(ctx.channel.name)
-        content = str(feedback)
-        mesg = ("Alright, I've sent this feedback to my owner, thank you!")
+        mesg = f"Alright, I've sent this feedback to my owner; thank you!"
+        await ctx.send(mesg)
         sql_query = """
-        INSERT INTO `{0}`.`_feedback` (`time`, `user-id`, `user-name`, `channel-id`, `channel-name`, `content`)
-        VALUES (%s, %s, %s, %s, %s, %s);
+        INSERT INTO `{0}`.`_feedback`
+        (`time`, `user-id`, `user-name`, `guild-id`, `guild-name`, `channel-id`, `channel-name`, `content`)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
         """
         new_query = sql_query.format(str(self.bot.common.mysqldb))
-        query_data = (sendtime, feedbackuserid, feedbackusername, channelid, channelname, content)
+        query_data = (str(sendtime), str(feedbackuserid), str(feedbackusername), str(guildid), str(guildname),
+                      str(channelid), str(channelname), str(feedback))
         async with self.bot.mysqlcon.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(new_query, query_data)
-        await ctx.send(mesg)
         mesg1 = f"I've recieved feedback from somebody! See below:\n"
         mesg1 += f"```\n"
         mesg1 += f"Username: {feedbackusername} - UserID: {feedbackuserid}\n"
-        mesg1 += f'Content:\n{content}\n'
+        if str('Direct Message') in str(ctx.channel):
+            mesg1 += f'Location: DM\n'
+        else:
+            mesg1 += f'Location: \n    Guild: {guildname} - {guildid}\n'
+            mesg1 += f'    Channel: {channelname} - {channelid}\n\n'
+        mesg1 += f'Feedback Message:\n{feedback}\n'
         mesg1 += f'```'
         for channel in self.bot.common.mainserverlogchan:
             chan = self.bot.get_channel(id=int(channel))
@@ -407,6 +417,10 @@ class AdminTesting:
         print("out")
         keyout = await self.bot.misccache.get(key=key)
         print(keyout)
+
+    @commands.command()
+    async def printchan(self, ctx):
+        print(ctx.message.channel)
 
     # @commands.command()
     # async def showprefix(self, ctx):

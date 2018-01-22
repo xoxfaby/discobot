@@ -190,6 +190,8 @@ CREATE TABLE `discobot`.`_feedback` (
   `time` VARCHAR(45) NOT NULL,
   `user-id` VARCHAR(45) NOT NULL,
   `user-name` VARCHAR(45) NOT NULL,
+  `guild-id` VARCHAR(45) NOT NULL,
+  `guild-name` VARCHAR(45) NOT NULL,
   `channel-id` VARCHAR(45) NOT NULL,
   `channel-name` VARCHAR(45) NOT NULL,
   `content` LONGTEXT NOT NULL,
