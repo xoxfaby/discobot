@@ -28,7 +28,6 @@ class InternalSQL:
                                                        user=self.bot.common.mysqluser, minsize=10, maxsize=250,
                                                        use_unicode=True, password=self.bot.common.mysqlpw, db=schema,
                                                        autocommit=True, charset='utf8mb4')
-        await self.bot.pref.load_all_prefixes()
 
     async def statement_get_prefixes(self):
         sqlcmd = """SELECT `guildid`, `prefix` FROM `{0}`.`prefixes` """

@@ -527,6 +527,8 @@ class EtcOnMessage:
                 for _ in range(numberoffire):
                     firemsg += alphabet["fire"]
                 await message.channel.send(firemsg)
+        if "Don't say Hello" in msg:
+            await message.channel.send("Hello")
         # if :
         #     for char in alphabet.keys():
         #         if char in msg:
