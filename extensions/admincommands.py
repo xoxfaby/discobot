@@ -311,7 +311,7 @@ class AdminCommands:
         else:
             mesg = (f'The prefix for this server is `{prefix}`\nTo run a command, you must either '
                     f'prepend this to the command, or mention me.\nTo set a new custom prefix, please use '
-                    f'`{prefix}prefix set mynewprefixhere`;')
+                    f'`{prefix}prefix set mynewprefixhere`')
         await ctx.send(mesg)
 
     # @commands.group()

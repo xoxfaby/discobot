@@ -163,14 +163,17 @@ class BotInfo:
                     pass
         else:
             initialchannel = channel
-        message = (f'Hello! I am {self.bot.common.botdescription}\nThank you for joining me to this server, please run '
-                   f'`{self.bot.common.discordbotcommandprefix}botconfig` to run my setup for this server.\nIn the '
+        message = (f'Hello! I am {self.bot.common.botdescription}\nThank you for joining me to this server!\n'
+                   f'First off, to make some notes:\n'
+                   f'My default prefix is `,` (Comma); a server administrator can change that with the `,prefix set`'
+                   f'command.\n I also have a command, `{self.bot.common.discordbotcommandprefix}botconfig` - This '
+                   f'command runs my initial setup, but I will work fine without it.\nIn the '
                    f'setup we\'ll set things such as if and where you want welcome messages and other features.\n'
                    f'**Please note, you will need `manage_guild` permissions on this guild in order to run`'
                    f'{self.bot.common.discordbotcommandprefix}botconfig`**')
         try:
             await initialchannel.send(message)
-        except Exception:
+        except Exception as e:
             return
             # fmt = f'On guild {guild.id} - {guild.name} - I was unable to send an initial message.'
             # raise self.bot.errors.DBotExternalError()

@@ -106,8 +106,8 @@ CREATE TABLE `mysqldb`.`_messages` (
   `content` LONGTEXT NULL,
   `attachmenturl` LONGTEXT NULL,
   `attachmentfilename` LONGTEXT NULL,
-  `isedited` TINYINT NOT NULL,
-  `isdeleted` TINYINT NOT NULL,
+  `isedited` TINYINT NOT NULL DEFAULT '0',
+  `isdeleted` TINYINT NOT NULL DEFAULT '0',
   `edit-time` VARCHAR(45) NULL,
   `delete-time` VARCHAR(45) NULL,
   `edit-before-content` LONGTEXT NULL,
@@ -160,8 +160,8 @@ CREATE TABLE `mysqldb`.`_dm_messages` (
   `content` LONGTEXT NULL,
   `attachmenturl` LONGTEXT NULL,
   `attachmentfilename` LONGTEXT NULL,
-  `isedited` TINYINT NULL DEFAULT '0',
-  `isdeleted` TINYINT NULL DEFAULT '0',
+  `isedited` TINYINT NOT NULL DEFAULT '0',
+  `isdeleted` TINYINT NOT NULL DEFAULT '0',
   `edit-time` VARCHAR(45) NULL,
   `delete-time` VARCHAR(45) NULL,
   `edit-before-content` LONGTEXT NULL,
@@ -185,7 +185,7 @@ CREATE TABLE `mysqldb`.`prefixes` (
   UNIQUE INDEX `idprefixes_UNIQUE` (`idprefixes` ASC))
 ROW_FORMAT=COMPRESSED;
 
-CREATE TABLE `discobot`.`_feedback` (
+CREATE TABLE `mysqldb`.`_feedback` (
   `id_feedback` INT NOT NULL AUTO_INCREMENT,
   `time` VARCHAR(45) NOT NULL,
   `user-id` VARCHAR(45) NOT NULL,
