@@ -7,7 +7,7 @@ class BotInternals:
     def __init__(self, bot):
         self.bot = bot
         self.bot.misccache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="misc")
-        self.bot.ignore = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="ignore")
+        self.bot.ignorecache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="ignore")
         self.bot.cd = commands.CooldownMapping.from_cooldown(5, 30.0, commands.BucketType.user)
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
@@ -437,8 +437,10 @@ class DBotHelp:
 
 
 def setup(dbot):
+    # put checks import here
     dbot.remove_command("help")
     dbot.check(dbotchecks.globally_ignore_bots())
     dbot.add_cog(DBotHelp(dbot))
     dbot.add_cog(BotInternals(dbot))
     dbot.add_cog(BotInfo(dbot))
+    # dbot.check(dbotchecks.check_user_not_ignored(dbot.ignorecache))

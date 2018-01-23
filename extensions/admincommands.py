@@ -314,13 +314,46 @@ class AdminCommands:
                     f'`{prefix}prefix set mynewprefixhere`;')
         await ctx.send(mesg)
 
-    @commands.command()
-    async def ignore(self, ctx, user):
-        pass
-
-    @commands.command()
-    async def unignore(self, ctx, user):
-        pass
+    # @commands.group()
+    # @dbotchecks.check_server_admin_or_botowner()
+    # async def ignore(self, ctx):
+    #     if ctx.invoked_subcommand is None:
+    #         return await ctx.send("No subcommand was given; Please try `ignore`, `checkignore`, or `unignore`.")
+    #
+    # @ignore.command()
+    # @dbotchecks.check_server_admin_or_botowner()
+    # async def ignore(self, ctx, ignoretype, user):
+    #     if ignoretype == "global":
+    #         botowner = bool(ctx.author.id == self.bot.common.botowner)
+    #         if botowner:
+    #             pass
+    #         else:
+    #             return
+    #     if ignoretype == "server":
+    #         key = str(ctx.guild.id)
+    #     elif ignoretype == "global":
+    #         key = "global"
+    #     else:
+    #         return
+    #     user_object = await self._user_getter(ctx, user)
+    #     keyexist = await self.bot.ignorecache.exists(key)
+    #     if keyexist:
+    #         ignorelist = await self.bot.ignorecache.get(key)
+    #         print(ignorelist)
+    #         ignorelist.append(user_object.id)
+    #         print(ignorelist)
+    #         await self.bot.ignorecache.set(key=key, value=ignorelist)
+    #
+    # @ignore.command()
+    # @dbotchecks.check_server_admin_or_botowner()
+    # async def unignore(self, ctx, ignoretype, user):
+    #     pass
+    #
+    # @ignore.command()
+    # async def checkignore(self, ctx):
+    #     listexists = await self.bot.ignorecache.exists(key=)
+    #     if listexists:
+    #         userlist = await self.bot.ignorecache.get()
 
     # def _sync_execute(self, ctx, text):
     #     print(text)
