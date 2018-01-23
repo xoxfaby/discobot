@@ -6,10 +6,24 @@ class BotInternals:
     """Bot Internal Shit"""
     def __init__(self, bot):
         self.bot = bot
+        self.bot.internals = self
         self.bot.misccache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="misc")
         self.bot.ignorecache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="ignore")
         self.bot.cd = commands.CooldownMapping.from_cooldown(5, 30.0, commands.BucketType.user)
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
+
+    async def cooldowncheck(self, ctx):
+        if str(ctx.author.id) in self.bot.common.trustedusers:
+            return True
+        bucket = self.bot.cd.get_bucket(ctx.message)
+        retry_after = bucket.update_rate_limit()
+        if retry_after:
+            nice_retry_after = (f'{round(retry_after)}')
+            mesg = f'You have been rate limited. Please wait for another {nice_retry_after} seconds.'
+            await ctx.send(mesg)
+            return False
+        else:
+            return True
 
     async def on_ready(self):
         game = discord.Game(name="https://personalwebsite.website/wiki/Noodlebot")
