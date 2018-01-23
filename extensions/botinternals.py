@@ -144,6 +144,10 @@ class BotInfo:
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
+    async def __local_check(self, ctx):
+        result = bool(await self.bot.internals.cooldowncheck(ctx))
+        return result
+
     async def on_guild_join(self, guild):
         channel = guild.system_channel
         if channel is None:
@@ -411,6 +415,10 @@ class DBotHelp:
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
+
+    async def __local_check(self, ctx):
+        result = bool(await self.bot.internals.cooldowncheck(ctx))
+        return result
 
     @commands.command(hidden=True)
     async def help(self, ctx, cmd=None, subcmd=None):

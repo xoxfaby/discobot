@@ -10,7 +10,8 @@ class Games:
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def __local_check(self, ctx):
-        return await self.bot.internals.cooldowncheck
+        result = bool(await self.bot.internals.cooldowncheck(ctx))
+        return result
 
     class _ww_internals:
         def __init__(self, bot):

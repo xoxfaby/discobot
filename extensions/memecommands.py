@@ -9,7 +9,8 @@ class ImageMemes:
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def __local_check(self, ctx):
-        return await self.bot.internals.cooldowncheck
+        result = bool(await self.bot.internals.cooldowncheck(ctx))
+        return result
 
     async def _randomfilechoice(self, ctx, args: str):
         async with ctx.typing():
@@ -186,6 +187,10 @@ class TextMemes:
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
+
+    async def __local_check(self, ctx):
+        result = bool(await self.bot.internals.cooldowncheck(ctx))
+        return result
 
     @commands.command()
     async def gface(self, ctx):
