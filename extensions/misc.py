@@ -275,15 +275,15 @@ class Misc:
             await ctx.message.delete()
         return await ctx.send("That wasn't very nice of you.")
 
-    @commands.command()
-    async def roll(self, ctx, dice: str):
-        """Roll a dice, use NdN format"""
-        try:
-            rolls, limit = map(int, dice.split('d'))
-        except Exception:
-            return await ctx.send('Format has to be in NdN!')
-        result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
-        await ctx.send(result)
+    # @commands.command()
+    # async def roll(self, ctx, dice: str):
+    #     """Roll a dice, use NdN format"""
+    #     try:
+    #         rolls, limit = map(int, dice.split('d'))
+    #     except Exception:
+    #         return await ctx.send('Format has to be in NdN!')
+    #     result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
+    #     await ctx.send(result)
 
     @commands.command(description='To decide between multiple choices', aliases=['decide'])
     async def choose(self, ctx, *args: str):

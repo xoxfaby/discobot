@@ -310,6 +310,39 @@ class AdminCommands:
                     f'`{prefix}prefix set mynewprefixhere`;')
         await ctx.send(mesg)
 
+    # def _sync_execute(self, ctx, text):
+    #     print(text)
+    #     exec(text)
+    #
+    # async def _async_execute(self, ctx, text):
+    #     print(text)
+    #     await exec(text)
+    #
+    # @commands.command()
+    # @commands.is_owner()
+    # async def eval(self, ctx, *, text):
+    #     if (text.startswith('```') or text.startswith('```py')) and text.endswith('```'):
+    #         newtext = '\n'.join(text.split('\n')[1:-1])
+    #         # awaitable = inspect.isawaitable(cmd)
+    #         awaitable = True
+    #         if awaitable:
+    #             env = {'bot': self.bot, 'ctx': ctx, 'channel': ctx.channel, 'author': ctx.author, 'guild': ctx.guild,
+    #                    'message': ctx.message}
+    #             env.update(globals())
+    #             compiled = f'async def func():\n{textwrap.indent(newtext, "    ")}'
+    #             try:
+    #                 out = eval(compiled, env)
+    #             except Exception as e:
+    #                 return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+    #         else:
+    #             return
+    #         # if output:
+    #         #     print(output)
+    #         #     # output formatter
+    #         #     await ctx.send(output)
+    #     else:
+    #         return await ctx.send("You did not send a valid codeblock for me to run")
+
     # @commands.command(hidden=True)
     # @commands.is_owner()
     # async def allguildbroadcast(self, ctx, *, message):
