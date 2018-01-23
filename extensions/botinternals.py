@@ -9,7 +9,7 @@ class BotInternals:
         self.bot.internals = self
         self.bot.misccache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="misc")
         self.bot.ignorecache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="ignore")
-        self.bot.cd = commands.CooldownMapping.from_cooldown(5, 30.0, commands.BucketType.user)
+        self.bot.cd = commands.CooldownMapping.from_cooldown(5, 30.0, commands.BucketType.channel)
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def cooldowncheck(self, ctx):
