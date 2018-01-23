@@ -51,6 +51,8 @@ class BotInternals:
             return await ctx.send(content="You have provided an invalid input for this command")
         elif isinstance(exception, self.bot.errors.BotNotWorking):
             return await ctx.send(content=exception)
+        elif isinstance(exception, commands.errors.CommandInvokeError):
+            return
         else:
             return await ctx.send(content='An unknown error has occurred.')
 
