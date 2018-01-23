@@ -154,3 +154,6 @@ class MyErrors(commands.CommandError):
 
     class NotOwnerError(commands.CommandError):
         pass
+
+    class DBotCooldownError(commands.CommandError):
+        pass

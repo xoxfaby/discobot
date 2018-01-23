@@ -8,6 +8,17 @@ class Misc:
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
+    async def __local_check(self, ctx):
+        bucket = self.bot.cd.get_bucket(ctx.message)
+        retry_after = bucket.update_rate_limit()
+        if retry_after:
+            nice_retry_after = (f'{round(retry_after)}')
+            mesg = f'You have been rate limited. Please wait for another {nice_retry_after} seconds.'
+            await ctx.send(mesg)
+            return False
+        else:
+            return True
+
     async def _internalfile(self, ctx, args: str):
         async with ctx.typing():
             file = os.path.join("internalfiles", "images", args)
@@ -265,25 +276,38 @@ class Misc:
     async def nice(self, ctx):
         """V naisu"""
         if str('Direct Message') not in str(ctx.channel):
-            await ctx.message.delete()
+            try:
+                await ctx.message.delete()
+            except Exception as e:
+                pass
         return await ctx.send("Nice")
 
     @commands.command()
     async def notnice(self, ctx):
         """Un-nice"""
         if str('Direct Message') not in str(ctx.channel):
-            await ctx.message.delete()
+            try:
+                await ctx.message.delete()
+            except Exception as e:
+                pass
         return await ctx.send("That wasn't very nice of you.")
 
-    # @commands.command()
-    # async def roll(self, ctx, dice: str):
-    #     """Roll a dice, use NdN format"""
-    #     try:
-    #         rolls, limit = map(int, dice.split('d'))
-    #     except Exception:
-    #         return await ctx.send('Format has to be in NdN!')
-    #     result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
-    #     await ctx.send(result)
+    @commands.command()
+    async def roll(self, ctx, dice: str):
+        """Roll a dice, use NdN format"""
+        new_dice = dice.split("d")
+        if (int(new_dice[0]) > 1000) or (int(new_dice[1]) > 1000):
+            return await ctx.send("Too many dice have been selected")
+        try:
+            rolls, limit = int(new_dice[0]), int(new_dice[1])
+        except Exception:
+            return await ctx.send('Format has to be in NdN!')
+        result = ''
+        for r in range(rolls):
+            result += f'{random.randint(1, limit)}, '
+        result = result[:-1][:-1]
+        if len(result) < 1999:
+            await ctx.send(result)
 
     @commands.command(description='To decide between multiple choices', aliases=['decide'])
     async def choose(self, ctx, *args: str):

@@ -8,6 +8,17 @@ class ImageMemes:
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
+    async def __local_check(self, ctx):
+        bucket = self.bot.cd.get_bucket(ctx.message)
+        retry_after = bucket.update_rate_limit()
+        if retry_after:
+            nice_retry_after = (f'{round(retry_after)}')
+            mesg = f'You have been rate limited. Please wait for another {nice_retry_after} seconds.'
+            await ctx.send(mesg)
+            return False
+        else:
+            return True
+
     async def _randomfilechoice(self, ctx, args: str):
         async with ctx.typing():
             memearray = []
@@ -108,7 +119,10 @@ class ImageMemes:
         """Sekrit"""
         awoofile = os.path.join("internalfiles", "images", "3ae.png")
         if str('Direct Message') not in str(ctx.channel):
-            await ctx.message.delete()
+            try:
+                await ctx.message.delete()
+            except Exception as e:
+                pass
         awoolist = [discord.File(fp=awoofile, filename="awoo.png"), discord.File(fp=awoofile, filename="awoo1.png"),
                     discord.File(fp=awoofile, filename="awoo2.png"), discord.File(fp=awoofile, filename="awoo3.png"),
                     discord.File(fp=awoofile, filename="awoo4.png"),

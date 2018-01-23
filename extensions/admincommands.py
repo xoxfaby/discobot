@@ -17,8 +17,9 @@ class AdminCommands:
         except:
             pass
         messages_list = []
-        messages_list += (x for x in await ctx.history(limit=num, before=ctx.message).flatten() if x.author == ctx.me)
-        index = 0
+        async for msg in ctx.history(limit=num, before=ctx.message):
+            if msg.author == ctx.me:
+                messages_list.append(msg)
         await ctx.channel.delete_messages(messages_list)
 
     @commands.command()
@@ -41,7 +42,10 @@ class AdminCommands:
         self.bot.common.logger.info(mesg)
         print(mesg)
         if str('Direct Message') not in str(ctx.channel):
-            await ctx.message.delete()
+            try:
+                await ctx.message.delete()
+            except Exception as e:
+                pass
         await ctx.send('Proceeding with bot shutdown now...')
         return await self.bot.logout()
 
@@ -309,6 +313,14 @@ class AdminCommands:
                     f'prepend this to the command, or mention me.\nTo set a new custom prefix, please use '
                     f'`{prefix}prefix set mynewprefixhere`;')
         await ctx.send(mesg)
+
+    @commands.command()
+    async def ignore(self, ctx, user):
+        pass
+
+    @commands.command()
+    async def unignore(self, ctx, user):
+        pass
 
     # def _sync_execute(self, ctx, text):
     #     print(text)

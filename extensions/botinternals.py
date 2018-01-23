@@ -7,6 +7,8 @@ class BotInternals:
     def __init__(self, bot):
         self.bot = bot
         self.bot.misccache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="misc")
+        self.bot.ignore = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="ignore")
+        self.bot.cd = commands.CooldownMapping.from_cooldown(5, 30.0, commands.BucketType.user)
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def on_ready(self):
@@ -21,10 +23,12 @@ class BotInternals:
             return await ctx.send(content=exception)
         elif isinstance(exception, self.bot.errors.DBotExternalError):
             return await ctx.send(content=exception)
+        elif isinstance(exception, self.bot.errors.DBotCooldownError):
+            return
         elif isinstance(exception, commands.errors.NotOwner):
             return await ctx.send(content="You do not have the permissions to perform this command.")
         elif isinstance(exception, commands.errors.CheckFailure):
-            return await ctx.send(content='You do not have the permissions to perform this command.')
+            return
         elif isinstance(exception, commands.errors.CommandNotFound):
             return
         elif isinstance(exception, commands.errors.BadArgument):
@@ -434,6 +438,7 @@ class DBotHelp:
 
 def setup(dbot):
     dbot.remove_command("help")
+    dbot.check(dbotchecks.globally_ignore_bots())
     dbot.add_cog(DBotHelp(dbot))
     dbot.add_cog(BotInternals(dbot))
     dbot.add_cog(BotInfo(dbot))
