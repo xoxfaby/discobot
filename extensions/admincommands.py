@@ -314,6 +314,12 @@ class AdminCommands:
                     f'`{prefix}prefix set mynewprefixhere`')
         await ctx.send(mesg)
 
+    @commands.command()
+    async def feedbackreply(self, ctx, userid, *, text):
+        member = await self._user_getter(ctx, str(userid))
+        pass
+
+
     # @commands.group()
     # @dbotchecks.check_server_admin_or_botowner()
     # async def ignore(self, ctx):
@@ -355,38 +361,46 @@ class AdminCommands:
     #     if listexists:
     #         userlist = await self.bot.ignorecache.get()
 
-    # def _sync_execute(self, ctx, text):
-    #     print(text)
-    #     exec(text)
-    #
-    # async def _async_execute(self, ctx, text):
-    #     print(text)
-    #     await exec(text)
-    #
-    # @commands.command()
-    # @commands.is_owner()
-    # async def eval(self, ctx, *, text):
-    #     if (text.startswith('```') or text.startswith('```py')) and text.endswith('```'):
-    #         newtext = '\n'.join(text.split('\n')[1:-1])
-    #         # awaitable = inspect.isawaitable(cmd)
-    #         awaitable = True
-    #         if awaitable:
-    #             env = {'bot': self.bot, 'ctx': ctx, 'channel': ctx.channel, 'author': ctx.author, 'guild': ctx.guild,
-    #                    'message': ctx.message}
-    #             env.update(globals())
-    #             compiled = f'async def func():\n{textwrap.indent(newtext, "    ")}'
-    #             try:
-    #                 out = eval(compiled, env)
-    #             except Exception as e:
-    #                 return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
-    #         else:
-    #             return
-    #         # if output:
-    #         #     print(output)
-    #         #     # output formatter
-    #         #     await ctx.send(output)
-    #     else:
-    #         return await ctx.send("You did not send a valid codeblock for me to run")
+    @commands.command()
+    @commands.is_owner()
+    async def eval(self, ctx, *, text):
+        """evaluate a python expression"""
+        # Code lifted from Robodanny on 2018-01-23
+        # Some adaptions have been made as to not completely copy Danny's code.
+        # Sauce: https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py
+        if (text.startswith('```') or text.startswith('```py')) and text.endswith('```'):
+            env = {'self.bot': self.bot, 'ctx': ctx, 'channel': ctx.channel, 'author': ctx.author, 'guild': ctx.guild,
+                   'message': ctx.message}
+            env.update(globals())
+            newtext = '\n'.join(text.split('\n')[1:-1])
+            stdout = io.StringIO()
+            compiled = f'async def func():\n{textwrap.indent(newtext, "  ")}'
+            try:
+                exec(compiled, env)
+            except Exception as e:
+                await ctx.message.add_reaction('\u274C')
+                return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+            func = env['func']
+            try:
+                with contextlib.redirect_stdout(stdout):
+                    ret = await func()
+            except Exception as e:
+                value = stdout.getvalue()
+                await ctx.message.add_reaction('\u274C')
+                await ctx.send(f'```py\n{value}{traceback.format_exc()}\n{e}\n```')
+            else:
+                value = stdout.getvalue()
+                try:
+                    await ctx.message.add_reaction('\u2705')
+                except Exception as e:
+                    pass
+                if ret is None:
+                    if value:
+                        await ctx.send(f'```py\n{value}\n```')
+                else:
+                    await ctx.send(f'```py\n{value}{ret}\n```')
+        else:
+            return await ctx.send("You did not send a valid code block for me to run")
 
     # @commands.command(hidden=True)
     # @commands.is_owner()
@@ -537,6 +551,9 @@ class AdminTesting:
     #     for cmd in self.bot.walk_commands():
     #         print(cmd)
     #
+    @commands.command()
+    async def plshalp(self, ctx):
+        return await ctx.send("My bot is broken")
 
 
 def setup(dbot):
