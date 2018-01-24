@@ -189,7 +189,7 @@ class BotInfo:
         embed.add_field(name="Invite", value="[Invite URL]"
                                              "(https://discordapp.com/oauth2/authorize?client_id=340802627887693825&"
                                              "scope=bot&permissions=365030599)")
-        embed.add_field(name="Bot Prefix", value="`,` (Comma)")
+        embed.add_field(name="Bot Prefix", value=f'{ctx.prefix}')
         embed.add_field(name="Source", value="[Github](https://github.com/jwshields/discobot)")
         now = datetime.datetime.utcnow()
         delta = now - self.bot.starttime

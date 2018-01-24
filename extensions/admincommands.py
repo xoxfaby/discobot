@@ -319,7 +319,6 @@ class AdminCommands:
         member = await self._user_getter(ctx, str(userid))
         pass
 
-
     # @commands.group()
     # @dbotchecks.check_server_admin_or_botowner()
     # async def ignore(self, ctx):
