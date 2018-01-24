@@ -369,8 +369,9 @@ class AdminCommands:
         # Some adaptions have been made as to not completely copy Danny's code.
         # Sauce: https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py
         if (text.startswith('```') or text.startswith('```py')) and text.endswith('```'):
-            env = {'self.bot': self.bot, 'ctx': ctx, 'channel': ctx.channel, 'author': ctx.author, 'guild': ctx.guild,
-                   'message': ctx.message}
+            env = {'bot': self.bot, 'ctx': ctx, 'channel': ctx.channel, 'author': ctx.author, 'guild': ctx.guild,
+                   'message': ctx.message, 'mysqlcon': self.bot.mysqlcon, 'mysqlcache': self.bot.mysqlcache,
+                   'misccache': self.bot.misccache, }
             env.update(globals())
             newtext = '\n'.join(text.split('\n')[1:-1])
             stdout = io.StringIO()
