@@ -133,7 +133,6 @@ class ImageManipulation:
             for pattern, replacement in replacements:
                 img = pattern.sub(replacement, img)
             return img
-        # wordpad_replacer = functools.partial(_replace, replacements=_wordpad_glitch)
         # Open image from imglocation, close image, save as bmp
         bmpdir = os.path.join(basedir, "bmp")
         origfilepath = os.path.split(imglocation)[0]
@@ -176,10 +175,6 @@ class ImageManipulation:
             img.compression_quality = 90
             img.save(filename=outpath)
         return outpath
-        # with open(out_path, 'wb') as wh:
-        #     wh.write(glitched)
-        # wh.close()
-        # return out_path
 
     @commands.command()
     async def corrupt(self, ctx):
