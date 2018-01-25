@@ -125,7 +125,8 @@ class ImageManipulation:
             (b'\x07', b'\x27'),
             (b'\x0B', b'\x0A\x0D'),
             (b'(?<!\x0A)(\x0D)', b'\x0A\x0D'),
-            (b'(\x0A)(?<!\x0D)', b'\x0A\x0D')]
+            (b'(\x0A)(?<!\x0D)', b'\x0A\x0D'),
+            (b'(\x0E)', b'(\x02)')]
 
         def _replace(img):
             replacements = [(re.compile(sub), replacement) for (sub, replacement) in wordpad_glitch]
@@ -157,24 +158,23 @@ class ImageManipulation:
         core_data = _replace(core_data)
         letters = b'a', b'b', b'c', b'd', b'e'
         outpath = None
-        for xx in range(10):
+        randrange = random.randint(1, 8)
+        for xx in range(randrange):
             ii = random.randint(0, data_size - 1)
             jj = random.randint(ii, ii + random.randint(100, 10000))
             pre = core_data[:ii]
             post = core_data[jj:]
             sub_data = core_data[ii:jj]
-            sub_data = sub_data.replace(letters[random.randint(0, 4)],
-                                        letters[random.randint(0, 4)])
-            full_data = pre + sub_data + post
-            glitched = header + full_data
-            print(len(glitched))
-            outdir = os.path.join(basedir, "corrupt")
-            corrupt_out_name = f'{filename}-corrupt.jpg'
-            outpath = os.path.join(outdir, corrupt_out_name)
-            with Image(blob=glitched) as img:
-                img.format = 'jpg'
-                img.compression_quality = 90
-                img.save(filename=outpath)
+            sub_data = sub_data.replace(letters[random.randint(0, 4)], letters[random.randint(0, 4)])
+            core_data = pre + sub_data + post
+        glitched = header + core_data
+        outdir = os.path.join(basedir, "corrupt")
+        corrupt_out_name = f'{filename}-corrupt.jpg'
+        outpath = os.path.join(outdir, corrupt_out_name)
+        with Image(blob=glitched) as img:
+            img.format = 'jpg'
+            img.compression_quality = 90
+            img.save(filename=outpath)
         return outpath
         # with open(out_path, 'wb') as wh:
         #     wh.write(glitched)
@@ -197,7 +197,8 @@ class ImageManipulation:
             os.makedirs(origimglocation)
         await self.bot.utils.retrieve_web_file(imglist[0], fulllocation)
         async with ctx.typing():
-            result = await self.bot.loop.run_in_executor(None, self._corrupt_img, basedir, fulllocation)
+            pass
+        result = await self.bot.loop.run_in_executor(None, self._corrupt_img, basedir, fulllocation)
         if result is not None:
             await ctx.send(file=discord.File(fp=result, filename="corrupt.jpg"))
         else:
