@@ -158,7 +158,7 @@ class ImageManipulation:
         core_data = _replace(core_data)
         letters = b'a', b'b', b'c', b'd', b'e'
         outpath = None
-        randrange = random.randint(1, 8)
+        randrange = random.randint(1, 15)
         for xx in range(randrange):
             ii = random.randint(0, data_size - 1)
             jj = random.randint(ii, ii + random.randint(100, 10000))
