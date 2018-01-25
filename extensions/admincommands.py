@@ -284,7 +284,7 @@ class AdminCommands:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(newcmd, querydata)
         mesg = (f'Alright, I have set the custom prefix for this guild to be `{newprefix}`.\nPlease use that to use me'
-                f'from now on. You can also view my prefix at any time by mentioning me and using the `showprefix`'
+                f' from now on. You can also view my prefix at any time by mentioning me and using the `showprefix`'
                 f' command')
         await self.bot.pref.reload_prefix_cache()
         await ctx.send(mesg)
