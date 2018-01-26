@@ -160,12 +160,20 @@ class ImageManipulation:
         randrange = random.randint(1, 8)
         for xx in range(randrange):
             ii = random.randint(0, data_size - 1)
-            jj = random.randint(ii, ii + random.randint(500, 15000))
+            jj = random.randint(ii, ii + random.randint(500, 5000))
             pre = core_data[:ii]
             post = core_data[jj:]
             sub_data = core_data[ii:jj]
             sub_data = sub_data.replace(letters[random.randint(0, 4)], letters[random.randint(0, 4)])
-            core_data = pre + sub_data + post
+            rand = random.randint(1,4)
+            if rand == 1:
+                core_data = pre + sub_data + post
+            elif rand == 2:
+                core_data = sub_data + pre + post
+            elif rand == 3:
+                core_data = post + pre + sub_data
+            elif rand == 4:
+                core_data = sub_data + post + pre
         glitched = header + core_data
         outdir = os.path.join(basedir, "corrupt")
         corrupt_out_name = f'{filename}-corrupt.jpg'
