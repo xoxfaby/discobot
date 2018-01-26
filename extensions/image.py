@@ -151,16 +151,16 @@ class ImageManipulation:
         # open bmp
         with open(path_bmp_out, 'rb') as in_file:
             imgbytes = in_file.read()
-        header = imgbytes[:1000]
-        core_data = imgbytes[1000:]
+        header = imgbytes[:64]
+        core_data = imgbytes[64:]
         data_size = len(core_data)
         core_data = _replace(core_data)
         letters = b'a', b'b', b'c', b'd', b'e'
         outpath = None
-        randrange = random.randint(1, 15)
+        randrange = random.randint(1, 8)
         for xx in range(randrange):
             ii = random.randint(0, data_size - 1)
-            jj = random.randint(ii, ii + random.randint(100, 10000))
+            jj = random.randint(ii, ii + random.randint(500, 15000))
             pre = core_data[:ii]
             post = core_data[jj:]
             sub_data = core_data[ii:jj]
@@ -231,6 +231,19 @@ class ImageManipulation:
         if convertedfilepath is not None:
             file = io.BytesIO(convertedfilepath)
             await ctx.send(files=[discord.File(fp=file, filename="ok.png")])
+
+    # @commands.command()
+    # async def hextest(self, ctx):
+    #     imgpath = os.path.join("internalfiles", "temp", "test.bmp")
+    #     bmpoffset = 0xA
+    #     async with aiofiles.open(imgpath, mode="rb") as fp:
+    #         await fp.seek(bmpoffset)
+    #         offsetvalue = await fp.read(1)
+    #         print(offsetvalue)
+    #         await fp.seek(offsetvalue)
+    #         header = fp[:offsetvalue]
+    #         imgdata = fp[offsetvalue:]
+    #         print(header)
 
 
 def setup(dbot):

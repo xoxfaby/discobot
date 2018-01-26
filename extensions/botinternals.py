@@ -185,7 +185,7 @@ class BotInfo:
         embed.add_field(name="Web URL", value="[Boat Wiki](https://personalwebsite.website/wiki/noodlebot)")
         embed.set_thumbnail(
             url='https://cdn.discordapp.com/app-icons/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png')
-        embed.add_field(name="Creator", value="`noodle#4660`")
+        embed.add_field(name="Creator", value="`noodle#0001`")
         embed.add_field(name="Invite", value="[Invite URL]"
                                              "(https://discordapp.com/oauth2/authorize?client_id=340802627887693825&"
                                              "scope=bot&permissions=365030599)")

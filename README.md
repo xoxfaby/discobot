@@ -23,6 +23,6 @@
     - multiprocessing, aioprocessing, wolframalpha, numpy, configparser, Pillow
     - csv, janus, threading, io, dataset, strawpoll, gzip, hashlib, glob,
 - contact me:
-    - on discord at noodle#4660
+    - on discord at noodle#0001
     - bot help website: https://personalwebsite.website/wiki/noodlebot
     - bot server: https://discord.gg/9B8eVyx

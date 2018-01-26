@@ -55,7 +55,7 @@ You've selected to not enable user voice messages for this server
 This concludes my configuration.
 Thank you for adding me to this server;
 You can view my help documentation at <https://personalwebsite.website/wiki/Noodlebot>
-My creator is `noodle#4660`, and you can join my main server at <https://discord.gg/9B8eVyx> if you need help with me.
+My creator is `noodle#0001`, and you can join my main server at <https://discord.gg/9B8eVyx> if you need help with me.
 You can also re-run this configuration command at any time to change your selections.
 %%
 The default welcome and part messages are:
