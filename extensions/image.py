@@ -120,7 +120,7 @@ class ImageManipulation:
         # Majority of code absorbed from:
         # https://github.com/GlitchTools/batch_wordpad_glitch/blob/master/wordpad_glitch.py
         # Adaptions were made from the flow of the code, but the actual glitching was copied
-        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'gif', 'bmp']
+        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
         wordpad_glitch = [
             (b'\x07', b'\x27'),
             (b'\x0B', b'\x0A\x0D'),
@@ -137,7 +137,7 @@ class ImageManipulation:
         bmpdir = os.path.join(basedir, "bmp")
         origfilepath = os.path.split(imglocation)[0]
         filename = os.path.basename(imglocation).split('.')[0]
-        ext = os.path.basename(imglocation).split('.')[1]
+        ext = os.path.basename(imglocation).split('.')[-1]
         origfilename = f'{filename}.{ext}'
         fp = os.path.join(origfilepath, origfilename)
         if ext.lower() in img_formats:
@@ -148,23 +148,22 @@ class ImageManipulation:
                     converted.save(filename=path_bmp_out)
         else:
             return None
-        # open bmp
         with open(path_bmp_out, 'rb') as in_file:
             imgbytes = in_file.read()
-        header = imgbytes[:64]
-        core_data = imgbytes[64:]
+        header = imgbytes[:140]
+        core_data = imgbytes[140:]
         data_size = len(core_data)
         core_data = _replace(core_data)
-        letters = b'a', b'b', b'c', b'd', b'e'
+        letters = b'\x07', b'\x27', b'\x0b', b'\x0a', b'\x0d' b'\x0a'
         outpath = None
-        randrange = random.randint(1, 8)
+        randrange = random.randint(1, 5)
         for xx in range(randrange):
             ii = random.randint(0, data_size - 1)
             jj = random.randint(ii, ii + random.randint(500, 5000))
             pre = core_data[:ii]
             post = core_data[jj:]
             sub_data = core_data[ii:jj]
-            sub_data = sub_data.replace(letters[random.randint(0, 4)], letters[random.randint(0, 4)])
+            # sub_data = sub_data.replace(letters[random.randint(0, 4)], letters[random.randint(0, 4)])
             rand = random.randint(1,4)
             if rand == 1:
                 core_data = pre + sub_data + post
@@ -182,17 +181,32 @@ class ImageManipulation:
             img.format = 'jpg'
             img.compression_quality = 90
             img.save(filename=outpath)
+        if os.path.getsize(outpath) > 8000000:
+            while os.path.getsize(outpath) > 8000000:
+                with Image(filename=outpath) as img:
+                    img.format = 'jpg'
+                    img.compression_quality = 85
+                    img.save(filename=outpath)
         return outpath
 
     @commands.command()
     async def corrupt(self, ctx):
         """Corrupt an image"""
-        imglist = await self._get_recent_images_links(ctx)
-        if not imglist:
-            raise self.bot.errors.DBotExternalError(f'No images have been posted in the last 25 messages that I could'
-                                                    f' use.')
+        if ctx.message.attachments:
+            imglist = []
+            download_list = list([at.url for at in ctx.message.attachments])
+            for url in download_list:
+                imglist += [url]
+        else:
+            imglist = await self._get_recent_images_links(ctx)
+            if not imglist:
+                raise self.bot.errors.DBotExternalError(f'No images have been posted in the last 25 messages that I '
+                                                        f'could use.')
         imagefilename = (imglist[0]).split('/')[-1].strip().split(".")
-        filename = (f'{time.strftime("%Y%m%d-%H%M%S")}-{imagefilename[0]}-original.{imagefilename[1]}')
+        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
+        if imagefilename[-1].lower() not in img_formats:
+            raise self.bot.errors.DBotExternalError("The most recent attachment posted does not appear to be an image")
+        filename = (f'{time.strftime("%Y%m%d-%H%M%S")}-{imagefilename[0]}-original.{imagefilename[-1]}')
         basedir = os.path.join(os.curdir, "internalfiles", "temp", "corrupt")
         origimglocation = os.path.join(os.curdir, "internalfiles", "temp", "corrupt", "original")
         fulllocation = os.path.join(origimglocation, filename)
