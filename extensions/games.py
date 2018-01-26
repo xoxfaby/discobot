@@ -1,9 +1,10 @@
 from extensions.utils.importsfile import *
-from extensions.utils import dbotchecks
 
 
 class Games:
     """A module for games within the bot."""
+    from extensions.utils import dbotchecks
+
     def __init__(self, bot):
         self.bot = bot
         self.wwclass = self._ww_internals(self.bot)

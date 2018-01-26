@@ -1,9 +1,10 @@
 from extensions.utils.importsfile import *
-from extensions.utils import dbotchecks
 
 
 class BotInternals:
     """Bot Internal Shit"""
+    from extensions.utils import dbotchecks
+
     def __init__(self, bot):
         self.bot = bot
         self.bot.internals = self
@@ -142,6 +143,8 @@ class BotInternals:
 
 class BotInfo:
     """Bot Information and configuration"""
+    from extensions.utils import dbotchecks
+
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
@@ -417,6 +420,8 @@ class BotInfo:
 
 class DBotHelp:
     """Bot help replacement"""
+    from extensions.utils import dbotchecks
+
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
@@ -464,7 +469,7 @@ class DBotHelp:
 
 
 def setup(dbot):
-    # put checks import here
+    from extensions.utils import dbotchecks
     dbot.remove_command("help")
     dbot.check(dbotchecks.globally_ignore_bots())
     dbot.add_cog(DBotHelp(dbot))

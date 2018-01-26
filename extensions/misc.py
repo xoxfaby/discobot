@@ -1,9 +1,10 @@
 from extensions.utils.importsfile import *
-from extensions.utils import dbotchecks
 
 
 class Misc:
     """Miscellaneous commands for the bot."""
+    from extensions.utils import dbotchecks
+
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
@@ -513,6 +514,8 @@ class Misc:
 
 
 class EtcOnMessage:
+    from extensions.utils import dbotchecks
+
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
@@ -531,20 +534,15 @@ class EtcOnMessage:
                 subreplace = re.compile('okay google ', re.IGNORECASE)
                 newmsg = subreplace.sub("", msg)
             else:
-                newmsg = msg
+                return
             newmesg1 = newmsg.replace(" ", "+")
             googleurl = (str("https://www.google.com/search?q=") + str(newmesg1))
+            await message.add_reaction('✅')
             await message.channel.send(str(googleurl))
         if alphabet["oksymbol"] in msg:
-            firemsg = ""
             numberoffire = random.randrange(0, 5)
-            if numberoffire == 0:
-                pass
-                # await message.channel.send("That was not fire at all")
-            else:
-                for _ in range(numberoffire):
-                    firemsg += alphabet["fire"]
-                await message.channel.send(firemsg)
+            if numberoffire != 0:
+                await message.add_reaction('🔥')
         if "Don't say Hello" in msg:
             await message.channel.send("Hello")
         # if :

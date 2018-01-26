@@ -1,9 +1,10 @@
 from extensions.utils.importsfile import *
-from extensions.utils import dbotchecks
 
 
 class ImageMemes:
     """Image memes"""
+    from extensions.utils import dbotchecks
+
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
@@ -184,6 +185,8 @@ class ImageMemes:
 
 class TextMemes:
     """Meme commands"""
+    from extensions.utils import dbotchecks
+
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')

@@ -45,6 +45,7 @@ def check_user_not_ignored():
         return True
     return commands.check(predicate)
 
+
 # def globalcooldown(ctx):
 #     def predicate(ctx):
 #         commands.cooldown(2, 60, commands.BucketType.user)
