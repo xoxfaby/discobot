@@ -539,7 +539,8 @@ class EtcOnMessage:
             firemsg = ""
             numberoffire = random.randrange(0, 5)
             if numberoffire == 0:
-                await message.channel.send("That was not fire at all")
+                pass
+                # await message.channel.send("That was not fire at all")
             else:
                 for _ in range(numberoffire):
                     firemsg += alphabet["fire"]
