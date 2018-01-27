@@ -52,9 +52,9 @@ class AdminCommands:
 
     @commands.command(hidden=True)
     @dbotchecks.check_trusted_user()
-    async def boatsay(self, ctx, *args):
+    async def boatsay(self, ctx, *, args):
         """Sekrit"""
-        mesg = ' '.join(args)
+        mesg = args
         try:
             await ctx.message.delete()
         except:
@@ -63,9 +63,9 @@ class AdminCommands:
 
     @commands.command(hidden=True)
     @dbotchecks.check_trusted_user()
-    async def adminbotsay(self, ctx, chanid, *args):
+    async def adminbotsay(self, ctx, chanid, *, args):
         """Sekrit"""
-        mesg = ' '.join(args)
+        mesg = args
         try:
             await ctx.message.delete()
         except:

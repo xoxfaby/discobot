@@ -471,7 +471,7 @@ class DBotHelp:
 def setup(dbot):
     from extensions.utils import dbotchecks
     dbot.remove_command("help")
-    dbot.check(dbotchecks.globally_ignore_bots)
+    dbot.check(dbotchecks.globally_ignore_bots())
     dbot.add_cog(DBotHelp(dbot))
     dbot.add_cog(BotInternals(dbot))
     dbot.add_cog(BotInfo(dbot))
