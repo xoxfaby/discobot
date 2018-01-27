@@ -10,7 +10,7 @@ class BotInternals:
         self.bot.internals = self
         self.bot.misccache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="misc")
         self.bot.ignorecache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="ignore")
-        self.bot.cd = commands.CooldownMapping.from_cooldown(5, 30.0, commands.BucketType.channel)
+        self.bot.cd = commands.CooldownMapping.from_cooldown(10, 30.0, commands.BucketType.channel)
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def cooldowncheck(self, ctx):
@@ -149,9 +149,9 @@ class BotInfo:
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
-    async def __local_check(self, ctx):
-        result = bool(await self.bot.internals.cooldowncheck(ctx))
-        return result
+    # async def __local_check(self, ctx):
+    #     result = bool(await self.bot.internals.cooldowncheck(ctx))
+    #     return result
 
     async def on_guild_join(self, guild):
         channel = guild.system_channel
@@ -426,9 +426,9 @@ class DBotHelp:
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
-    async def __local_check(self, ctx):
-        result = bool(await self.bot.internals.cooldowncheck(ctx))
-        return result
+    # async def __local_check(self, ctx):
+    #     result = bool(await self.bot.internals.cooldowncheck(ctx))
+    #     return result
 
     @commands.command(hidden=True)
     async def help(self, ctx, cmd=None, subcmd=None):
@@ -471,7 +471,7 @@ class DBotHelp:
 def setup(dbot):
     from extensions.utils import dbotchecks
     dbot.remove_command("help")
-    dbot.check(dbotchecks.globally_ignore_bots())
+    dbot.check(dbotchecks.globally_ignore_bots)
     dbot.add_cog(DBotHelp(dbot))
     dbot.add_cog(BotInternals(dbot))
     dbot.add_cog(BotInfo(dbot))

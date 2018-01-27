@@ -213,7 +213,7 @@ class ImageManipulation:
                     bias = 0.7
                     converted.function('sinusoid', [frequency, phase_shift, amplitude, bias])
                     converted.level(0.3, 0.9, gamma=1.8)
-                    converted.compression_quality = 20
+                    converted.compression_quality = 5
                     converted.save(filename=path_fried_out)
                     return path_fried_out
         else:
