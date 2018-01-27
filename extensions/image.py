@@ -128,12 +128,6 @@ class ImageManipulation:
             (b'(?<!\x0A)(\x0D)', b'\x0A\x0D'),
             (b'(\x0A)(?<!\x0D)', b'\x0A\x0D'),
             (b'(\x0E)', b'(\x02)')]
-
-        def _replace(img):
-            replacements = [(re.compile(sub), replacement) for (sub, replacement) in wordpad_glitch]
-            for pattern, replacement in replacements:
-                img = pattern.sub(replacement, img)
-            return img
         # Open image from imglocation, close image, save as bmp
         bmpdir = os.path.join(basedir, "bmp")
         origfilepath = os.path.split(imglocation)[0]
@@ -154,18 +148,27 @@ class ImageManipulation:
         header = imgbytes[:140]
         core_data = imgbytes[140:]
         data_size = len(core_data)
-        core_data = _replace(core_data)
-        letters = b'\x07', b'\x27', b'\x0b', b'\x0a', b'\x0d' b'\x0a'
+
+        replacements = [(re.compile(sub), replacement) for (sub, replacement) in wordpad_glitch]
+        for pattern, replacement in replacements:
+            core_data = pattern.sub(replacement, core_data)
+
+        letters = b'\x07', b'\x27', b'\x0b', b'\x0a', b'\x0d', b'\xce', b'\x0b', b'\xfa', b'\xd4', b'\x97', b'\x45', \
+                  b'\x1a', b'\xfe', b'\xff', b'\xfd', b'\x01', b'\xcc', b'\xe9', b'\x95', b'\xe8', b'\xf9', b'\x95', \
+                  b'\x3f', b'\x19', b'\x13', b'\x14', b'\x10', b'\x17'
         outpath = None
-        randrange = random.randint(1, 5)
+        randrange = random.randint(1, 8)
         for xx in range(randrange):
             ii = random.randint(0, data_size - 1)
-            jj = random.randint(ii, ii + random.randint(500, 15000))
+            jj = random.randint(ii, ii + random.randint(0, round(data_size / 12)))
             pre = core_data[:ii]
             post = core_data[jj:]
             sub_data = core_data[ii:jj]
-            # sub_data = sub_data.replace(letters[random.randint(0, 4)], letters[random.randint(0, 4)])
-            rand = random.randint(1,6)
+            # replacements = [(re.compile(sub), replacement) for (sub, replacement) in wordpad_glitch]
+            # for pattern, replacement in replacements:
+            #     sub_data = pattern.sub(replacement, sub_data)
+            sub_data = sub_data.replace(letters[random.randint(0, len(letters))], letters[random.randint(0, len(letters))])
+            rand = random.randint(1, 6)
             datadict = [(pre + sub_data + post), (sub_data + pre + post), (post + pre + sub_data),
                         (pre + post + sub_data), (sub_data + post + pre), (post + sub_data + pre)]
             core_data = random.choice(datadict)
