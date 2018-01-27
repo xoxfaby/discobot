@@ -108,15 +108,6 @@ class ImageManipulation:
                 image = img.make_blob('png')
         return image
 
-    @commands.command(aliases=['alwayssunny', 'titlecard'])
-    async def sunny(self, ctx, *, text: str):
-        """Generates a titlecard from always sunny"""
-        async with ctx.typing():
-            imgfile = await self.bot.loop.run_in_executor(None, self._sunnytask, text)
-        if imgfile is not None:
-            file = io.BytesIO(imgfile)
-            await ctx.send(files=[discord.File(fp=file, filename="Sunny.png")])
-
     def _corrupt_img(self, basedir, imglocation):
         # Majority of code absorbed from:
         # https://github.com/GlitchTools/batch_wordpad_glitch/blob/master/wordpad_glitch.py
@@ -148,27 +139,41 @@ class ImageManipulation:
         header = imgbytes[:140]
         core_data = imgbytes[140:]
         data_size = len(core_data)
-
         replacements = [(re.compile(sub), replacement) for (sub, replacement) in wordpad_glitch]
         for pattern, replacement in replacements:
             core_data = pattern.sub(replacement, core_data)
-
         letters = b'\x07', b'\x27', b'\x0b', b'\x0a', b'\x0d', b'\xce', b'\x0b', b'\xfa', b'\xd4', b'\x97', b'\x45', \
                   b'\x1a', b'\xfe', b'\xff', b'\xfd', b'\x01', b'\xcc', b'\xe9', b'\x95', b'\xe8', b'\xf9', b'\x95', \
                   b'\x3f', b'\x19', b'\x13', b'\x14', b'\x10', b'\x17'
         outpath = None
         randrange = random.randint(1, 8)
         for xx in range(randrange):
-            ii = random.randint(0, data_size - 1)
-            jj = random.randint(ii, ii + random.randint(0, round(data_size / 12)))
+            ii = random.randrange(0, data_size - 1, 1)
+            temp_jj = ii + round(data_size / 8)
+            jj = random.randrange(ii, temp_jj, 1)
             pre = core_data[:ii]
             post = core_data[jj:]
             sub_data = core_data[ii:jj]
+
+            # inside sorts
+            inside_ii = random.randrange(0, len(sub_data) - 1, 1)
+            inside_temp_jj = inside_ii + round(len(sub_data) / 8)
+            inside_jj = random.randrange(inside_ii, inside_temp_jj, 1)
+            inside_pre = core_data[:inside_ii]
+            inside_post = core_data[inside_jj:]
+            inside_sub_data = sub_data[inside_ii:inside_jj]
+            inside_sub_array = list(inside_sub_data)
+            inside_sub_array.sort()
+            inside_sub_data = bytes(inside_sub_array)
+            sub_data = inside_pre + inside_sub_data + inside_post
+            # done with inside sorts
+
             # replacements = [(re.compile(sub), replacement) for (sub, replacement) in wordpad_glitch]
             # for pattern, replacement in replacements:
             #     sub_data = pattern.sub(replacement, sub_data)
+
             sub_data = sub_data.replace(letters[random.randint(0, len(letters))], letters[random.randint(0, len(letters))])
-            rand = random.randint(1, 6)
+            rand = random.randint(0, 5)
             datadict = [(pre + sub_data + post), (sub_data + pre + post), (post + pre + sub_data),
                         (pre + post + sub_data), (sub_data + post + pre), (post + sub_data + pre)]
             core_data = random.choice(datadict)
@@ -188,6 +193,42 @@ class ImageManipulation:
                     img.compression_quality = 90
                     img.save(filename=outpath)
         return outpath
+
+    def _deepfry(self, ctx, basedir, imagelocation):
+        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
+        frieddir = os.path.join(basedir, "fried")
+        origfilepath = os.path.split(imagelocation)[0]
+        filename = os.path.basename(imagelocation).split('.')[0]
+        ext = os.path.basename(imagelocation).split('.')[-1]
+        origfilename = f'{filename}.{ext}'
+        fp = os.path.join(origfilepath, origfilename)
+        if ext.lower() in img_formats:
+            with Image(filename=fp) as img:
+                with img.convert('jpg') as converted:
+                    fried_out = f'{filename}.jpg'
+                    path_fried_out = os.path.join(frieddir, fried_out)
+                    frequency = 3
+                    phase_shift = -90
+                    amplitude = 0.2
+                    bias = 0.7
+                    converted.function('sinusoid', [frequency, phase_shift, amplitude, bias])
+                    converted.level(0.3, 0.9, gamma=1.8)
+                    converted.compression_quality = 20
+                    converted.save(filename=path_fried_out)
+                    return path_fried_out
+        else:
+            return None
+
+    @commands.command(aliases=['alwayssunny', 'titlecard'])
+    async def sunny(self, ctx, *, text: str):
+        """Generates a titlecard from always sunny"""
+        async with ctx.typing():
+            pass
+        partial_sunny = functools.partial(self._sunnytask, text)
+        result = await self.bot.loop.run_in_executor(None, partial_sunny)
+        if result is not None:
+            file = io.BytesIO(result)
+            await ctx.send(files=[discord.File(fp=file, filename="Sunny.png")])
 
     @commands.command()
     async def corrupt(self, ctx):
@@ -215,7 +256,8 @@ class ImageManipulation:
         await self.bot.utils.retrieve_web_file(imglist[0], fulllocation)
         async with ctx.typing():
             pass
-        result = await self.bot.loop.run_in_executor(None, self._corrupt_img, basedir, fulllocation)
+        partial_corrupt = functools.partial(self._corrupt_img, basedir, fulllocation)
+        result = await self.bot.loop.run_in_executor(None, partial_corrupt)
         if result is not None:
             await ctx.send(file=discord.File(fp=result, filename="corrupt.jpg"))
         else:
@@ -224,21 +266,32 @@ class ImageManipulation:
     @commands.command(aliases=['needsmoarjpg', 'morejpg', 'moarjpg'])
     async def needsmorejpg(self, ctx):
         """Makes an image more jpg-y"""
-        imglist = await self._get_recent_images_links(ctx)
-        if not imglist:
-            raise self.bot.errors.DBotExternalError(f'No images have been posted in the last 25 messages that I could'
-                                                    f' use.')
-        imagefilename = (imglist[0]).split('/')[-1].strip()
-        filename = (f'{time.strftime("%Y%m%d-%H%M%S")}-original-{imagefilename}')
+        if ctx.message.attachments:
+            imglist = []
+            download_list = list([at.url for at in ctx.message.attachments])
+            for url in download_list:
+                imglist += [url]
+        else:
+            imglist = await self._get_recent_images_links(ctx)
+            if not imglist:
+                raise self.bot.errors.DBotExternalError(f'No images have been posted in the last 25 messages that I '
+                                                        f'could use.')
+        imagefilename = (imglist[0]).split('/')[-1].strip().split(".")
+        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
+        if imagefilename[-1].lower() not in img_formats:
+            raise self.bot.errors.DBotExternalError("The most recent attachment posted does not appear to be an image")
+        filename = (f'{time.strftime("%Y%m%d-%H%M%S")}-{imagefilename[0]}-original.{imagefilename[-1]}')
         imglocation = os.path.join(os.curdir, "internalfiles", "temp", "morejpg")
         if not os.path.exists(imglocation):
             os.makedirs(imglocation)
         fulllocation = os.path.join(imglocation, filename)
         await self.bot.utils.retrieve_web_file(imglist[0], fulllocation)
         async with ctx.typing():
-            convertedfilepath = await self.bot.loop.run_in_executor(None, self._moar_jpg, fulllocation)
-        if convertedfilepath is not None:
-            await ctx.send(file=discord.File(fp=convertedfilepath, filename="moar.jpg"))
+            pass
+        partial_jpg = functools.partial(self._moar_jpg, fulllocation)
+        result = await self.bot.loop.run_in_executor(None, partial_jpg)
+        if result is not None:
+            await ctx.send(file=discord.File(fp=result, filename="moar.jpg"))
         else:
             raise self.bot.errors.DBotExternalError(f'Sorry, there was an error on processing the image.')
 
@@ -249,35 +302,12 @@ class ImageManipulation:
         if not os.path.exists(imglocation):
             os.makedirs(imglocation)
         async with ctx.typing():
-            convertedfilepath = await self.bot.loop.run_in_executor(None, self._ok_doge, text)
-        if convertedfilepath is not None:
-            file = io.BytesIO(convertedfilepath)
+            pass
+        partial_doge = functools.partial(self._ok_doge, text)
+        result = await self.bot.loop.run_in_executor(None, partial_doge)
+        if result is not None:
+            file = io.BytesIO(result)
             await ctx.send(files=[discord.File(fp=file, filename="ok.png")])
-
-    def _deepfry(self, ctx, basedir, imagelocation):
-        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
-        frieddir = os.path.join(basedir, "fried")
-        origfilepath = os.path.split(imagelocation)[0]
-        filename = os.path.basename(imagelocation).split('.')[0]
-        ext = os.path.basename(imagelocation).split('.')[-1]
-        origfilename = f'{filename}.{ext}'
-        fp = os.path.join(origfilepath, origfilename)
-        if ext.lower() in img_formats:
-            with Image(filename=fp) as img:
-                with img.convert('jpg') as converted:
-                    fried_out = f'{filename}.jpg'
-                    path_fried_out = os.path.join(frieddir, fried_out)
-                    frequency = 3
-                    phase_shift = -90
-                    amplitude = 0.2
-                    bias = 0.7
-                    converted.function('sinusoid', [frequency, phase_shift, amplitude, bias])
-                    converted.level(0.3, 0.9, gamma=1.8)
-                    converted.compression_quality = 20
-                    converted.save(filename=path_fried_out)
-                    return path_fried_out
-        else:
-            return None
 
     @commands.command(aliases=['fried', 'fry', 'deep'])
     async def deepfry(self, ctx):
@@ -303,9 +333,11 @@ class ImageManipulation:
         if not os.path.exists(origimglocation):
             os.makedirs(origimglocation)
         await self.bot.utils.retrieve_web_file(imglist[0], fulllocation)
+
         async with ctx.typing():
             pass
-        result = await self.bot.loop.run_in_executor(None, self._deepfry, ctx, basedir, fulllocation)
+        partial_fried = functools.partial(self._deepfry, ctx, basedir, fulllocation)
+        result = await self.bot.loop.run_in_executor(None, partial_fried)
         if result is not None:
             await ctx.send(file=discord.File(fp=result, filename="fried.jpg"))
         else:
