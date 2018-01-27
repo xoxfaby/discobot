@@ -177,11 +177,12 @@ class ImageManipulation:
             img.format = 'jpg'
             img.compression_quality = 90
             img.save(filename=outpath)
+        os.remove(path_bmp_out)
         if os.path.getsize(outpath) > 8000000:
             while os.path.getsize(outpath) > 8000000:
                 with Image(filename=outpath) as img:
                     img.format = 'jpg'
-                    img.compression_quality = 85
+                    img.compression_quality = 90
                     img.save(filename=outpath)
         return outpath
 
