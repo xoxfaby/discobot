@@ -250,6 +250,63 @@ class ImageManipulation:
             file = io.BytesIO(convertedfilepath)
             await ctx.send(files=[discord.File(fp=file, filename="ok.png")])
 
+    def _deepfry(self, ctx, basedir, imagelocation):
+        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
+        frieddir = os.path.join(basedir, "fried")
+        origfilepath = os.path.split(imagelocation)[0]
+        filename = os.path.basename(imagelocation).split('.')[0]
+        ext = os.path.basename(imagelocation).split('.')[-1]
+        origfilename = f'{filename}.{ext}'
+        fp = os.path.join(origfilepath, origfilename)
+        if ext.lower() in img_formats:
+            with Image(filename=fp) as img:
+                with img.convert('jpg') as converted:
+                    fried_out = f'{filename}.jpg'
+                    path_fried_out = os.path.join(frieddir, fried_out)
+                    frequency = 3
+                    phase_shift = -90
+                    amplitude = 0.2
+                    bias = 0.7
+                    converted.function('sinusoid', [frequency, phase_shift, amplitude, bias])
+                    converted.level(0.3, 0.9, gamma=1.8)
+                    converted.compression_quality = 20
+                    converted.save(filename=path_fried_out)
+                    return path_fried_out
+        else:
+            return None
+
+    @commands.command(aliases=['fried', 'fry', 'deep'])
+    async def deepfry(self, ctx):
+        """deepfry an image"""
+        if ctx.message.attachments:
+            imglist = []
+            download_list = list([at.url for at in ctx.message.attachments])
+            for url in download_list:
+                imglist += [url]
+        else:
+            imglist = await self._get_recent_images_links(ctx)
+            if not imglist:
+                raise self.bot.errors.DBotExternalError(f'No images have been posted in the last 25 messages that I '
+                                                        f'could use.')
+        imagefilename = (imglist[0]).split('/')[-1].strip().split(".")
+        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
+        if imagefilename[-1].lower() not in img_formats:
+            raise self.bot.errors.DBotExternalError("The most recent attachment posted does not appear to be an image")
+        filename = (f'{time.strftime("%Y%m%d-%H%M%S")}-{imagefilename[0]}-original.{imagefilename[-1]}')
+        basedir = os.path.join(os.curdir, "internalfiles", "temp", "fried")
+        origimglocation = os.path.join(os.curdir, "internalfiles", "temp", "fried", "original")
+        fulllocation = os.path.join(origimglocation, filename)
+        if not os.path.exists(origimglocation):
+            os.makedirs(origimglocation)
+        await self.bot.utils.retrieve_web_file(imglist[0], fulllocation)
+        async with ctx.typing():
+            pass
+        result = await self.bot.loop.run_in_executor(None, self._deepfry, ctx, basedir, fulllocation)
+        if result is not None:
+            await ctx.send(file=discord.File(fp=result, filename="fried.jpg"))
+        else:
+            raise self.bot.errors.DBotExternalError(f"Sorry, there was an error on processing the image.")
+
     # @commands.command()
     # async def hextest(self, ctx):
     #     imgpath = os.path.join("internalfiles", "temp", "test.bmp")
