@@ -503,4 +503,3 @@ def setup(dbot):
     dbot.add_cog(DBotHelp(dbot))
     dbot.add_cog(BotInternals(dbot))
     dbot.add_cog(BotInfo(dbot))
-    # dbot.check(dbotchecks.check_user_not_ignored(dbot.ignorecache))

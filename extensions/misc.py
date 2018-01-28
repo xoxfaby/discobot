@@ -513,7 +513,7 @@ class Misc:
         sentence = f'That really {random.choice(word1)} my {random.choice(word2)}.'
         await ctx.send(sentence)
 
-    @commands.command(aliases=['checkem', 'trips'])
+    @commands.command(aliases=['checkem', 'trips', 'quads', 'quints'])
     async def dubs(self, ctx):
         """Check my dubs"""
         mesg = ''
@@ -526,6 +526,7 @@ class Misc:
             threematch_compile = re.compile(r'(\d)(\1{2})$')
             threematch = threematch_compile.search(str(numrange))
             if threematch:
+                mesg += f'TRIPS\n'
                 fourmatch_compile = re.compile(r'(\d)(\1{4})$')
                 fourmatch = fourmatch_compile.search(str(numrange))
                 if fourmatch:
