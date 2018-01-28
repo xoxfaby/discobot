@@ -449,6 +449,7 @@ class InternalSQL:
         welcomechanbool = bool(responses[1])
         adminlogchanbool = bool(responses[2])
         voicelogchanbool = bool(responses[3])
+        enable_etc = bool(responses[4])
         if enableawoos:
             awoochan = str(channellist[4].id)
         else:
@@ -469,19 +470,20 @@ class InternalSQL:
         configquery = """
         INSERT INTO `{0}`.`_serverconfig` (`guild-id`, `isconfigged`, `initialchannel`, `whoconfiged`, `lastconfiged`, 
         `enablelogging`, `enableusewelcome`, `enableadminlogs`, `enablevoicelogs`, `welcomechannel`, `adminchannel`,
-        `voicelogchannel`, `awoochannel`, `enableawoo`, `partmessage`, `welcomemessage`)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        `voicelogchannel`, `awoochannel`, `enableawoo`, `partmessage`, `welcomemessage`, `etc_on_message`)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE 
         `initialchannel` = %s, `whoconfiged` = %s, `lastconfiged` = %s, `enablelogging` = %s, `enableusewelcome` = %s,
         `enableadminlogs` = %s, `enablevoicelogs` = %s, `welcomechannel` = %s, `adminchannel` = %s,
-        `voicelogchannel` = %s, `awoochannel` = %s, `enableawoo` = %s, `partmessage` = %s, `welcomemessage` = %s
+        `voicelogchannel` = %s, `awoochannel` = %s, `enableawoo` = %s, `partmessage` = %s, `welcomemessage` = %s,
+        `etc_on_message` = $s
         """
         new_query = configquery.format(self.bot.common.mysqldb)
         query_data = (guildid, isconfigged, initialchan, whoconfiged, configtime, enablelogging, welcomechanbool,
                       adminlogchanbool, voicelogchanbool, welcomechan, adminlogchan, voicelogchan, awoochan,
-                      enableawoos, partmessage, joinmessage, initialchan, whoconfiged, configtime, enablelogging,
-                      welcomechanbool, adminlogchanbool, voicelogchanbool, welcomechan, adminlogchan, voicelogchan,
-                      awoochan, enableawoos, partmessage, joinmessage)
+                      enableawoos, partmessage, joinmessage, enable_etc, initialchan, whoconfiged, configtime,
+                      enablelogging, welcomechanbool, adminlogchanbool, voicelogchanbool, welcomechan, adminlogchan,
+                      voicelogchan, awoochan, enableawoos, partmessage, joinmessage, enable_etc)
         return new_query, query_data
 
     async def statement_get_server_config(self, guild):

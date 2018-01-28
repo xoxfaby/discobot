@@ -53,10 +53,11 @@ You've selected {0} as the voice log channel
 You've selected to not enable user voice messages for this server
 %%
 This concludes my configuration.
-Thank you for adding me to this server;
+Thank you for adding me to this server!
 You can view my help documentation at <https://personalwebsite.website/wiki/Noodlebot>
 My creator is `noodle#0001`, and you can join my main server at <https://discord.gg/9B8eVyx> if you need help with me.
 You can also re-run this configuration command at any time to change your selections.
+One last thing, my default prefix is `,` (Comma) - You can change that by running `,prefix set` at any time.
 %%
 The default welcome and part messages are:
 welcome: "Welcome to [guildname], [username]~"
@@ -89,4 +90,15 @@ welcome to {1}, {0}~
 ok bye {0}
 %%
 You've selected {0} as the awoo channel
+%%
+Another feature I have it to perform actions based on some text without a prefix.
+Currently there are two of them, `okay google` and `👌`;
+I will send an auto response to those message if enabled.
+Please see this example:
+<https://personalwebsite.website/wiki/images/b/bb/Boat-auto_message.png>
+Would you like to enable this feature on this server? Please type 'Yes' or 'No'
+%%
+Awesome, I've marked that down! Thanks!
+%%
+Alright, I'll leave that feature disabled on this server
 %%

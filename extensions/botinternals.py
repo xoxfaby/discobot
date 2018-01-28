@@ -410,11 +410,25 @@ class BotInfo:
             configmessagelist.append(sent_awoochanquestion)
             enableawoos = 0
             awoochan = None
-        # add config option to choose what prefix to use
+        await asyncio.sleep(0.5)
+        sent_etcquestion = await ctx.send(botconfigscript[28])
+        configmessagelist.append(sent_etcquestion)
+        etc_resp = await self.bot.wait_for('message', check=checkauthor, timeout=60)
+        userresp.append(etc_resp)
+        etc_resp_content = etc_resp.content.lower()
+        if etc_resp_content in yesanswerlist:
+            sent_confirmation = await ctx.send(botconfigscript[29])
+            configmessagelist.append(sent_confirmation)
+            enable_etc = 1
+        else:
+            sent_confirmation = await ctx.send(botconfigscript[30])
+            configmessagelist.append(sent_confirmation)
+            enable_etc = 0
+        await asyncio.sleep(0.5)
         await ctx.send(botconfigscript[17])
         enablelogging = any([welcomechanbool, adminlogchanbool, voicelogchanbool, enableawoos])
         channellist = [initialchan, welcomechan, adminlogchan, voicelogchan, awoochan]
-        responses = [enablelogging, welcomechanbool, adminlogchanbool, voicelogchanbool, enableawoos]
+        responses = [enablelogging, welcomechanbool, adminlogchanbool, voicelogchanbool, enableawoos, enable_etc]
         joinpartmsgs = [welcomemessage, leavemessage]
         sqlquery, querydata = await self.bot.sql.statement_insert_guildconfig(ctx, channellist, responses, joinpartmsgs)
         member_guild_config = str(f'{str(ctx.guild.id)}_guild_config')
