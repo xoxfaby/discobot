@@ -513,6 +513,37 @@ class Misc:
         sentence = f'That really {random.choice(word1)} my {random.choice(word2)}.'
         await ctx.send(sentence)
 
+    @commands.command(aliases=['checkem', 'trips'])
+    async def dubs(self, ctx):
+        """Check my dubs"""
+        mesg = ''
+        numrange = random.randrange(200000000, 900000000, 1)
+        twomatch_compile = re.compile(r'(\d)(\1{1})$')
+        twomatch = twomatch_compile.search(str(numrange))
+        attach = False
+        if twomatch:
+            mesg += f'CHECK EM\n'
+            threematch_compile = re.compile(r'(\d)(\1{2})$')
+            threematch = threematch_compile.search(str(numrange))
+            if threematch:
+                fourmatch_compile = re.compile(r'(\d)(\1{4})$')
+                fourmatch = fourmatch_compile.search(str(numrange))
+                if fourmatch:
+                    mesg += f'HOLY SHIT YOU MADMAN\n'
+                    fivematch_compile = re.compile(r'(\d)(\1{4})$')
+                    fivematch = fivematch_compile.search(str(numrange))
+                    if fivematch:
+                        mesg += (f'MODS = GODS MODS = GODS MODS = GODS MODS = GODS MODS = GODS MODS = GODS MODS = GODS '
+                                 f'MODS = GODS MODS = GODS MODS = GODS MODS = GODS MODS = GODS MODS = GODS MODS = GODS '
+                                 f'MODS = GODS MODS = GODS MODS = GODS MODS = GODS\n')
+            fp = discord.File(fp=os.path.join("internalfiles", "images", "dubs.gif"), filename="dubs.gif")
+            attach = True
+        mesg += f'Your post number is: {numrange}'
+        if attach:
+            await ctx.send(content=mesg, file=fp)
+        else:
+            await ctx.send(mesg)
+
 
 def setup(dbot):
     dbot.add_cog(Misc(dbot))

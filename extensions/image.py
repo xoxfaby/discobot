@@ -147,7 +147,7 @@ class ImageManipulation:
                   b'\x3f', b'\x19', b'\x13', b'\x14', b'\x10', b'\x17', b'\xf8', b'\x9f', b'\x9e', b'\x93', b'\xa8', \
                   b'\xa6', b'\xab', b'\xa7', b'\xb1', b'\xac', b'\xa9', b'\xad', b'\xaa', b'\xae', b'\xaf', b'\xb0'
         outpath = None
-        randrange = random.randint(1, 9)
+        randrange = random.randint(1, 6)
         for xx in range(randrange):
             ii = random.randrange(0, data_size - 1, 1)
             temp_jj = ii + round(data_size / 12)
