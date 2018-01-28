@@ -554,6 +554,13 @@ class AdminTesting:
     #     for cmd in self.bot.walk_commands():
     #         print(cmd)
     #
+
+    @commands.command()
+    async def tasks(self, ctx):
+        tasks = asyncio.Task.all_tasks()
+        
+        print(tasks)
+
     @commands.command()
     async def plshalp(self, ctx):
         return await ctx.send("My bot is broken")

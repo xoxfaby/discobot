@@ -199,3 +199,11 @@ CREATE TABLE `mysqldb`.`_feedback` (
   PRIMARY KEY (`id_feedback`),
   UNIQUE INDEX `id_feedback_UNIQUE` (`id_feedback` ASC))
 ROW_FORMAT=COMPRESSED;
+
+CREATE TABLE `discobot`.`_pinger` (
+  `id_pinger` INT NOT NULL AUTO_INCREMENT,
+  `time` VARCHAR(45) NOT NULL,
+  `heartbeat` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id_pinger`),
+  UNIQUE INDEX `id_pinger_UNIQUE` (`id_pinger` ASC))
+ROW_FORMAT=COMPRESSED;

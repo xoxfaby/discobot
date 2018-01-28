@@ -225,8 +225,30 @@ class BotInfo:
         t1 = time.perf_counter()
         await ctx.channel.trigger_typing()
         t2 = time.perf_counter()
+        sqlcmd = """SELECT `heartbeat` FROM `{0}`.`_pinger` ORDER BY `id_pinger` DESC LIMIT 20;"""
+        # sqlcmd1 = """SELECT `heartbeat` FROM `{0}`.`_pinger` ORDER BY `id_pinger` DESC LIMIT 120;"""
+        newcmd = sqlcmd.format(self.bot.common.mysqldb)
+        async with self.bot.mysqlcon.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(newcmd)
+                pingvalue = await cursor.fetchall()
+                asyncio.sleep
+                # await cursor.execute(sqlcmd1)
+                # pingvalue1 = await cursor.fetchall()
+        templist = []
+        for row in pingvalue:
+            rowtime = row['heartbeat']
+            templist.append(float(rowtime))
+        avg = (sum(templist)/len(templist))
+        # templist1 = []
+        # for row in pingvalue1:
+        #     rowtime = row['heartbeat']
+        #     templist1.append(float(rowtime))
+        # avg = (sum(templist1)/len(templist1))
         await ctx.channel.send(f'Heartbeat to Discord: {round(self.bot.latency * 1000)}ms\n'
-                               f'Time to send a signal to Discord: {round((t2-t1)*1000)}ms')
+                               f'Time to send typing signal to Discord: {round((t2-t1)*1000)}ms\n'
+                               f'Average heartbeat over the last 10 minutes: {round(avg * 1000, 4)}\n')
+                               # f'Average heartbeat over the last hour: {round(avg * 1000, 3)}\n')
 
     @commands.command(description="This command can be used to invite the bot to a server")
     async def invite(self, ctx):

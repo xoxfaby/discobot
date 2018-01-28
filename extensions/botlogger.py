@@ -19,15 +19,15 @@ class BotLoggerDB:
         while not self.bot.is_closed():
             curtime = datetime.datetime.now()
             latencytime = self.bot.latency
+            sqlcmd = """
+            INSERT INTO `{0}`.`_pinger` (`curtime`, `heartbeat`)
+            VALUES (%s, %s)
+            """
+            newcmd = sqlcmd.format(self.bot.common.mysqldb).replace("\n", "")
+            querydata = (curtime, latencytime)
             async with self.bot.mysqlcon.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    sqlcmd = """
-                    INSERT INTO {0}.`_pinger` (`time`, `heartbeat`)
-                    VALUES (%s, %s)
-                    """
-                    newcmd = sqlcmd.format(self.bot.common.mysqldb)
-                    querydata = (curtime, latencytime)
-                    cursor.execute(newcmd, querydata)
+                    await cursor.execute(newcmd, querydata)
             await asyncio.sleep(30)
 
     async def on_command_completion(self, ctx):
