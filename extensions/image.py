@@ -147,10 +147,10 @@ class ImageManipulation:
                   b'\x3f', b'\x19', b'\x13', b'\x14', b'\x10', b'\x17', b'\xf8', b'\x9f', b'\x9e', b'\x93', b'\xa8', \
                   b'\xa6', b'\xab', b'\xa7', b'\xb1', b'\xac', b'\xa9', b'\xad', b'\xaa', b'\xae', b'\xaf', b'\xb0'
         outpath = None
-        randrange = random.randint(1, 8)
+        randrange = random.randint(1, 9)
         for xx in range(randrange):
             ii = random.randrange(0, data_size - 1, 1)
-            temp_jj = ii + round(data_size / 8)
+            temp_jj = ii + round(data_size / 12)
             jj = random.randrange(ii, temp_jj, 1)
             pre = core_data[:ii]
             post = core_data[jj:]
@@ -175,12 +175,11 @@ class ImageManipulation:
 
             sub_data = sub_data.replace(letters[random.randint(0, len(letters) - 1)],
                                         letters[random.randint(0, len(letters) - 1)])
-            rand = random.randint(0, 5)
             datadict = [(pre + sub_data + post), (sub_data + pre + post), (post + pre + sub_data),
                         (pre + post + sub_data), (sub_data + post + pre), (post + sub_data + pre),
                         (pre[::1] + sub_data[::1] + post[::1]), (sub_data[::1] + pre[::1] + post[::1]),
-                        (post[::1] + pre[::1] + sub_data[::1]), (pre[::1] + post[::1] + sub_data[::1]),
-                        (sub_data[::1] + post[::1] + pre[::1]), (post[::1] + sub_data[::1] + pre[::1]),]
+                        (post[::1] + pre[::1] + sub_data[::1]), (pre[::1] + post + sub_data[::1]),
+                        (sub_data[::1] + post + pre[::1]), (post[::1] + sub_data[::1] + pre[::1]),]
             core_data = random.choice(datadict)
         glitched = header + core_data
         outdir = os.path.join(basedir, "corrupt")

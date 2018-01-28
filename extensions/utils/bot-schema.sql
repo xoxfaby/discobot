@@ -74,6 +74,7 @@ CREATE TABLE `mysqldb`.`_serverconfig` (
   `enableadminlogs` TINYINT(4) NOT NULL,
   `enablevoicelogs` TINYINT(4) NOT NULL,
   `enableawoo` VARCHAR(45) NOT NULL,
+  `etc_on_message` TINYINT(4) NOT NULL DEFAULT '0',
   `welcomechannel` VARCHAR(45) DEFAULT NULL,
   `adminchannel` VARCHAR(45) DEFAULT NULL,
   `voicelogchannel` VARCHAR(45) DEFAULT NULL,

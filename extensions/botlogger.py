@@ -8,6 +8,27 @@ class BotLoggerDB:
     def __init__(self, bot):
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
+        self.pinger = self.bot.loop.create_task(self.ping_timer())
+
+    def __unload(self):
+        """I will clean up stuff!"""
+        self.pinger.cancel()
+
+    async def ping_timer(self):
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            curtime = datetime.datetime.now()
+            latencytime = self.bot.latency
+            async with self.bot.mysqlcon.acquire() as conn:
+                async with conn.cursor() as cursor:
+                    sqlcmd = """
+                    INSERT INTO {0}.`_pinger` (`time`, `heartbeat`)
+                    VALUES (%s, %s)
+                    """
+                    newcmd = sqlcmd.format(self.bot.common.mysqldb)
+                    querydata = (curtime, latencytime)
+                    cursor.execute(newcmd, querydata)
+            await asyncio.sleep(30)
 
     async def on_command_completion(self, ctx):
         sql_cmd, query_data = await self.bot.sql.statement_insert_cmdtable(ctx)

@@ -225,7 +225,8 @@ class BotInfo:
         t1 = time.perf_counter()
         await ctx.channel.trigger_typing()
         t2 = time.perf_counter()
-        await ctx.channel.send(f'pseudo-ping: {round((t2-t1)*1000)}ms')
+        await ctx.channel.send(f'Heartbeat to Discord: {round(self.bot.latency * 1000)}ms\n'
+                               f'Time to send a signal to Discord: {round((t2-t1)*1000)}ms')
 
     @commands.command(description="This command can be used to invite the bot to a server")
     async def invite(self, ctx):

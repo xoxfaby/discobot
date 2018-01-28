@@ -44,6 +44,7 @@ class CommonParams:
               'extensions.load',
               'extensions.memecommands',
               'extensions.misc',
+              'extensions.etconmessage',
               'extensions.image',
               'extensions.loops'
               ]

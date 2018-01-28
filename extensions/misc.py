@@ -453,6 +453,28 @@ class Misc:
         mesg = f'The next awoo~ will occur in {fmt}'
         return await ctx.send(mesg)
 
+
+    # def _wolf(self, query):
+    #     """ Non async WolframAlpha lib function """
+    #     wolframclient = wolframalpha.Client(self.bot.common.wolframapikey)
+    #     wolframquery = (" ".join(query))
+    #     results = wolframclient.query(wolframquery)
+    #     return results
+    #
+    # @commands.command(aliases=['wolfram', 'alpha', 'calculate'])
+    # async def wolframalpha(self, ctx, *, args):
+    #     if not args:
+    #         raise self.bot.errors.DBotInternalError("You've not entered anything for Wolfram to calculate!")
+    #     await ctx.trigger_typing()
+    #     result = await self.bot.loop.run_in_executor(None, self._wolf, args)
+    #     if result is not None:
+    #         pass
+    #         # do things with results
+    #         # result.pods, result.info, result.assumptions, result.warnings, result.results
+    #         # await ctx.send(result)
+    #     else:
+    #         raise self.bot.errors.DBotExternalError(f"Sorry, I couldn't calculate `{args}`.")
+
     @commands.command(aliases=['xmyy', 'thatreallyxmyy'])
     async def thatreally(self, ctx):
         """That really x my y"""
@@ -491,70 +513,6 @@ class Misc:
         sentence = f'That really {random.choice(word1)} my {random.choice(word2)}.'
         await ctx.send(sentence)
 
-    # def _wolf(self, query):
-    #     """ Non async WolframAlpha lib function """
-    #     wolframclient = wolframalpha.Client(self.bot.common.wolframapikey)
-    #     wolframquery = (" ".join(query))
-    #     results = wolframclient.query(wolframquery)
-    #     return results
-    #
-    # @commands.command(aliases=['wolfram', 'alpha', 'calculate'])
-    # async def wolframalpha(self, ctx, *, args):
-    #     if not args:
-    #         raise self.bot.errors.DBotInternalError("You've not entered anything for Wolfram to calculate!")
-    #     await ctx.trigger_typing()
-    #     result = await self.bot.loop.run_in_executor(None, self._wolf, args)
-    #     if result is not None:
-    #         pass
-    #         # do things with results
-    #         # result.pods, result.info, result.assumptions, result.warnings, result.results
-    #         # await ctx.send(result)
-    #     else:
-    #         raise self.bot.errors.DBotExternalError(f"Sorry, I couldn't calculate `{args}`.")
-
-
-class EtcOnMessage:
-    from extensions.utils import dbotchecks
-
-    def __init__(self, bot):
-        self.bot = bot
-        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
-
-    async def on_message(self, message):
-        if (message.content.startswith(self.bot.common.discordbotcommandprefix)) or \
-                (str(message.author.id) == str(self.bot.common.botdiscordid)) or (message.author.bot is True):
-            return
-        alphabet = {"bmoji": u"\U0001f171", "oksymbol": str("👌"), "fire": str("🔥")}
-        msg = message.content
-        if msg.lower().startswith('ok google') or msg.lower().startswith('okay google'):
-            if msg.lower().startswith('ok google'):
-                subreplace = re.compile('ok google ', re.IGNORECASE)
-                newmsg = subreplace.sub("", msg)
-            elif msg.lower().startswith('okay google'):
-                subreplace = re.compile('okay google ', re.IGNORECASE)
-                newmsg = subreplace.sub("", msg)
-            else:
-                return
-            newmesg1 = newmsg.replace(" ", "+")
-            googleurl = (str("https://www.google.com/search?q=") + str(newmesg1))
-            await message.add_reaction('✅')
-            await message.channel.send(str(googleurl))
-        if alphabet["oksymbol"] in msg:
-            numberoffire = random.randrange(0, 5)
-            if numberoffire != 0:
-                await message.add_reaction('🔥')
-        if "Don't say Hello" in msg:
-            await message.channel.send("Hello")
-        # if :
-        #     for char in alphabet.keys():
-        #         if char in msg:
-        #             bmsg = msg.replace(char, alphabet[char])
-        #         elif char.upper() in msg:
-        #             bmsg = msg.replace(char.upper(), alphabet[char])
-        #         if msg != message.content:
-        #             await message.send(content=bmsg)
-
 
 def setup(dbot):
     dbot.add_cog(Misc(dbot))
-    dbot.add_cog(EtcOnMessage(dbot))

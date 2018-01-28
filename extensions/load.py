@@ -13,6 +13,7 @@ class Load:
     @commands.is_owner()
     async def load(self, ctx, botmodule: str):
         """Loads an addon."""
+        stdout = io.StringIO()
         try:
             fullmodule = ""
             if botmodule[0:11] != "extensions.":
@@ -20,12 +21,15 @@ class Load:
             self.bot.load_extension(fullmodule)
             await ctx.message.add_reaction('✅')
         except Exception as e:
-            await ctx.send(f'💢 Failed!\n```\n{type(e).__name__}: {botmodule}\n```')
+            value = stdout.getvalue()
+            await ctx.send(f'💢 Failed!\n```py\n{value}{traceback.format_exc()}\n```')
+            await ctx.send(f'💢 Failed!\n```\n{type(e).__name__}: {fullmodule}\n```')
 
     @commands.command(hidden=True)
     @commands.is_owner()
     async def unload(self, ctx, botmodule: str):
         """Unloads an addon."""
+        stdout = io.StringIO()
         try:
             fullmodule = ""
             if botmodule[0:11] != "extensions.":
@@ -36,12 +40,15 @@ class Load:
                 self.bot.unload_extension(fullmodule)
                 await ctx.message.add_reaction('✅')
         except Exception as e:
-            await ctx.send(f'💢 Failed!\n```\n{type(e).__name__}: {botmodule}\n```')
+            value = stdout.getvalue()
+            await ctx.send(f'💢 Failed!\n```py\n{value}{traceback.format_exc()}\n```')
+            await ctx.send(f'💢 Failed!\n```\n{type(e).__name__}: {fullmodule}\n```')
 
     @commands.command(hidden=True, aliases=['reload'])
     @commands.is_owner()
     async def modulereload(self, ctx, dbotmodule):
         """Reloads an addon."""
+        stdout = io.StringIO()
         if dbotmodule is None:
             raise commands.errors.BadArgument("A reload command was given with no module name")
         elif dbotmodule == "all":
@@ -55,6 +62,7 @@ class Load:
                 self.bot.load_extension(mod)
             await ctx.message.add_reaction('✅')
         else:
+
             try:
                 fullmodule = ""
                 if dbotmodule[0:11] != "extensions.":
@@ -63,12 +71,15 @@ class Load:
                 self.bot.load_extension(fullmodule)
                 await ctx.message.add_reaction('✅')
             except Exception as e:
-                await ctx.send(f'💢 Failed!\n```\n{type(e).__name__}: {dbotmodule}\n```')
+                value = stdout.getvalue()
+                await ctx.send(f'💢 Failed!\n```py\n{value}{traceback.format_exc()}\n```')
+                await ctx.send(f'💢 Failed!\n```\n{type(e).__name__}: {fullmodule}\n```')
 
     @commands.command(name='listextensions', hidden=True)
     @commands.is_owner()
     async def _listmods(self, ctx):
         """List extensions"""
+        stdout = io.StringIO()
         modules = self.bot.extensions
         loadedmods = []
         for mod in modules:
