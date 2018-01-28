@@ -558,7 +558,6 @@ class AdminTesting:
     @commands.command()
     async def tasks(self, ctx):
         tasks = asyncio.Task.all_tasks()
-        
         print(tasks)
 
     @commands.command()

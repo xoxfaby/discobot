@@ -2,7 +2,7 @@ from extensions.utils.importsfile import *
 from extensions.utils.common import CommonParams, PrefixStuff, MyErrors
 
 
-class DBot(commands.Bot):
+class DBot(commands.AutoShardedBot):
     """A modified discord.ext.commands.Bot class"""
     def __init__(self, *args, **kwargs):
         self.common, self.errors, self.pref = CommonParams, MyErrors, PrefixStuff(self)

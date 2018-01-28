@@ -62,7 +62,6 @@ class Load:
                 self.bot.load_extension(mod)
             await ctx.message.add_reaction('✅')
         else:
-
             try:
                 fullmodule = ""
                 if dbotmodule[0:11] != "extensions.":
