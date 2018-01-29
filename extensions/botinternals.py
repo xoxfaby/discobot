@@ -31,34 +31,33 @@ class BotInternals:
         await self.bot.change_presence(status=discord.Status.online, game=game)
 
     async def on_command_error(self, ctx, exception):
-        if ctx.author.bot:
+        ignored_errors = (commands.errors.CheckFailure, commands.errors.CommandNotFound,
+                          commands.errors.CommandInvokeError, self.bot.errors.DBotCooldownError)
+        if (ctx.author.bot) or (hasattr(ctx.command, 'on_error')):
             return
         print(str(datetime.datetime.now()) + ': ' + str(exception))
-        if isinstance(exception, self.bot.errors.DBotInternalError):
-            return await ctx.send(content=exception)
-        elif isinstance(exception, self.bot.errors.DBotExternalError):
-            return await ctx.send(content=exception)
-        elif isinstance(exception, self.bot.errors.DBotCooldownError):
-            return
-        elif isinstance(exception, commands.errors.NotOwner):
-            return await ctx.send(content="You do not have the permissions to perform this command.")
-        elif isinstance(exception, commands.errors.CheckFailure):
-            return
-        elif isinstance(exception, commands.errors.CommandNotFound):
+        if isinstance(exception, ignored_errors):
             return
         elif isinstance(exception, commands.errors.BadArgument):
             return await ctx.send(content="You have provided an invalid argument for this command")
         elif isinstance(exception, commands.errors.UserInputError):
             return await ctx.send(content="You have provided an invalid input for this command")
+        elif isinstance(exception, commands.errors.NotOwner):
+            return await ctx.send(content="You do not have the permissions to perform this command.")
         elif isinstance(exception, self.bot.errors.BotNotWorking):
             return await ctx.send(content=exception)
-        elif isinstance(exception, commands.errors.CommandInvokeError):
-            return
+        if isinstance(exception, self.bot.errors.DBotInternalError):
+            return await ctx.send(content=exception)
+        elif isinstance(exception, self.bot.errors.DBotExternalError):
+            return await ctx.send(content=exception)
+        elif isinstance(exception, asyncio.TimeoutError):
+            msg = f"You've exceeded the maximum allotted time to answer the question, exiting out of command..."
+            return await ctx.send(content=msg)
         else:
             return await ctx.send(content='An unknown error has occurred.')
 
     async def on_voice_state_update(self, member, before, after):
-        if str(before.channel) == str(after.channel):
+        if before.channel == after.channel:
             return
         else:
             member_guild_config = str(f'{str(member.guild.id)}_guild_config')
@@ -82,8 +81,8 @@ class BotInternals:
                         else:
                             return
             if enable_voice_logs:
-                content = (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ': ' + str(member) +
-                           ' is in voice channel: ' + str(after.channel))
+                content = (f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: '
+                           f'{member} is in voice channel: {after.channel}')
                 voice_log_chan = self.bot.get_channel(id=int(guild_conf['voicelogchannel']))
                 await voice_log_chan.send(content=content)
             else:
@@ -121,8 +120,8 @@ class BotInternals:
                 if bool(guild_conf['enableadminlogs']):
                     member_verb = {"join": " joined the server", "leave": " left the server",
                                    "ban": " was banned from the server", "unban": " was unbanned from the server"}
-                    admin_msg = (str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + ': ' + str(member) +
-                                 str(member_verb[secondaryargs]))
+                    admin_msg = (f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: {member}'
+                                 f'{member_verb[secondaryargs]}')
                     admin_channel = self.bot.get_channel(id=int(guild_conf['adminchannel']))
                     await admin_channel.send(admin_msg)
             else:
@@ -184,24 +183,33 @@ class BotInfo:
     @commands.command()
     async def info(self, ctx):
         """This command shows various information about the bot."""
-        embed = discord.Embed(title="Bot Information", description="Noodle Disco-Pybot", color=0x3347ff)
-        embed.add_field(name="Web URL", value="[Boat Wiki](https://personalwebsite.website/wiki/noodlebot)")
-        embed.set_thumbnail(
-            url='https://cdn.discordapp.com/app-icons/340802627887693825/f830b6257e434a56cab408ece5cf8fa8.png')
-        embed.add_field(name="Creator", value="`noodle#0001`")
-        embed.add_field(name="Invite", value="[Invite URL]"
-                                             "(https://discordapp.com/oauth2/authorize?client_id=340802627887693825&"
-                                             "scope=bot&permissions=365030599)")
-        embed.add_field(name="Bot Prefix", value=f'{ctx.prefix}')
-        embed.add_field(name="Source", value="[Github](https://github.com/jwshields/discobot)")
         now = datetime.datetime.utcnow()
         delta = now - self.bot.common.starttime
         hours, remainder = divmod(int(delta.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
-        fmt = '{h} hours, {m} minutes, and {s} seconds'
-        fmt_new = fmt.format(h=hours, m=minutes, s=seconds)
-        embed.add_field(name="Uptime", value=fmt_new)
+        uptimeval = f'{hours} hours, {minutes} minutes, and {seconds} seconds'
+        numguilds = str(len(self.bot.guilds))
+        process = psutil.Process(os.getpid())
+        memuse = round(process.memory_info().rss / 1024 ** 2, 1)
+        cpuuse = (process.cpu_percent())
+        embed=discord.Embed(title="Bot Information", url="https://personalwebsite.website/wiki/noodlebot",
+                            description="Noodle Discord-PyBot", color=0x3347ff)
+        embed.set_thumbnail(url="https://cdn.discordapp.com/app-icons/340802627887693825/"
+                                "f830b6257e434a56cab408ece5cf8fa8.png")
+        embed.add_field(name="Uptime", value=uptimeval, inline=True)
+        embed.add_field(name="_\n_", value="_\n_", inline=False)
+        embed.add_field(name="Default Prefix", value="`,` (Comma)", inline=True)
+        embed.add_field(name="Source", value="[GitHub](https://github.com/jwshields/discobot/)", inline=True)
+        embed.add_field(name="Wiki", value="[Bot Wiki](https://personalwebsite.website/wiki/noodlebot)", inline=True)
+        embed.add_field(name="Invite", value=("[Invite URL](https://discordapp.com/oauth2/authorize?client_id="
+                                              "340802627887693825&scope=bot&permissions=365030599)"), inline=True)
+        embed.add_field(name="_\n_", value="_\n_", inline=False)
+        embed.add_field(name="Guild Count", value=numguilds, inline=True)
+        embed.add_field(name="CPU Usage", value=f'{cpuuse}%', inline=True)
+        embed.add_field(name="Memory Usage", value=f'{memuse}MB', inline=True)
+        embed.set_footer(text="Powered by Discord.Py by Rapptz, Python 3.6.2, MySQL 5.7.2, and PyCharm; "
+                              "Created by noodle#0001")
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -212,9 +220,8 @@ class BotInfo:
         hours, remainder = divmod(int(delta.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
-        fmt = '{h} hours, {m} minutes, and {s} seconds'
-        fmt_new = fmt.format(h=hours, m=minutes, s=seconds)
-        return await ctx.send(fmt_new)
+        fmt = f'{hours} hours, {minutes} minutes, and {seconds} seconds'
+        return await ctx.send(fmt)
 
     @commands.command()
     async def ping(self, ctx):
@@ -239,7 +246,6 @@ class BotInfo:
         await ctx.channel.send(f'Heartbeat to Discord: {round(self.bot.latency * 1000)}ms\n'
                                f'Time to send typing signal to Discord: {round((t2-t1)*1000)}ms\n'
                                f'Average heartbeat over the last 10 minutes: {round(avg * 1000, 4)}ms\n')
-                               # f'Average heartbeat over the last hour: {round(avg * 1000, 3)}\n')
 
     @commands.command(description="This command can be used to invite the bot to a server")
     async def invite(self, ctx):
@@ -494,6 +500,35 @@ class DBotHelp:
         embed.add_field(name=f'Command: `{mycmd}`', value=helptext)
         embed.add_field(name="URL", value=f'<{url}>')
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def source(self, ctx, *, command):
+        if command is None:
+            return await ctx.send("[GitHub](https://github.com/jwshields/noodlebot/)")
+        result = await self._cmd_type_checker(ctx, command)
+        url_stub = f'https://github.com/jwshields/'
+        file = inspect.getsourcefile(result)
+        code = inspect.getsourcelines(result)
+        startline = code[1]
+        length = len(code[0])
+        endline = startline + length
+        lines = f'#L{startline}-L{endline - 1}'
+        newfile = re.sub(r'.*discobot', 'discobot', file)
+        newfile = newfile.replace("\\", "/").replace("discobot", "discobot/blob/master")
+        full_url = url_stub + newfile + lines
+        await ctx.send(f'<{full_url}>')
+
+    async def _cmd_type_checker(self, ctx, cmd):
+        cmd = ctx.bot.get_command(cmd)
+        if cmd is not None:
+            return cmd.callback
+        cog = ctx.bot.get_cog(cmd)
+        if cog is not None:
+            return cog.__class__
+        module = ctx.bot.extensions.get(cmd)
+        if module is not None:
+            return module
+        raise commands.BadArgument()
 
 
 def setup(dbot):

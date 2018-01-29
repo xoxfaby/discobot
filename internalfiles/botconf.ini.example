@@ -22,8 +22,6 @@ trustedusers = id-of-trusted-users,
 mainserver = id-of-main-guild,
 botdescription = discobot
 botdiscordid = userid-of-discordbot
-mainserverjailrole = id-of-jail-role,
-mainserverafkchan = id-of-main-server-afk-voice-channel,
 mainserverspamroom = id-of-main-server-room-for-spam,
 
 [youtube]

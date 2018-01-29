@@ -51,7 +51,6 @@ class AdminCommands:
         return await self.bot.logout()
 
     @commands.command(hidden=True)
-    @dbotchecks.check_trusted_user()
     async def boatsay(self, ctx, *, args):
         """Sekrit"""
         mesg = args
@@ -432,7 +431,7 @@ class AdminCommands:
     #         await clear()
     #     else:
     #         return
-
+    #
     # @commands.command(hidden=True)
     # async def jail(self, ctx, *args):
     #     """Put a user in jail"""
@@ -449,7 +448,7 @@ class AdminCommands:
     #                                      content="Putting " + str(name.mention) + " in jail")
     #     else:
     #         await ctx.send("You are not authorized to use this command")
-
+    #
     # @commands.command(hidden=True)
     # async def unjail(self, ctx, *args):
     #     """Remove a user from jail"""

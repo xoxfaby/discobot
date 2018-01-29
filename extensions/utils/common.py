@@ -7,6 +7,7 @@ class CommonParams:
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     starttime = datetime.datetime.utcnow()
+
     config = configparser.ConfigParser()
     internalfilesdir = os.path.join(os.curdir, "internalfiles")
     configfile = os.path.join(internalfilesdir, "botconf.ini")
@@ -22,20 +23,22 @@ class CommonParams:
     discordbotcommandprefix = str(config['dbot']['discordbotcommandprefix'])
     botowner = int(config['dbot']['botowner'])
     trustedusers = (config['dbot']['trustedusers']).split(',')
+
     mainserver = (config['dbot']['mainserver']).split(',')
     mainserverlogchan = (config['dbot']['mainserverlogchan']).split(',')
-    mainserverjailrole = int(config['dbot']['mainserverjailrole'])
-    mainserverafkchan = int(config['dbot']['mainserverafkchan'])
+
     mysqlserver = str(config['script']['mysqlserver'])
     mysqlport = int(config['script']['mysqlport'])
     mysqluser = str(config['script']['mysqluser'])
     mysqlpw = str(config['script']['mysqlpw'])
     mysqldb = str(config['script']['mysqldb'])
+
     weatherapikey = str(config['wunderground']['weatherapikey'])
     wolframapikey = str(config['wolfram']['wolframalphaapikey'])
     youtubeapikey = str(config['youtube']['youtubeapikey'])
     imgflipusername = str(config['imgflip']['imgusername'])
     imgflippassword = str(config['imgflip']['imgpassword'])
+
     addons = ['extensions.utils.sqlcommands',
               'extensions.utils.utilfuncs',
               'extensions.botlogger',
@@ -43,12 +46,14 @@ class CommonParams:
               'extensions.mainserver',
               'extensions.admincommands',
               'extensions.load',
-              'extensions.memecommands',
+              'extensions.textmemes',
+              'extensions.imagememes',
               'extensions.misc',
               'extensions.etconmessage',
               'extensions.image',
               'extensions.loops'
               ]
+
     if not botdescription:
         botdescription = 'discord pybot'
     if not discordbotcommandprefix:
