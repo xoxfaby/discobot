@@ -75,7 +75,7 @@ If you want to mention the server name, please sub-in `servername` in place of t
 %%
 You have chosen to not change the default join/leave messages.
 %%
-As a fun feature, I have a built in function that sends a small "awoo" image to a channel at random intervals;
+As a fun feature, I have a built in function that sends an "awoo" emoji  to a channel at random intervals;
 The range of times between messages is random, and will be between 2 hours and 8 hours.
 Would you like to enable this feature?
 Please enter 'yes' or 'no'
