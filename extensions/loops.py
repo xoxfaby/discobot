@@ -12,7 +12,7 @@ class LoopClass:
         self.pinger = self.bot.loop.create_task(self.ping_timer())
 
     def __unload(self):
-        """I will clean up stuff!"""
+        """Unloading the cog, cancel tasks"""
         self.pinger.cancel()
         self.awootask.cancel()
 

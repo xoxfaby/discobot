@@ -195,7 +195,7 @@ class BotInfo:
         embed.add_field(name="Bot Prefix", value=f'{ctx.prefix}')
         embed.add_field(name="Source", value="[Github](https://github.com/jwshields/discobot)")
         now = datetime.datetime.utcnow()
-        delta = now - self.bot.starttime
+        delta = now - self.bot.common.starttime
         hours, remainder = divmod(int(delta.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
@@ -208,7 +208,7 @@ class BotInfo:
     async def uptime(self, ctx):
         """This command shows the uptime of the bot."""
         now = datetime.datetime.utcnow()
-        delta = now - self.bot.starttime
+        delta = now - self.bot.common.starttime
         hours, remainder = divmod(int(delta.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)

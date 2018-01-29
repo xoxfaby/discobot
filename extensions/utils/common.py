@@ -5,7 +5,7 @@ class CommonParams:
     """Things for common parameters"""
     def __init__(self):
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
-
+    starttime = datetime.datetime.utcnow()
     config = configparser.ConfigParser()
     internalfilesdir = os.path.join(os.curdir, "internalfiles")
     configfile = os.path.join(internalfilesdir, "botconf.ini")
@@ -158,3 +158,24 @@ class MyErrors(commands.CommandError):
 
     class DBotCooldownError(commands.CommandError):
         pass
+
+
+class Loading:
+    """Bot startup thingers"""
+    def __init__(self, bot):
+        self.bot = bot
+        self.bot.utils = self
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
+
+    def load(self):
+        loaded_exts, total_exts = 0, len(self.bot.common.addons)
+        for extension in self.bot.common.addons:
+            try:
+                self.bot.load_extension(extension)
+                loaded_exts += 1
+            except Exception as e:
+                print(f'{extension} failed to load.\n{type(e).__name__}: {e}')
+        self.bot.loop.create_task(self.bot.pref.load_all_prefixes())
+        curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        print(f'{curtime}: {loaded_exts}/{total_exts} extensions and {len(self.bot.cogs.keys())} cogs have been '
+              f'loaded\nProceeding with login to Discord now...\n')

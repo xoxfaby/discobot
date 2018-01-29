@@ -27,5 +27,26 @@ class UtilFuncs:
             raise self.bot.errors.DBotExternalError("Failed to retreive requested file.")
 
 
+class Startup:
+    """Bot init thingers"""
+    def __init__(self, bot):
+        self.bot = bot
+        self.bot.utils = self
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
+
+    async def on_ready(self):
+        curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        mesg = f'{0}: Logged in as "{1}" with the id of "{2}"\n------\n'
+        mesg = mesg.format(curtime, str(self.bot.user), str(self.bot.user.id))
+        print(mesg)
+
+    async def on_shard_ready(self, shardid):
+        curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        mesg = f'{0}: Shard {1} logged in as "{2}" with the id of "{3}"\n------\n'
+        mesg = mesg.format(curtime, str(shardid), str(self.bot.user), str(self.bot.user.id))
+        print(mesg)
+
+
 def setup(dbot):
     dbot.add_cog(UtilFuncs(dbot))
+    dbot.add_cog(Startup(dbot))
