@@ -527,7 +527,7 @@ class Misc:
             threematch = threematch_compile.search(str(numrange))
             if threematch:
                 mesg += f'TRIPS\n'
-                fourmatch_compile = re.compile(r'(\d)(\1{4})$')
+                fourmatch_compile = re.compile(r'(\d)(\1{3})$')
                 fourmatch = fourmatch_compile.search(str(numrange))
                 if fourmatch:
                     mesg += f'HOLY SHIT YOU MADMAN\n'

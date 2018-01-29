@@ -13,27 +13,50 @@ class ImageManipulation:
         result = bool(await self.bot.internals.cooldowncheck(ctx))
         return result
 
-    async def _get_recent_images_links(self, ctx):
-        msglist = []
-        async for message in ctx.channel.history(limit=25, reverse=False):
-            if message.attachments:
-                download_list = list([at.url for at in message.attachments])
-                for url in download_list:
-                    msglist += [url]
-            else:
-                content = message.content
-                fileexts = ['.png', '.jpg', '.jpeg', '.gif']
-                if any(ext in content for ext in fileexts):
-                    urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
-                                      content)
-                    if len(urls) > 0:
-                        for url in urls:
-                            msglist += [url]
-        return msglist
+    async def _get_recent_images_links(self, ctx, type: str):
+        if ctx.message.attachments:
+            imglist = []
+            download_list = list([at.url for at in ctx.message.attachments])
+            for url in download_list:
+                imglist += [url]
+        else:
+            imglist = []
+            async for message in ctx.channel.history(limit=25, reverse=False):
+                if message.attachments:
+                    download_list = list([at.url for at in message.attachments])
+                    for url in download_list:
+                        imglist += [url]
+                else:
+                    content = message.content
+                    fileexts = ['.png', '.jpg', '.jpeg', '.gif']
+                    if any(ext in content for ext in fileexts):
+                        urls = re.findall(
+                            'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+                            content)
+                        if len(urls) > 0:
+                            for url in urls:
+                                imglist += [url]
+        if not imglist:
+            raise self.bot.errors.DBotExternalError(f'No images have been posted in the last 25 messages'
+                                                    f' that I could use.')
+        imagefilename = (imglist[0]).split('/')[-1].strip().split(".")
+        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
+        if imagefilename[-1].lower() not in img_formats:
+            raise self.bot.errors.DBotExternalError("The most recent attachment posted does not appear to be an image")
+        filename = (f'{time.strftime("%Y%m%d-%H%M%S")}-{imagefilename[0]}-original.{imagefilename[-1]}')
+        basedir = os.path.join(os.curdir, "internalfiles", "temp", type)
+        origimglocation = os.path.join(os.curdir, "internalfiles", "temp", type, "original")
+        fulllocation = os.path.join(origimglocation, filename)
+        if not os.path.exists(origimglocation):
+            os.makedirs(origimglocation)
+        await self.bot.utils.retrieve_web_file(imglist[0], fulllocation)
+        return basedir, fulllocation
 
     def _moar_jpg(self, imglocation):
         file = os.path.split(imglocation)
         realfilepath = file[0]
+        if not os.path.exists(realfilepath):
+            os.makedirs(realfilepath)
         filename = file[1]
         convertname = (f'{time.strftime("%Y%m%d-%H%M%S")}-converted-{filename}.jpg')
         convertedfilepath = os.path.join(realfilepath, convertname)
@@ -48,6 +71,9 @@ class ImageManipulation:
 
     def _ok_doge(self, text):
         originalimage = os.path.join(os.curdir, "internalfiles", "images", "Doge.png")
+        dogedir = os.path.join(os.curdir, "internalfiles", "images",)
+        if not os.path.exists(dogedir):
+            os.makedirs(dogedir)
         with Image(filename=originalimage) as original:
             with Drawing() as draw:
                 fontlocation = os.path.join("internalfiles", "misc", "impact.ttf")
@@ -121,6 +147,8 @@ class ImageManipulation:
             (b'(\x0E)', b'(\x02)')]
         # Open image from imglocation, close image, save as bmp
         bmpdir = os.path.join(basedir, "bmp")
+        if not os.path.exists(bmpdir):
+            os.makedirs(bmpdir)
         origfilepath = os.path.split(imglocation)[0]
         filename = os.path.basename(imglocation).split('.')[0]
         ext = os.path.basename(imglocation).split('.')[-1]
@@ -147,7 +175,7 @@ class ImageManipulation:
                   b'\x3f', b'\x19', b'\x13', b'\x14', b'\x10', b'\x17', b'\xf8', b'\x9f', b'\x9e', b'\x93', b'\xa8', \
                   b'\xa6', b'\xab', b'\xa7', b'\xb1', b'\xac', b'\xa9', b'\xad', b'\xaa', b'\xae', b'\xaf', b'\xb0'
         outpath = None
-        randrange = random.randint(1, 6)
+        randrange = random.randint(1, 4)
         for xx in range(randrange):
             ii = random.randrange(0, data_size - 1, 1)
             temp_jj = ii + round(data_size / 12)
@@ -201,6 +229,8 @@ class ImageManipulation:
     def _deepfry(self, ctx, basedir, imagelocation):
         img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
         frieddir = os.path.join(basedir, "fried")
+        if not os.path.exists(frieddir):
+            os.makedirs(frieddir)
         origfilepath = os.path.split(imagelocation)[0]
         filename = os.path.basename(imagelocation).split('.')[0]
         ext = os.path.basename(imagelocation).split('.')[-1]
@@ -237,27 +267,7 @@ class ImageManipulation:
     @commands.command()
     async def corrupt(self, ctx):
         """Corrupt an image"""
-        if ctx.message.attachments:
-            imglist = []
-            download_list = list([at.url for at in ctx.message.attachments])
-            for url in download_list:
-                imglist += [url]
-        else:
-            imglist = await self._get_recent_images_links(ctx)
-            if not imglist:
-                raise self.bot.errors.DBotExternalError(f'No images have been posted in the last 25 messages that I '
-                                                        f'could use.')
-        imagefilename = (imglist[0]).split('/')[-1].strip().split(".")
-        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
-        if imagefilename[-1].lower() not in img_formats:
-            raise self.bot.errors.DBotExternalError("The most recent attachment posted does not appear to be an image")
-        filename = (f'{time.strftime("%Y%m%d-%H%M%S")}-{imagefilename[0]}-original.{imagefilename[-1]}')
-        basedir = os.path.join(os.curdir, "internalfiles", "temp", "corrupt")
-        origimglocation = os.path.join(os.curdir, "internalfiles", "temp", "corrupt", "original")
-        fulllocation = os.path.join(origimglocation, filename)
-        if not os.path.exists(origimglocation):
-            os.makedirs(origimglocation)
-        await self.bot.utils.retrieve_web_file(imglist[0], fulllocation)
+        basedir, fulllocation = await self._get_recent_images_links(ctx, "corrupt")
         async with ctx.typing():
             pass
         partial_corrupt = functools.partial(self._corrupt_img, basedir, fulllocation)
@@ -270,26 +280,7 @@ class ImageManipulation:
     @commands.command(aliases=['needsmoarjpg', 'morejpg', 'moarjpg'])
     async def needsmorejpg(self, ctx):
         """Makes an image more jpg-y"""
-        if ctx.message.attachments:
-            imglist = []
-            download_list = list([at.url for at in ctx.message.attachments])
-            for url in download_list:
-                imglist += [url]
-        else:
-            imglist = await self._get_recent_images_links(ctx)
-            if not imglist:
-                raise self.bot.errors.DBotExternalError(f'No images have been posted in the last 25 messages that I '
-                                                        f'could use.')
-        imagefilename = (imglist[0]).split('/')[-1].strip().split(".")
-        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
-        if imagefilename[-1].lower() not in img_formats:
-            raise self.bot.errors.DBotExternalError("The most recent attachment posted does not appear to be an image")
-        filename = (f'{time.strftime("%Y%m%d-%H%M%S")}-{imagefilename[0]}-original.{imagefilename[-1]}')
-        imglocation = os.path.join(os.curdir, "internalfiles", "temp", "morejpg")
-        if not os.path.exists(imglocation):
-            os.makedirs(imglocation)
-        fulllocation = os.path.join(imglocation, filename)
-        await self.bot.utils.retrieve_web_file(imglist[0], fulllocation)
+        basedir, fulllocation = await self._get_recent_images_links(ctx, "morejpg")
         async with ctx.typing():
             pass
         partial_jpg = functools.partial(self._moar_jpg, fulllocation)
@@ -316,28 +307,7 @@ class ImageManipulation:
     @commands.command(aliases=['fried', 'fry', 'deep'])
     async def deepfry(self, ctx):
         """deepfry an image"""
-        if ctx.message.attachments:
-            imglist = []
-            download_list = list([at.url for at in ctx.message.attachments])
-            for url in download_list:
-                imglist += [url]
-        else:
-            imglist = await self._get_recent_images_links(ctx)
-            if not imglist:
-                raise self.bot.errors.DBotExternalError(f'No images have been posted in the last 25 messages that I '
-                                                        f'could use.')
-        imagefilename = (imglist[0]).split('/')[-1].strip().split(".")
-        img_formats = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'bmp']
-        if imagefilename[-1].lower() not in img_formats:
-            raise self.bot.errors.DBotExternalError("The most recent attachment posted does not appear to be an image")
-        filename = (f'{time.strftime("%Y%m%d-%H%M%S")}-{imagefilename[0]}-original.{imagefilename[-1]}')
-        basedir = os.path.join(os.curdir, "internalfiles", "temp", "fried")
-        origimglocation = os.path.join(os.curdir, "internalfiles", "temp", "fried", "original")
-        fulllocation = os.path.join(origimglocation, filename)
-        if not os.path.exists(origimglocation):
-            os.makedirs(origimglocation)
-        await self.bot.utils.retrieve_web_file(imglist[0], fulllocation)
-
+        basedir, fulllocation = await self._get_recent_images_links(ctx, "fried")
         async with ctx.typing():
             pass
         partial_fried = functools.partial(self._deepfry, ctx, basedir, fulllocation)
@@ -346,6 +316,91 @@ class ImageManipulation:
             await ctx.send(file=discord.File(fp=result, filename="fried.jpg"))
         else:
             raise self.bot.errors.DBotExternalError(f"Sorry, there was an error on processing the image.")
+
+    def _flip_flop(self, ctx, basedir, imagelocation, flipflop: str):
+        img_formats = ['jpg', 'jpeg', 'png', 'gif, ''tif', 'tiff', 'bmp']
+        origfilepath = os.path.split(imagelocation)[0]
+        filename = os.path.basename(imagelocation).split('.')[0]
+        ext = os.path.basename(imagelocation).split('.')[-1]
+        origfilename = f'{filename}.{ext}'
+        fp = os.path.join(origfilepath, origfilename)
+        flipflopdir = os.path.join(basedir, "out")
+        flipflop_out = f'{filename}.jpg'
+        path_flipflop_out = os.path.join(flipflopdir, flipflop_out)
+        if not os.path.exists(flipflopdir):
+            os.makedirs(flipflopdir)
+        if flipflop is "flip":
+            with Image(filename=fp) as img:
+                width = img.width
+                height = img.height
+                halfheight = round(height / 2)
+                with img[0:width, 0:halfheight] as cropped:
+                    cropped.flip()
+                    img.composite(cropped, int(0), halfheight)
+                    img.save(filename=path_flipflop_out)
+            return path_flipflop_out
+        elif flipflop is "dood":
+            with Image(filename=fp) as img:
+                width = img.width
+                height = img.height
+                halfwidth = round(width / 2)
+                with img[0:halfwidth, 0:height] as cropped:
+                    cropped.flop()
+                    img.composite(cropped, halfwidth, 0)
+                    img.save(filename=path_flipflop_out)
+            return path_flipflop_out
+        elif flipflop is "moom":
+            with Image(filename=fp) as img:
+                width = img.width
+                height = img.height
+                halfwidth = round(width / 2)
+                with img[halfwidth:width, 0:height] as cropped:
+                    cropped.flop()
+                    img.composite(cropped, 0, 0)
+                    img.save(filename=path_flipflop_out)
+            return path_flipflop_out
+        else:
+            return None
+
+    @commands.command()
+    async def flip(self, ctx):
+        """Flip"""
+        basedir, fulllocation = await self._get_recent_images_links(ctx, "flipflop")
+        async with ctx.typing():
+            pass
+        partial_flipflop = functools.partial(self._flip_flop, ctx, basedir, fulllocation, "flip")
+        result = await self.bot.loop.run_in_executor(None, partial_flipflop)
+        if result is not None:
+            await ctx.send(file=discord.File(fp=result, filename="flipped.jpg"))
+        else:
+            raise self.bot.errors.DBotExternalError(f"Sorry, there was an error on processing the image.")
+
+    @commands.command()
+    async def dood(self, ctx):
+        """dood"""
+        basedir, fulllocation = await self._get_recent_images_links(ctx, "flipflop")
+        async with ctx.typing():
+            pass
+        partial_flipflop = functools.partial(self._flip_flop, ctx, basedir, fulllocation, "dood")
+        result = await self.bot.loop.run_in_executor(None, partial_flipflop)
+        if result is not None:
+            await ctx.send(file=discord.File(fp=result, filename="dood.jpg"))
+        else:
+            raise self.bot.errors.DBotExternalError(f"Sorry, there was an error on processing the image.")
+
+    @commands.command()
+    async def moom(self, ctx):
+        """moom"""
+        basedir, fulllocation = await self._get_recent_images_links(ctx, "flipflop")
+        async with ctx.typing():
+            pass
+        partial_flipflop = functools.partial(self._flip_flop, ctx, basedir, fulllocation, "moom")
+        result = await self.bot.loop.run_in_executor(None, partial_flipflop)
+        if result is not None:
+            await ctx.send(file=discord.File(fp=result, filename="moom.jpg"))
+        else:
+            raise self.bot.errors.DBotExternalError(f"Sorry, there was an error on processing the image.")
+
 
     # @commands.command()
     # async def hextest(self, ctx):
