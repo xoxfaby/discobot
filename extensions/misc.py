@@ -419,19 +419,28 @@ class Misc:
         embed.set_image(url=target.avatar_url_as(format='png'))
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['bigmoji', 'bemoji', 'big'])
-    async def bigemoji(self, ctx, emoji):
-        """Attempts to make an emoji bigger"""
-        # discord.PartialReactionEmoji()
-        try:
-            newemoji = await commands.EmojiConverter().convert(ctx, emoji)
-        except commands.BadArgument:
-            return await ctx.send("This is not a custom emoji, I cannot biggify it.")
-        if type(newemoji) == discord.Emoji:
-            emoji_cdn = newemoji.url
-            embed = discord.Embed(title=f':{newemoji.name}: \N{EM DASH} `{newemoji.id}`')
-            embed.set_image(url=emoji_cdn)
-            await ctx.send(embed=embed)
+    # @commands.command(aliases=['bigmoji', 'bemoji', 'big'])
+    # async def bigemoji(self, ctx, emoji):
+    #     """Attempts to make an emoji bigger"""
+    #     # try:
+    #     print("1")
+    #     newemoji = await commands.EmojiConverter().convert(ctx, emoji)
+    #     print(newemoji.name)
+    #     print(newemoji.id)
+    #     print("2")
+    #     print(type(emoji))
+    #     # except commands.BadArgument:
+    #     #     return await ctx.send("This is not a custom emoji, I cannot biggify it.")
+    #     if isinstance(emoji, (discord.Emoji, discord.PartialReactionEmoji)):
+    #         print("here")
+    #         emoji_cdn = emoji.url
+    #         print("3")
+    #         embed = discord.Embed(title=f':{emoji.name}: \N{EM DASH} `{emoji.id}`')
+    #         print("4")
+    #         embed.set_image(url=emoji_cdn)
+    #         print("5")
+    #         await ctx.send(embed=embed)
+    #         print("6")
 
     @commands.command()
     async def awootime(self, ctx):

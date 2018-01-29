@@ -270,7 +270,7 @@ class TextMemes:
             gayarraychoice = str(random.choice(gayarray))
             return await ctx.send(mesg + gayarraychoice)
 
-    @commands.command(aliases=['pasta', 'emoji', 'daddy'])
+    @commands.command(aliases=['pasta', 'daddy'])
     async def emojipasta(self, ctx):
         """I will call you daddy"""
         pastafile = os.path.join("internalfiles", 'content', 'textshit', 'emojipasta.txt')
