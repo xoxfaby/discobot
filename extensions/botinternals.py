@@ -238,7 +238,7 @@ class BotInfo:
         avg = (sum(templist)/len(templist))
         await ctx.channel.send(f'Heartbeat to Discord: {round(self.bot.latency * 1000)}ms\n'
                                f'Time to send typing signal to Discord: {round((t2-t1)*1000)}ms\n'
-                               f'Average heartbeat over the last 10 minutes: {round(avg * 1000, 4)}\n')
+                               f'Average heartbeat over the last 10 minutes: {round(avg * 1000, 4)}ms\n')
                                # f'Average heartbeat over the last hour: {round(avg * 1000, 3)}\n')
 
     @commands.command(description="This command can be used to invite the bot to a server")

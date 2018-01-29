@@ -36,7 +36,8 @@ class EtcOnMessage:
 
     async def on_message(self, message):
         if (message.content.startswith(self.bot.common.discordbotcommandprefix)) or \
-                (str(message.author.id) == str(self.bot.common.botdiscordid)) or (message.author.bot is True):
+                (str(message.author.id) == str(self.bot.common.botdiscordid)) or (message.author.bot is True) or \
+                (message.guild is None):
             return
         alphabet = {"bmoji": u"\U0001f171", "oksymbol": str("👌"), "fire": str("🔥")}
         msg = message.content

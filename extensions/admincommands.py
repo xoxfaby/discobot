@@ -478,6 +478,11 @@ class AdminTesting:
         if ctx.invoked_subcommand is None:
             return
 
+    @fake.command()
+    async def join(self, ctx):
+        user = ctx.author
+        self.bot.dispatch('member_join', user)
+
     @commands.command()
     @commands.is_owner()
     async def echo(self, ctx):
@@ -554,15 +559,30 @@ class AdminTesting:
     #     for cmd in self.bot.walk_commands():
     #         print(cmd)
     #
-
-    @commands.command()
-    async def tasks(self, ctx):
-        tasks = asyncio.Task.all_tasks()
-        print(tasks)
+    #
+    # @commands.command()
+    # async def tasks(self, ctx):
+    #     tasks = asyncio.Task.all_tasks()
+    #     print(tasks)
 
     @commands.command()
     async def plshalp(self, ctx):
         return await ctx.send("My bot is broken")
+    #
+    # @commands.command()
+    # async def emojitest(self, ctx):
+    #     awoolist = []
+    #     for server in self.bot.guilds:
+    #         for emoji in server.emojis:
+    #             if "awoo12" in emoji.name.lower():
+    #                 awoolist.append(emoji)
+    #     mesg = ''
+    #     for emote in awoolist:
+    #         newemote = await commands.EmojiConverter().convert(ctx, str(emote))
+    #         print(emote)
+    #         print(type(emote))
+    #     await ctx.send(emote)
+
 
 
 def setup(dbot):

@@ -133,10 +133,10 @@ class PrefixStuff:
     async def get_prefix(self, bot, message):
         try:
             # if message.guild is None:
-            #     return commands.when_mentioned_or(None)(bot,message)
+            #     return commands.when_mentioned_or()(bot,message)
             # else:
-            prefix = [await self.prefix_for(message.guild.id)]
-            return commands.when_mentioned_or(*prefix)(bot, message)
+                prefix = [await self.prefix_for(message.guild.id)]
+                return commands.when_mentioned_or(*prefix)(bot, message)
         except (KeyError, AttributeError):
             return self.bot.common.discordbotcommandprefix
 
