@@ -502,9 +502,9 @@ class DBotHelp:
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def source(self, ctx, *, command):
+    async def source(self, ctx, *, command=None):
         if command is None:
-            return await ctx.send("[GitHub](https://github.com/jwshields/noodlebot/)")
+            return await ctx.send("<https://github.com/jwshields/noodlebot>")
         result = await self._cmd_type_checker(ctx, command)
         url_stub = f'https://github.com/jwshields/'
         file = inspect.getsourcefile(result)
@@ -528,7 +528,7 @@ class DBotHelp:
         module = ctx.bot.extensions.get(cmd)
         if module is not None:
             return module
-        raise commands.BadArgument()
+        raise commands.BadArgument(f"User tried to get source for an invalid command, {cmd}")
 
 
 def setup(dbot):
