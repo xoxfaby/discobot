@@ -36,14 +36,14 @@ class Startup:
 
     async def on_ready(self):
         curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-        mesg = f'{0}: Logged in as "{1}" with the id of "{2}"\n------\n'
+        mesg = '{0}: Logged in as "{1}" with the id of "{2}"\n------'
         mesg = mesg.format(curtime, str(self.bot.user), str(self.bot.user.id))
         print(mesg)
 
     async def on_shard_ready(self, shardid):
         curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-        mesg = f'{0}: Shard {1} logged in as "{2}" with the id of "{3}"\n------\n'
-        mesg = mesg.format(curtime, str(shardid), str(self.bot.user), str(self.bot.user.id))
+        mesg = '{0}: Shard {1} logged in...\n------'
+        mesg = mesg.format(curtime, str(shardid))
         print(mesg)
 
 
