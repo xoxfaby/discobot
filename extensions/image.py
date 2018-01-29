@@ -401,6 +401,9 @@ class ImageManipulation:
         else:
             raise self.bot.errors.DBotExternalError(f"Sorry, there was an error on processing the image.")
 
+    @commands.command(aliases=['nag', 'netart', 'netartgen'])
+    async def composite(self, ctx):
+        pass
 
     # @commands.command()
     # async def hextest(self, ctx):

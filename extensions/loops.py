@@ -9,20 +9,16 @@ class LoopClass:
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
         self.awootask = self.bot.loop.create_task(self.awoo())
+        self.pinger = self.bot.loop.create_task(self.ping_timer())
 
     def __unload(self):
         """I will clean up stuff!"""
+        self.pinger.cancel()
         self.awootask.cancel()
 
     async def awoo(self):
         await self.bot.wait_until_ready()
         timerange = list(range(7200, 28800, 2))
-        awoo_array = []
-        awoo_path = os.path.join("internalfiles", "images", "smallawoo", "**")
-        file_exts = '.png', '.jpg', '.jpeg', '.gif'
-        for filename in glob.glob(str(awoo_path), recursive=False):
-            if filename.endswith(file_exts):
-                awoo_array += [str(filename)]
         while not self.bot.is_closed():
             curtime = datetime.datetime.now()
             waittime = random.choice(timerange)
@@ -37,13 +33,33 @@ class LoopClass:
                 async with conn.cursor(aiomysql.DictCursor) as cursor:
                     await cursor.execute(sql_cmd)
                     chan_list = await cursor.fetchall()
+            awoolist = []
+            for server in self.bot.guilds:
+                for emoji in server.emojis:
+                    if "awoo" in emoji.name.lower():
+                        awoolist.append(emoji)
             for item in chan_list:
                 for key, chanid in item.items():
-                    random_awoo = random.choice(awoo_array)
-                    fp = discord.File(fp=random_awoo, filename="awoo.png")
+                    random_awoo = random.choice(awoolist)
                     send_chan = self.bot.get_channel(id=int(chanid))
-                    await send_chan.send(file=fp, content="awoo~")
+                    await send_chan.send(content=random_awoo)
             await asyncio.sleep(waittime)
+
+    async def ping_timer(self):
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            curtime = datetime.datetime.now()
+            latencytime = self.bot.latency
+            sqlcmd = """
+            INSERT INTO `{0}`.`_pinger` (`curtime`, `heartbeat`)
+            VALUES (%s, %s)
+            """
+            newcmd = sqlcmd.format(self.bot.common.mysqldb).replace("\n", "")
+            querydata = (curtime, latencytime)
+            async with self.bot.mysqlcon.acquire() as conn:
+                async with conn.cursor() as cursor:
+                    await cursor.execute(newcmd, querydata)
+            await asyncio.sleep(30)
 
     async def daychange(self):
         midnight = time.strftime("0000")
