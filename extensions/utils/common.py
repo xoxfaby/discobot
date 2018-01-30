@@ -186,4 +186,4 @@ class Loading:
         self.bot.loop.create_task(self.bot.pref.load_all_prefixes())
         curtime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
         print(f'{curtime}: {loaded_exts}/{total_exts} extensions and {len(self.bot.cogs.keys())} cogs have been '
-              f'loaded\nProceeding with login to Discord now...\n')
+              f'loaded\n------\nProceeding with login to Discord now...\n------')

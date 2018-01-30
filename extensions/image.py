@@ -291,7 +291,7 @@ class ImageManipulation:
             raise self.bot.errors.DBotExternalError(f'Sorry, there was an error on processing the image.')
 
     @commands.command(aliases=['doge'])
-    async def ok(self, ctx, *, text):
+    async def ok(self, ctx, *, text=None):
         """Ok"""
         imglocation = os.path.join(os.curdir, "internalfiles", "temp", "okdoge")
         if not os.path.exists(imglocation):

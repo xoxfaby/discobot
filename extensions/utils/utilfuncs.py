@@ -31,7 +31,7 @@ class Startup:
     """Bot init thingers"""
     def __init__(self, bot):
         self.bot = bot
-        self.bot.utils = self
+        self.bot.startup = self
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
     async def on_ready(self):
