@@ -19,6 +19,7 @@ import gzip
 import hashlib
 import inspect
 import io
+import importlib
 import janus
 import json
 import logging

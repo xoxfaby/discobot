@@ -6,6 +6,7 @@ class BotInternals:
     from extensions.utils import dbotchecks
 
     def __init__(self, bot):
+        importlib.reload(self.dbotchecks)
         self.bot = bot
         self.bot.internals = self
         self.bot.misccache = aiocache.SimpleMemoryCache(serializer=NullSerializer, namespace="misc")
@@ -145,6 +146,7 @@ class BotInfo:
     from extensions.utils import dbotchecks
 
     def __init__(self, bot):
+        importlib.reload(self.dbotchecks)
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
@@ -457,6 +459,7 @@ class DBotHelp:
     from extensions.utils import dbotchecks
 
     def __init__(self, bot):
+        importlib.reload(self.dbotchecks)
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 

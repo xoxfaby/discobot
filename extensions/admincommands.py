@@ -6,6 +6,7 @@ class AdminCommands:
     from extensions.utils import dbotchecks
 
     def __init__(self, bot):
+        importlib.reload(self.dbotchecks)
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
@@ -467,6 +468,7 @@ class AdminTesting:
     from extensions.utils import dbotchecks
 
     def __init__(self, bot):
+        importlib.reload(self.dbotchecks)
         self.bot = bot
         print(f'{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}: Addon "{self.__class__.__name__}" loaded')
 
