@@ -176,7 +176,7 @@ class AdminCommands:
         embed.add_field(name="Member Name", value=str(membername))
         embed.add_field(name="Member ID", value=str(memberid))
         if isinstance(mentioned_users, discord.Member):
-            embed.add_field(name="Top Role of User", value=str(userrole.name))
+            embed.add_field(name="Top Role of User", value=f'`{str(userrole.name)}`')
         embed.add_field(name="Joined Discord", value=str(userjoineddisco), inline=False)
         if isinstance(mentioned_users, discord.Member):
             embed.add_field(name="Joined this Guild/Server", value=str(userjoinedguild), inline=False)
