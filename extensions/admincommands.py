@@ -484,6 +484,11 @@ class AdminTesting:
         user = ctx.author
         self.bot.dispatch('member_join', user)
 
+    @fake.command()
+    async def guild_join(self, ctx):
+        guild = ctx.guild
+        self.bot.dispatch('guild_join', guild)
+
     @commands.command()
     @commands.is_owner()
     async def echo(self, ctx):

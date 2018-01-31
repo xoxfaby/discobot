@@ -76,14 +76,14 @@ class TextMemes:
             for usermention in mesg:
                 isgay = str(random.choice(gayarray))
                 await ctx.send(usermention.mention + str(isgay))
-        elif args is ():
-            members = ctx.message.guild.members
-            mentionarray = []
-            for member in members:
-                mentionarray += [member.mention]
-            randomuser = random.choice(mentionarray)
-            gayarraychoice = str(random.choice(gayarray))
-            return await ctx.send(randomuser + gayarraychoice)
+        # elif args is ():
+        #     members = ctx.message.guild.members
+        #     mentionarray = []
+        #     for member in members:
+        #         mentionarray += [member.mention]
+        #     randomuser = random.choice(mentionarray)
+        #     gayarraychoice = str(random.choice(gayarray))
+        #     return await ctx.send(randomuser + gayarraychoice)
         else:
             mesg = ' '.join(args)
             gayarraychoice = str(random.choice(gayarray))

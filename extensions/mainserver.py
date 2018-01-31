@@ -21,15 +21,23 @@ class MainServer:
             return
         else:
             mytime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-            action = {"join": "was added to a new", "leave": "was removed from a"}
-            mainservermessage = ("!!!! ALART !!!!\nBoat was {7} server\nDate: {0}\nGuild Name & ID: {1} --- {2}\n"
-                                 "Guild Owner: {3} --- Owner ID: {4}\nGuild Info: Size: {5} Users; Created: {6}")
-            content = mainservermessage.format(mytime, str(guild.name), str(guild.id), str(guild.owner),
-                                               str(guild.owner.id), str(guild.member_count), str(guild.created_at),
-                                               str(action[joinleave]))
+            action = {"join": "was added to a new server", "leave": "was removed from a server"}
+            try:
+                invites = await guild.invites()
+            except (discord.Forbidden, discord.HTTPException):
+                invites = None
+            mainservermessage = (f'!!!! ALART !!!!\nBoat was {str(action[joinleave])} \n'
+                                 f'```Guild Name & ID: {str(guild.name)} --- {str(guild.id)}\n'
+                                 f'Guild Owner: {str(guild.owner)} --- {str(guild.owner.id)}\n'
+                                 f'Guild Misc Info:\n'
+                                 f'    Users on join: {str(guild.member_count)}\n'
+                                 f'    Created: {str(guild.created_at)}\n```')
+            if invites:
+                temp = [f'{x.code}, ' for x in invites]
+                mainservermessage += (f'Invite list: {temp}')
             for channel in self.bot.common.mainserverlogchan:
                 chan = self.bot.get_channel(id=int(channel))
-                await chan.send(content)
+                await chan.send(mainservermessage)
 
 
 def setup(dbot):
